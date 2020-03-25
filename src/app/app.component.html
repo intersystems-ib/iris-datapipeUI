@@ -1,0 +1,25 @@
+<mat-toolbar color="primary">
+  <!-- left aligned-->
+  <button mat-button routerLink="/datapipe">
+    Search
+  </button>
+
+  <span class="fill-space"></span>
+  <span>datapipeUI</span>
+
+  <!-- right aligned -->
+  <span class="fill-space"></span>
+
+  <button mat-button routerLink="/auth/login" *ngIf="!(isLoggedIn$ | async)">
+    login
+  </button>
+  <button mat-button routerLink="/auth/logout" *ngIf="(isLoggedIn$ | async)">
+    logout
+  </button>
+</mat-toolbar>
+
+<app-alert-display></app-alert-display>
+
+<div class="main-content">
+  <router-outlet></router-outlet>
+</div>

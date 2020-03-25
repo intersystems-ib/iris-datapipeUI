@@ -1,0 +1,59 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~bootstrap/dist/css/bootstrap.css";
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/** Fill space. Used in toolbar and centered elements */
+.fill-space {
+    flex: 1 1 auto;
+}
+
+/** Inbox status chips */
+.status-ingesting, .status-staging, .status-operating {
+	background-color:#f5a973 !important;
+	color: #fff !important; 
+	font-weight: bold;
+}
+.status-done {
+	background-color: #407829 !important;
+	color: #fff !important;
+	font-weight: bold;
+}
+.status-error-ingesting, .status-error-staging, .status-error-operating, .status-error-general {
+	background-color:#f57c6e !important;
+	color: #fff !important; 
+	font-weight: bold;
+}
+
+/** Staging Status chips */
+.staging-valid {
+	background-color:#aed689 !important;
+	color: #407829 !important; 
+}
+.staging-invalid {
+	background-color:#f57c6e !important;
+	color: #fff !important; 
+}
+.staging-na {
+	background-color:#bbb !important;
+	color: #eee !important; 
+}
+
+/** Oper Status chips */
+.oper-processing {
+    background-color: #17a2b8 !important;
+    color: #fff !important;
+}
+.oper-processed {
+	background-color:#aed689 !important;
+	color: #407829 !important; 
+}
+.oper-error {
+	background-color:#f57c6e !important;
+	color: #fff !important; 
+}
+.oper-na {
+	background-color:#bbb !important;
+	color: #eee !important;  
+}

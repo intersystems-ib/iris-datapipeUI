@@ -1,0 +1,183 @@
+<div class="container">
+  <p class="h2">Inbox List</p>
+
+  <!-- filters form -->
+  <mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon style='margin-right:5px;'>filter_list</mat-icon>Filters
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <form #filtersForm="ngForm" (ngSubmit)="search()">
+
+        <!-- filters row -->
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+          <mat-form-field floatLabel="always">
+            <mat-label class="highlight-field">Status</mat-label>
+            <input matInput type="text" [(ngModel)]="filters.Status" [matAutocomplete]="autoStatus" name="Status"
+              (keyup)="onStatusKeyUp($event, filters.Status)">
+            <mat-autocomplete #autoStatus="matAutocomplete">
+              <mat-option *ngFor="let status of filteredStatus" [value]="status">
+                {{ status }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <mat-form-field floatLabel="always">
+            <mat-label class="highlight-field">Staging</mat-label>
+            <input matInput type="text" [(ngModel)]="filters.StagingStatus" [matAutocomplete]="autoStagingStatus"
+              name="StagingStatus" (keyup)="onStagingStatusKeyUp($event, filters.StagingStatus)">
+            <mat-autocomplete #autoStagingStatus="matAutocomplete">
+              <mat-option *ngFor="let stagingStatus of filteredStagingStatus" [value]="stagingStatus">
+                {{ stagingStatus }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <mat-form-field floatLabel="always">
+            <mat-label class="highlight-field">Operation</mat-label>
+            <input matInput type="text" [(ngModel)]="filters.OperStatus" [matAutocomplete]="autoOperStatus" name="Oper"
+              (keyup)="onOperStatusKeyUp($event, filters.OperStatus)">
+            <mat-autocomplete #autoOperStatus="matAutocomplete">
+              <mat-option *ngFor="let operStatus of filteredOperStatus" [value]="operStatus">
+                {{ operStatus }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+        </div>
+
+        <!-- filters row -->
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+          <mat-form-field floatLabel="always">
+            <mat-label class="highlight-field">Source</mat-label>
+            <input matInput [(ngModel)]="filters.Source" name="Source">
+          </mat-form-field>
+          <mat-form-field floatLabel="always">
+            <mat-label class="highlight-field">Flow</mat-label>
+            <input matInput [(ngModel)]="filters.Flow" name="Flow">
+          </mat-form-field>
+          <mat-form-field floatLabel="always">
+            <mat-label class="highlight-field">MsgId</mat-label>
+            <input matInput [(ngModel)]="filters.MsgId" name="Flow">
+          </mat-form-field>
+          <mat-form-field floatLabel="always">
+            <mat-label class="highlight-field">Element</mat-label>
+            <input matInput [(ngModel)]="filters.Element" name="Flow">
+          </mat-form-field>
+        </div>
+
+        <!-- filters row -->
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+          <mat-form-field>
+            <input matInput placeholder="Updated (From)" [matDatepicker]="updatedTSFrom"
+              [(ngModel)]="filters.UpdatedTSFrom" name="updatedTSFrom">
+            <mat-datepicker-toggle matSuffix [for]="updatedTSFrom"></mat-datepicker-toggle>
+            <mat-datepicker #updatedTSFrom></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Updated (To)" [matDatepicker]="updatedTSTo"
+              [(ngModel)]="filters.UpdatedTSTo" name="updatedTSTo">
+            <mat-datepicker-toggle matSuffix [for]="updatedTSTo"></mat-datepicker-toggle>
+            <mat-datepicker #updatedTSTo></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- filters buttons -->
+        <button type="submit" mat-raised-button color="primary" style='margin-right: 10px;' [disabled]="!canSearch()">
+          <mat-icon>search</mat-icon>Search
+        </button>
+        <button type="button" mat-raised-button (click)="clickResetFilters()">Reset</button>
+      </form>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+
+  <!-- results table -->
+  <mat-table class="result-table mat-elevation-z8" [dataSource]="inboxes$ | async">
+    
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef fxFlex="60px">
+      </mat-header-cell>
+      <mat-cell *matCellDef="let inbox" fxFlex="60px">
+        <button mat-icon-button routerLink="/datapipe/{{ inbox.Id }}">
+          <mat-icon aria-label="Info">info</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+    
+    <ng-container matColumnDef="Id">
+      <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+      <mat-cell *matCellDef="let inbox">{{ inbox.Id }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="Source">
+      <mat-header-cell *matHeaderCellDef>Source</mat-header-cell>
+      <mat-cell *matCellDef="let inbox">{{ inbox.Source }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="Flow">
+      <mat-header-cell *matHeaderCellDef>Flow</mat-header-cell>
+      <mat-cell *matCellDef="let inbox">{{ inbox.Flow }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="MsgId">
+      <mat-header-cell *matHeaderCellDef>MsgId</mat-header-cell>
+      <mat-cell *matCellDef="let inbox">{{ inbox.MsgId }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="Element">
+      <mat-header-cell *matHeaderCellDef>Element</mat-header-cell>
+      <mat-cell *matCellDef="let inbox">{{ inbox.Element }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="UpdatedTS">
+      <mat-header-cell *matHeaderCellDef fxFlex="170px" fxHide.xs>Updated</mat-header-cell>
+      <mat-cell *matCellDef="let inbox" fxFlex="170px" fxHide.xs>{{ inbox.UpdatedTS | date:'dd/MM/yyyy HH:mm:ss':'GMT' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="Status">
+      <mat-header-cell *matHeaderCellDef fxFlex="180px" fxHide.xs>Status</mat-header-cell>
+      <mat-cell *matCellDef="let inbox" fxFlex="180px" fxHide.xs>
+        <mat-chip-list *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
+          <mat-chip [ngClass]="format.cssClass">{{ inbox.Status }}</mat-chip>
+        </mat-chip-list>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="StagingStatus">
+      <mat-header-cell *matHeaderCellDef fxHide.xs>Staging</mat-header-cell>
+      <mat-cell *matCellDef="let inbox" fxHide.xs>
+        <mat-chip-list *ngIf="datapipeService.getStagingStatusChipFormat(inbox.StagingStatus,inbox.ValidationErrors); let format">
+          <mat-chip [ngClass]="format.cssClass">
+            <mat-icon [matTooltip]="format.tooltip">
+              {{ format.icon }}
+            </mat-icon>
+            {{ format.desc }}
+          </mat-chip>
+        </mat-chip-list>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="OperStatus">
+      <mat-header-cell *matHeaderCellDef fxHide.xs>Operation</mat-header-cell>
+      <mat-cell *matCellDef="let inbox" fxHide.xs>
+        <mat-chip-list *ngIf="datapipeService.getOperStatusChipFormat(inbox.OperStatus, inbox.OperErrors); let format">
+          <mat-chip [ngClass]="format.cssClass">
+            <mat-icon [matTooltip]="format.tooltip">
+              {{ format.icon }}
+            </mat-icon>
+            {{ format.desc }}
+          </mat-chip>
+        </mat-chip-list>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
+
+  <mat-paginator #paginator [length]="totalResults" [pageSize]="20" [pageSizeOptions]="[10, 20, 50]"
+    (page)="onChangePage($event)"></mat-paginator>
+</div>

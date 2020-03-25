@@ -1,0 +1,226 @@
+<div class="container">
+
+    <div class="spinner-container" *ngIf="(loading$ | async)">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <div class="section-container" *ngIf="!(loading$ | async)">
+        
+        <!-- button bar -->
+        <div class="button-bar" fxLayout="row" fxLayoutGap="20%">
+            <span class="fill-space"></span>
+            <button mat-mini-fab color="link" style='margin-right: 10px;'>
+                <mat-icon 
+                    matTooltip="Reload" 
+                    (click)="loadData()">
+                        refresh
+                </mat-icon>
+            </button>
+            <span class="fill-space"></span>
+        </div>
+
+        <!-- Inbox -->
+        <div class="section" *ngIf="(inbox$ | async) as inbox">
+            <mat-toolbar>
+                <mat-toolbar-row>
+                    <div fxLayout="row" fxLayoutGap="20%">
+                        <span fxFlex="90px">Inbox</span>
+                        <mat-chip-list *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
+                            <mat-chip [ngClass]="format.cssClass">{{ inbox.Status }}</mat-chip>
+                        </mat-chip-list>
+                    </div>
+                </mat-toolbar-row>
+            </mat-toolbar>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+                <mat-form-field floatLabel="always" fxFlex="200px">
+                    <mat-label>Updated</mat-label>
+                    <input matInput [ngModel]="inbox.UpdatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="UpdatedTS" disabled>
+                </mat-form-field>
+                <mat-form-field floatLabel="always">
+                    <mat-label>Source</mat-label>
+                    <input matInput [(ngModel)]="inbox.Source" name="Source" disabled>
+                </mat-form-field>
+                <mat-form-field floatLabel="always">
+                    <mat-label>Flow</mat-label>
+                    <input matInput [(ngModel)]="inbox.Flow" name="Flow" disabled>
+                </mat-form-field>
+                <mat-form-field floatLabel="always">
+                    <mat-label>MsgId</mat-label>
+                    <input matInput [(ngModel)]="inbox.MsgId" name="MsgId" disabled>
+                </mat-form-field>
+                <mat-form-field floatLabel="always">
+                    <mat-label>Element</mat-label>
+                    <input matInput [(ngModel)]="inbox.Element" name="Element" disabled>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- ingestion object needed also in Staging compare butto -->
+        <div *ngIf="(ingestion$ | async) as ingestion">
+            <!-- Ingestion -->
+            <div class="section">
+                <mat-toolbar>
+                    <mat-toolbar-row>
+                        <div fxLayout="row" fxLayoutGap="20%">
+                            <span fxFlex="90px">Ingestion</span>
+                        </div>
+                    </mat-toolbar-row>
+                </mat-toolbar>
+                <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+                    <mat-form-field floatLabel="always" fxFlex="200px">
+                        <mat-label>Created</mat-label>
+                        <input matInput [ngModel]="ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="CreatedTS" disabled>
+                    </mat-form-field>
+                    <mat-form-field floatLabel="always" fxFlex="50%">
+                        <mat-label>Model Name</mat-label>
+                        <input matInput [(ngModel)]="ingestion.ModelName" name="ModelName" disabled>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
+                    <button type="submit" mat-mini-fab color="accent" style='margin-right: 10px;'>
+                        <mat-icon matTooltip="Repeat Ingestion" (click)="clickResendMessage(ingestion.HeaderId, 'Repeat Ingestion?')">repeat</mat-icon>
+                    </button>          
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId">
+                    <mat-icon 
+                        matTooltip="View Trace" 
+                        (click)="datapipeService.clickSession(ingestion.HeaderId)">
+                            zoom_in
+                    </mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;'>
+                    <mat-icon 
+                        matTooltip="Model Data" 
+                        (click)="datapipeService.clickViewStream({
+                                title: 'Model Data', 
+                                icon: 'code',
+                                stream1: ingestion.ModelData 
+                            })">code
+                    </mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Staging -->
+            <div class="section" *ngIf="(staging$ | async) as staging">
+                <mat-toolbar>
+                    <mat-toolbar-row>
+                        <div fxLayout="row" fxLayoutGap="20%">
+                            <span fxFlex="90px">Staging</span>
+                            <mat-chip-list *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status); let format">
+                                <mat-chip [ngClass]="format.cssClass">
+                                <mat-icon>
+                                    {{ format.icon }}
+                                </mat-icon>
+                                {{ format.desc }}
+                                </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                    </mat-toolbar-row>
+                </mat-toolbar>
+                <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+                    <mat-form-field floatLabel="always" fxFlex="200px">
+                        <mat-label>Created</mat-label>
+                        <input matInput [ngModel]="staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="CreatedTS" disabled>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
+                    <button type="submit" mat-mini-fab color="accent" style='margin-right: 10px;'>
+                        <mat-icon matTooltip="Repeat Staging" (click)="clickResendMessage(staging.HeaderId, 'Repeat Staging?')">repeat</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId">
+                    <mat-icon 
+                        matTooltip="View Trace" 
+                        (click)="datapipeService.clickSession(staging.HeaderId)">
+                            zoom_in
+                    </mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;'>
+                    <mat-icon 
+                        matTooltip="Model Normalized Data" 
+                        (click)="datapipeService.clickViewStream({
+                                title: 'Model Normalized Data',
+                                icon: 'code',
+                                stream1: staging.ModelNormData
+                            })">code
+                    </mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.ModelNormData">
+                        <mat-icon
+                        matTooltip="Model Data Vs. Normalization" 
+                        (click)="datapipeService.clickViewStream({
+                                title: 'Model Data Vs. Normalization',
+                                icon: 'compare',
+                                stream1: ingestion.ModelData,
+                                stream2: staging.ModelNormData
+                            })">compare
+                        </mat-icon>
+                    </button>
+                </div>
+                <div class="errors-container" *ngIf="staging.ValidationErrors">
+                    <div mat-subheader>Validation Errors:</div>
+                    <ul>
+                        <li *ngFor="let error of (staging.ValidationErrors)">
+                            {{ error.Code }}: {{ error.Desc }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oper -->
+        <div class="section" *ngIf="(oper$ | async) as oper">
+            <mat-toolbar>
+                <mat-toolbar-row>
+                    <div fxLayout="row" fxLayoutGap="20%">
+                        <span fxFlex="90px">Operation</span>
+                        <mat-chip-list *ngIf="datapipeService.getOperStatusChipFormat(oper.Status); let format">
+                            <mat-chip [ngClass]="format.cssClass">
+                              <mat-icon>
+                                {{ format.icon }}
+                              </mat-icon>
+                              {{ format.desc }}
+                            </mat-chip>
+                        </mat-chip-list>
+                    </div>
+                </mat-toolbar-row>
+            </mat-toolbar>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+                <mat-form-field floatLabel="always" fxFlex="200px">
+                    <mat-label>Created</mat-label>
+                    <input matInput [ngModel]="oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="CreatedTS" disabled>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
+                <button type="submit" mat-mini-fab color="accent" style='margin-right: 10px;'>
+                    <mat-icon matTooltip="Repeat Operation" (click)="clickResendMessage(oper.HeaderId, 'Repeat Operation?')">repeat</mat-icon>
+                </button>
+                <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId">
+                  <mat-icon 
+                    matTooltip="View Trace" 
+                    (click)="datapipeService.clickSession(oper.HeaderId)">
+                        zoom_in
+                   </mat-icon>
+                </button>
+                <button mat-mini-fab color="link" style='margin-right: 10px;'>
+                    <mat-icon 
+                      matTooltip="Operation Log" 
+                      (click)="datapipeService.clickViewStream({
+                              title: 'Operation Log',
+                              icon: 'description',
+                              stream1: oper.OperLog 
+                          })">description
+                    </mat-icon>
+                  </button>
+            </div>
+            <div class="errors-container" *ngIf="oper.OperErrors">
+                <div mat-subheader>Operation Errors:</div>
+                <ul>
+                    <li *ngFor="let error of (oper.OperErrors)">
+                        {{ error.Code }}: {{ error.Desc }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>

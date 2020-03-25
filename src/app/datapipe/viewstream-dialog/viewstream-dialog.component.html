@@ -1,0 +1,12 @@
+<mat-icon>{{ icon }}</mat-icon>
+<span class="app-subtitle-label">{{ title }}</span>
+<mat-divider></mat-divider>
+
+<div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0.5%" style='margin-top: 20px;' *ngIf=(!stream2)>
+	<pre>{{ stream1 }}</pre>
+</div>
+
+<div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0.5%" style='margin-top: 20px;' *ngIf=(stream2)>
+	<td-ngx-text-diff [left]="stream1" [right]="stream2">
+	</td-ngx-text-diff>
+</div>

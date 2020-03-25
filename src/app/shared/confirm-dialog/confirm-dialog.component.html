@@ -1,0 +1,13 @@
+<mat-icon color="accent">help_outline</mat-icon>
+<span> {{ title }}</span>
+<mat-divider></mat-divider>
+
+<div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0.5%" style='margin-top: 20px;'>
+	<div>
+	{{ text }}
+	</div>
+</div>
+<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" fxLayoutAlign="end" style='margin-top: 30px;'>
+	<button mat-raised-button color="primary" (click)="onAccept()" style='margin-right: 10px;'>Accept</button>
+	<button mat-raised-button (click)="onCancel()" style='margin-right: 10px;'>Cancel</button>
+</div>
