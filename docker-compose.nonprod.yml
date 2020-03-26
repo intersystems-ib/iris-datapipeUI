@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+
+  wwwdatapipeui:
+    build:
+      context: .
+      dockerfile: Dockerfile.nonprod
+    container_name: wwwdatapipeui
+    ports:
+    - "8080:80"
+
+networks:
+  default:
+    external:
+      name: datapipe-network

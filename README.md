@@ -1,27 +1,38 @@
-# DataPipeUI
+**DataPipeUI** is an frontend builf on *Angular* for [iris-datapipe](https://github.com/intersystems-ib/iris-datapipe), an **InterSystems IRIS** application which provides a set of re-usable components you can use to handle incoming data flow into ingestion, staging and operation phases in a homogeneus and flexible way.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.21.
+Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
 
-## Development server
+# Configuration
+Set up environment files so you can reach you [iris-datapipe](https://github.com/intersystems-ib/iris-datapipe) instance.
+* [environment.ts](./src/environments/environment.ts) - non production environment
+* [environment.prod.ts](./src/environments/environment.ts) - production environment
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+# Build & Run 
+*DataPipeUI* is an Angular application, so you can use usual Angular approachs to run it. You can do it locally or using a container.
 
-## Code scaffolding
+# Local
+If you have a local *Node.js* installation you build the application as follows:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```console
+# install project dependencies
+npm install
+# non-production build
+ng build
+```
 
-## Build
+Then, to run the application:
+* Copy the generated `dist/DataPipeUI` package into you web server.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+# Container
+You can also run the application using a web server in a container.
 
-## Running unit tests
+Check that [docker-compose.nonprod.yml](./src/environments/environment.ts) is using a network so you can reach your iris-datapipe instance.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Build & run the application:
+```console
+docker-compose -f docker-compose.nonprod.yml up -d
+```
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Application will be available at:
+* *Credentials*: use your *iris-datapipe* instance credentials
+* *URL*: http://localhost:8080/
