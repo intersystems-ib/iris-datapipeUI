@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpInterceptor, HttpRequest, HttpHandler, Htt
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, ReplaySubject, Observable, throwError } from 'rxjs';
 import { map, distinctUntilChanged, tap, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 /**
  * Authentication Service
@@ -11,7 +12,7 @@ import { map, distinctUntilChanged, tap, catchError } from 'rxjs/operators';
 export class AuthService {
   
   /** Backend API used to login. We can use any URL that will enforce an IRIS Basic Auth */
-  authApiUrl: string = 'http://localhost:52773/dpipe/api/rf2/form/info';
+  authApiUrl: string = environment.urlIRISApi + '/rf2/form/info/DataPipe.Data.Inbox';
 
   /** isLoginSubject is used to know if the user is logged in or not */
   isLoginSubject = new BehaviorSubject<boolean>(this.authenticated());
@@ -52,7 +53,7 @@ export class AuthService {
       pipe(
         map(data => { 
           let token = `Basic ${basicheader}`;
-          localStorage.setItem('currentUser', JSON.stringify({ username, token }));
+          localStorage.setItem(environment.authLocalStorageKey, JSON.stringify({ username, token }));
           this._token.next(token);
           setTimeout(() => {
             this.isLoginSubject.next(true);
@@ -70,7 +71,7 @@ export class AuthService {
    * Logout
    */
   public logout(): void {
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem(environment.authLocalStorageKey);
     setTimeout(() => {
       this.isLoginSubject.next(false);
     });
@@ -80,7 +81,7 @@ export class AuthService {
    * Returns true if user is authenticated
    */
   public authenticated(): boolean {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey));
     const token = currentUser && currentUser.token;
     if (token) {
       if (this._token) {
@@ -95,7 +96,7 @@ export class AuthService {
    * Returns stored user token (if any)
    */
   getToken(): string {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey));
     const token = currentUser && currentUser.token;
     return token;
   }

@@ -5,6 +5,13 @@
 export const environment = {
   production: false,
 
+  name: 'local-dev',
+  description: '[local-dev]',
+  tooltip: 'LOCAL-DEV',
+
+  /** local storage key used to store the credentials */
+  authLocalStorageKey: 'datapipeui-local-dev-auth',
+
   /** IRIS API url. IRIS REST APIs URLs will be formed using this url */
   urlIRISApi: 'http://localhost:52773/dpipe/api',
 

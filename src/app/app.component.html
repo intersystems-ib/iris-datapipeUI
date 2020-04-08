@@ -1,4 +1,4 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" [ngClass]="envToolbarClass">
   <!-- left aligned-->
   <button mat-button routerLink="/datapipe">
     Search
@@ -16,6 +16,10 @@
   <button mat-button routerLink="/auth/logout" *ngIf="(isLoggedIn$ | async)">
     logout
   </button>
+
+  <span style='margin-right:20px;' [matTooltip]="envTooltip">
+    {{ envDescription }}
+  </span>
 </mat-toolbar>
 
 <app-alert-display></app-alert-display>
