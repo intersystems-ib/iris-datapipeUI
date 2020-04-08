@@ -11,8 +11,7 @@ You need a running **iris-datapipe** instance in order to get the iris-datapipeU
 You have two options to set up your development environment:
 
 ## Setup
-### Local
-This is the preferred option. You need a local `Node.js` installation.
+You need a local `Node.js` installation.
 
 Install project dependencies using `npm`:
 ```
@@ -22,22 +21,6 @@ npm install
 Run development server:
 ```
 ng serve
-```
-
-### Container
-Use this option if you don't want to set up a local `Node.js` installation.
-
-Build image:
-```
-docker-compose build
-```
-
-Container network config:
-* Check that [docker-compose.yml](./docker-compose.yml) is using the same **iris-datapipe** network name.
-
-Run container:
-```
-docker-compose up
 ```
 
 ## Configuration
@@ -75,4 +58,5 @@ ng generate component datapipe/inbox-info
 ng generate component datapipe/inbox-history
 
 ng generate component shared/confirm-dialog
+ng generate service shared/info
 ```

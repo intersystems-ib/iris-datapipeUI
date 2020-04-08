@@ -2,23 +2,15 @@ version: '3.7'
 
 services:
 
-  datapipeui:
+  httpdatapipe:
+    image: httpdatapipe:latest
     build:
-      dockerfile: Dockerfile
       context: .
-    container_name: datapipeui
+      args:
+        NG_BUILD_OPTS: build
+    container_name: httpdatapipe
     ports:
-    - "4200:4200"
-
-    # usual way to ignore node_modules subfolder
-    # volumes:
-    #- .:/app
-    #- /app/node_modules
-    
-    # workaround to Docker issue https://github.com/moby/moby/issues/38564
-    volumes:
-    - ./e2e:/app/e2e
-    - ./src:/app/src
+    - "8080:80"
 
 networks:
   default:

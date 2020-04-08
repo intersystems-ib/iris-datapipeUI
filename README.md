@@ -26,11 +26,11 @@ Then, to run the application:
 # Container
 You can also run the application using a web server in a container.
 
-Check that [docker-compose.nonprod.yml](./src/environments/environment.ts) is using a network so you can reach your iris-datapipe instance.
+Check that [docker-compose.yml](./docker-compose.yml) is using a network so you can reach your iris-datapipe instance.
 
 Build & run the application:
 ```console
-docker-compose -f docker-compose.nonprod.yml up -d
+docker-compose up -d
 ```
 
 Application will be available at:

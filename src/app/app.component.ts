@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AuthService } from './auth/auth.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { InfoService } from './shared/info.service';
 
 @Component({
   selector: 'app-root',
@@ -10,11 +11,21 @@ import { map } from 'rxjs/operators';
 })
 export class AppComponent {
   title = 'DataPipeUI';
-
   isLoggedIn$: Observable<boolean>;
+  info: any;
   
-  constructor(private authService: AuthService) { 
+  constructor(
+    private authService: AuthService,
+    private infoService: InfoService
+    ) { 
     this.isLoggedIn$ = this.authService.isLoggedIn();
-  }  
+  }
+  
+  /**
+   * Init
+   */
+  ngOnInit() {
+    this.info = this.infoService.getAppInfo();
+  }
 
 }
