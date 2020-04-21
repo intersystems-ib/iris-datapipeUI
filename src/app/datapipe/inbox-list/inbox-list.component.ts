@@ -43,7 +43,7 @@ export class InboxListComponent implements AfterViewInit {
   @ViewChild('filtersForm', {static: true}) filtersForm: NgForm;
   constructor(
     private cdr: ChangeDetectorRef,
-    private datapipeService: DatapipeService
+    public datapipeService: DatapipeService
   ) { }
 
   /**

@@ -19,7 +19,7 @@ export class InboxHistoryComponent implements OnInit {
   loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private datapipeService: DatapipeService,
+    public datapipeService: DatapipeService,
     private route: ActivatedRoute,
   ) { }
 
