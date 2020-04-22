@@ -18,7 +18,7 @@ export class DatapipeService {
   private urlBase = environment.urlIRISApi;
   
   /** Options used in request */
-  private options = { withCredentials: true };
+  private options = { };
 
   /**
    * Constructor
