@@ -8,10 +8,13 @@ export interface Inbox {
     Source: string;
     Flow: string;
     MsgId: string;
+    Subject: string;
     Element: string;
     Status: string;
     CreatedTS: Date;
     UpdatedTS: Date;
+    Ignored: boolean;
+    OperRetries: string;
 
     LastIngestion: number;
     LastStaging: number;

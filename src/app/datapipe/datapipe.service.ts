@@ -38,13 +38,14 @@ export class DatapipeService {
    */
   findInboxes(pageIndex: number, pageSize: number, query: any): Observable<QueryResult<Inbox>> {
     let filter = '';
-    if (query.Status) { filter += `+Status+contains+${query.Status}`; }
-    if (query.StagingStatus) { filter += `+StagingStatus+contains+${query.StagingStatus}`; }
-    if (query.OperStatus) { filter += `+OperStatus+contains+${query.OperStatus}`; }
-    if (query.Source) { filter += `+Source+contains+${query.Source}`; }
-    if (query.Flow) { filter += `+Flow+contains+${query.Flow}`; }
-    if (query.MsgId) { filter += `+MsgId+contains+${query.MsgId}`; }
-    if (query.Element) { filter += `+Element+contains+${query.Element}`; }
+    if (query.Ignored) { filter += `+Ignored+eq+${query.Ignored}`; }
+    if (query.Status) { filter += `+Status+eq+${query.Status}`; }
+    if (query.StagingStatus) { filter += `+StagingStatus+eq+${query.StagingStatus}`; }
+    if (query.OperStatus) { filter += `+OperStatus+eq+${query.OperStatus}`; }
+    if (query.Source) { filter += `+Source+eq+${query.Source}`; }
+    if (query.Flow) { filter += `+Flow+eq+${query.Flow}`; }
+    if (query.MsgId) { filter += `+MsgId+eq+${query.MsgId}`; }
+    if (query.Element) { filter += `+Element+eq+${query.Element}`; }
     
     if (query.UpdatedTSFrom) {
       const updatedTSFromString = this.dateToString(query.UpdatedTSFrom);
@@ -58,7 +59,7 @@ export class DatapipeService {
     escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
     
     return this.http.get<QueryResult<Inbox>>(
-      this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/find?size=${pageSize}&page=${pageIndex}&collation=UPPER&filter=${escapedFilter}&orderby=1+desc`,
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&orderby=1+desc`,
       this.options
     ).pipe(
       //tap(data => console.log(data))
@@ -205,6 +206,23 @@ export class DatapipeService {
   }
 
   /**
+   * Ignore 
+   * @param inboxId
+   */
+  ignoreInbox(inboxId: number) {
+    return this.http.put<boolean>(
+      this.urlBase + `/ignore/${inboxId}`,
+      {},
+      this.options
+    ).pipe(
+        catchError(err => {
+          this.alertService.error('[ignoreInbox] ' + err.message)
+          return throwError(err);
+        })
+      );
+  }
+
+  /**
    * Status chip format 
    */
   getInboxStatusChipFormat(status: string): any {
@@ -235,7 +253,7 @@ export class DatapipeService {
   /**
    * OperStatus format
    */
-  getOperStatusChipFormat(status: string, errors?: string): any {
+  getOperStatusChipFormat(status: string, retries?: number, errors?: string): any {
     let errorArr: any[];
     if (errors) {
       errorArr = JSON.parse(errors);
@@ -246,7 +264,8 @@ export class DatapipeService {
             status === 'PROCESSED' ? 'done':
             status === 'ERROR' ? 'sync_problem':
             'not_interested',
-      desc: '',
+      desc: (+retries > 1) ? '('+retries+')':
+            '',
       tooltip: (errorArr) ? errorArr.reduce(function(res, item){ return res + item + '\n'; }, ''):
                 ''
     };
@@ -281,6 +300,5 @@ export class DatapipeService {
       data: data
     });
   }
-
 
 }
