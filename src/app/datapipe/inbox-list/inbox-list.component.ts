@@ -6,6 +6,7 @@ import { MatPaginator, PageEvent, MatDialog } from '@angular/material';
 import { NgForm } from '@angular/forms';
 import { map, tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
+import { PreferencesService } from 'src/app/shared/preferences.service';
 
 /**
  * Display all shows using a table
@@ -46,6 +47,7 @@ export class InboxListComponent implements AfterViewInit {
     private cdr: ChangeDetectorRef,
     public datapipeService: DatapipeService,
     public dialog: MatDialog,
+    public preferencesService: PreferencesService,
   ) { }
 
   /**
@@ -58,9 +60,11 @@ export class InboxListComponent implements AfterViewInit {
     this.filteredStagingStatus = this.stagingStatus;
     this.operStatus = [ 'N/A', 'Processing', 'Processed', 'Error', 'Ignored'];
     this.filteredOperStatus = this.operStatus;
-
-    this.paginator.pageIndex = 0;
-    this.paginator.pageSize = 10;
+    
+    this.filters = this.preferencesService.inboxList.filters;
+    
+    this.paginator.pageIndex = this.preferencesService.inboxList.pageIndex;
+    this.paginator.pageSize = this.preferencesService.inboxList.pageSize;
     this.getDataPage(this.paginator.pageIndex, this.paginator.pageSize);
   }
 
@@ -71,6 +75,10 @@ export class InboxListComponent implements AfterViewInit {
    */
   getDataPage(pageIndex: number, pageSize: number) {
     this.cdr.detectChanges();
+
+    this.preferencesService.inboxList.pageIndex = pageIndex;
+    this.preferencesService.inboxList.pageSize = pageSize;
+
     this.inboxes$ = this.datapipeService.findInboxes(pageIndex + 1, pageSize, this.buildQuery()).pipe(
       tap(res => {
         this.totalResults = res['total']
@@ -123,8 +131,7 @@ export class InboxListComponent implements AfterViewInit {
    * Click on reset filters button
    */
   clickResetFilters(): void {
-    this.filters = {};
-    this.filtersForm.reset();
+    this.filtersForm.reset(this.preferencesService.inboxList.filtersInitial);
     this.onChangeFilter(null);
   }
 
