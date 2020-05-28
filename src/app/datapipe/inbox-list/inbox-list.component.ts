@@ -56,7 +56,7 @@ export class InboxListComponent implements AfterViewInit {
     this.filteredStatus = this.status;
     this.stagingStatus = [ 'N/A', 'Valid', 'Invalid'];
     this.filteredStagingStatus = this.stagingStatus;
-    this.operStatus = [ 'N/A', 'Processing', 'Processed', 'Error'];
+    this.operStatus = [ 'N/A', 'Processing', 'Processed', 'Error', 'Ignored'];
     this.filteredOperStatus = this.operStatus;
 
     this.paginator.pageIndex = 0;
