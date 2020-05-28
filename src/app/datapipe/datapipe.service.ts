@@ -46,6 +46,7 @@ export class DatapipeService {
     if (query.Flow) { filter += `+Flow+eq+${query.Flow}`; }
     if (query.MsgId) { filter += `+MsgId+eq+${query.MsgId}`; }
     if (query.Element) { filter += `+Element+eq+${query.Element}`; }
+    if (query.Subject) { filter += `+Subject+eq+${query.Subject}`; }
     
     if (query.UpdatedTSFrom) {
       const updatedTSFromString = this.dateToString(query.UpdatedTSFrom);
