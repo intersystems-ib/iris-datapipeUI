@@ -2,9 +2,11 @@ import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '
 import { Observable } from 'rxjs';
 import { Inbox } from '../datapipe.model';
 import { DatapipeService } from '../datapipe.service';
-import { MatPaginator, PageEvent } from '@angular/material';
+import { MatPaginator, PageEvent, MatDialog } from '@angular/material';
 import { NgForm } from '@angular/forms';
 import { map, tap } from 'rxjs/operators';
+import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
+import { PreferencesService } from 'src/app/shared/preferences.service';
 
 /**
  * Display all shows using a table
@@ -23,7 +25,7 @@ export class InboxListComponent implements AfterViewInit {
   totalResults: number = 0;
 
   /** columns that will be displayed */
-  displayedColumns = ['actions', 'Source', 'Flow', 'MsgId', 'Element', 'UpdatedTS', 'Status', 'StagingStatus', 'OperStatus'];
+  displayedColumns = ['actions', 'Source', 'Flow', 'MsgId', 'Subject', 'Element', 'UpdatedTS', 'Status', 'StagingStatus', 'OperStatus'];
 
   /** filters that are using to query the server */
   filters: any = {};
@@ -43,7 +45,9 @@ export class InboxListComponent implements AfterViewInit {
   @ViewChild('filtersForm', {static: true}) filtersForm: NgForm;
   constructor(
     private cdr: ChangeDetectorRef,
-    public datapipeService: DatapipeService
+    public datapipeService: DatapipeService,
+    public dialog: MatDialog,
+    public preferencesService: PreferencesService,
   ) { }
 
   /**
@@ -54,11 +58,13 @@ export class InboxListComponent implements AfterViewInit {
     this.filteredStatus = this.status;
     this.stagingStatus = [ 'N/A', 'Valid', 'Invalid'];
     this.filteredStagingStatus = this.stagingStatus;
-    this.operStatus = [ 'N/A', 'Processing', 'Processed', 'Error'];
+    this.operStatus = [ 'N/A', 'Processing', 'Processed', 'Error', 'Ignored'];
     this.filteredOperStatus = this.operStatus;
-
-    this.paginator.pageIndex = 0;
-    this.paginator.pageSize = 10;
+    
+    this.filters = this.preferencesService.inboxList.filters;
+    
+    this.paginator.pageIndex = this.preferencesService.inboxList.pageIndex;
+    this.paginator.pageSize = this.preferencesService.inboxList.pageSize;
     this.getDataPage(this.paginator.pageIndex, this.paginator.pageSize);
   }
 
@@ -69,6 +75,10 @@ export class InboxListComponent implements AfterViewInit {
    */
   getDataPage(pageIndex: number, pageSize: number) {
     this.cdr.detectChanges();
+
+    this.preferencesService.inboxList.pageIndex = pageIndex;
+    this.preferencesService.inboxList.pageSize = pageSize;
+
     this.inboxes$ = this.datapipeService.findInboxes(pageIndex + 1, pageSize, this.buildQuery()).pipe(
       tap(res => {
         this.totalResults = res['total']
@@ -121,8 +131,7 @@ export class InboxListComponent implements AfterViewInit {
    * Click on reset filters button
    */
   clickResetFilters(): void {
-    this.filters = {};
-    this.filtersForm.reset();
+    this.filtersForm.reset(this.preferencesService.inboxList.filtersInitial);
     this.onChangeFilter(null);
   }
 
@@ -158,6 +167,26 @@ export class InboxListComponent implements AfterViewInit {
   onOperStatusKeyUp(event: any, value: String): void {
     this.filteredOperStatus = this.operStatus.filter(operStatus => {
       return (operStatus.toUpperCase().indexOf(value.toUpperCase()) !== -1);
+    });
+  }
+
+  /**
+   * Click on ignore (change ignore status)
+   */
+  clickIgnore(inbox: Inbox): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Confirmation', text: 'Change ignored status?' }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        this.datapipeService.ignoreInbox(inbox.Id).subscribe(
+          data => {
+            this.search(null);
+          }
+        )
+      }
     });
   }
 

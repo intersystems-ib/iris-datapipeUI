@@ -24,6 +24,8 @@ export class InboxDetailComponent implements OnInit {
 
   loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  inbox: Inbox;
+  
   constructor(
     public datapipeService: DatapipeService,
     private route: ActivatedRoute,
@@ -44,6 +46,7 @@ export class InboxDetailComponent implements OnInit {
     this.loading$.next(true);
     this.inbox$ = this.datapipeService.findInboxById(this.inboxId).pipe(
       tap(inbox => { 
+        this.inbox = inbox;
         this.ingestion$ = this.datapipeService.findIngestionById(inbox.LastIngestion).pipe();
         if (inbox.LastStaging) {
           this.staging$ = this.datapipeService.findStagingById(inbox.LastStaging).pipe();
@@ -82,6 +85,18 @@ export class InboxDetailComponent implements OnInit {
         )
       }
     });
+  }
+
+  /**
+   * Returns true if resend buttons must be disabled.
+   * Resend buttons are disabled when a message has been processed with no errors
+   */
+  disableResend() {
+    return (
+      this.inbox.Status==="DONE" &&
+      this.inbox.StagingStatus==="VALID" &&
+      this.inbox.OperStatus==="PROCESSED"
+    );
   }
   
 }

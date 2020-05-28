@@ -1,4 +1,4 @@
-<div class="container">
+<div class="">
   <p class="h2">Inbox List</p>
 
   <!-- filters form -->
@@ -46,6 +46,14 @@
             </mat-autocomplete>
           </mat-form-field>
 
+          <mat-form-field floatLabel="always">
+            <mat-select placeholder="Ignored" [(ngModel)]="filters.Ignored" name="Ignored">
+              <mat-option value="1">Yes</mat-option>
+              <mat-option value="0">No</mat-option>
+              <mat-option [value]="null"></mat-option>
+            </mat-select>
+          </mat-form-field>
+
         </div>
 
         <!-- filters row -->
@@ -60,11 +68,15 @@
           </mat-form-field>
           <mat-form-field floatLabel="always">
             <mat-label class="highlight-field">MsgId</mat-label>
-            <input matInput [(ngModel)]="filters.MsgId" name="Flow">
+            <input matInput [(ngModel)]="filters.MsgId" name="MsgId">
+          </mat-form-field>
+          <mat-form-field floatLabel="always">
+            <mat-label class="highlight-field">Subject</mat-label>
+            <input matInput [(ngModel)]="filters.Subject" name="Subject">
           </mat-form-field>
           <mat-form-field floatLabel="always">
             <mat-label class="highlight-field">Element</mat-label>
-            <input matInput [(ngModel)]="filters.Element" name="Flow">
+            <input matInput [(ngModel)]="filters.Element" name="Element">
           </mat-form-field>
         </div>
 
@@ -98,12 +110,18 @@
   <mat-table class="result-table mat-elevation-z8" [dataSource]="inboxes$ | async">
     
     <ng-container matColumnDef="actions">
-      <mat-header-cell *matHeaderCellDef fxFlex="60px">
+      <mat-header-cell *matHeaderCellDef fxFlex="100px">
       </mat-header-cell>
-      <mat-cell *matCellDef="let inbox" fxFlex="60px">
+      <mat-cell *matCellDef="let inbox" fxFlex="100px">
         <button mat-icon-button routerLink="/datapipe/{{ inbox.Id }}">
           <mat-icon aria-label="Info">info</mat-icon>
         </button>
+        <button *ngIf="inbox.Ignored==1" mat-icon-button (click)="clickIgnore(inbox)" matTooltip="Unignore">
+					<mat-icon aria-label="Hide">visibility_on</mat-icon>
+				</button>
+				<button *ngIf="inbox.Ignored!==1" mat-icon-button (click)="clickIgnore(inbox)" matTooltip="Ignore">
+					<mat-icon aria-label="Hide">visibility_off</mat-icon>
+				</button>
       </mat-cell>
     </ng-container>
     
@@ -125,6 +143,11 @@
     <ng-container matColumnDef="MsgId">
       <mat-header-cell *matHeaderCellDef>MsgId</mat-header-cell>
       <mat-cell *matCellDef="let inbox">{{ inbox.MsgId }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="Subject">
+      <mat-header-cell *matHeaderCellDef>Subject</mat-header-cell>
+      <mat-cell *matCellDef="let inbox">{{ inbox.Subject }}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="Element">
@@ -163,7 +186,7 @@
     <ng-container matColumnDef="OperStatus">
       <mat-header-cell *matHeaderCellDef fxHide.xs>Operation</mat-header-cell>
       <mat-cell *matCellDef="let inbox" fxHide.xs>
-        <mat-chip-list *ngIf="datapipeService.getOperStatusChipFormat(inbox.OperStatus, inbox.OperErrors); let format">
+        <mat-chip-list *ngIf="datapipeService.getOperStatusChipFormat(inbox.OperStatus, inbox.OperRetries, inbox.OperErrors); let format">
           <mat-chip [ngClass]="format.cssClass">
             <mat-icon [matTooltip]="format.tooltip">
               {{ format.icon }}

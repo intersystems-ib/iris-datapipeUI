@@ -25,7 +25,8 @@ import {
   MatChipsModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatTabsModule
+  MatTabsModule,
+  MatSelectModule
 } from '@angular/material';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
@@ -49,7 +50,8 @@ const mm = [
   MatChipsModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatTabsModule
+  MatTabsModule,
+  MatSelectModule
 ]
 
 @NgModule({
