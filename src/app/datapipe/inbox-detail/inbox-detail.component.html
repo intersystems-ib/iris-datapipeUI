@@ -77,7 +77,7 @@
                     </mat-form-field>
                 </div>
                 <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
-                    <button type="submit" mat-mini-fab color="accent" style='margin-right: 10px;'>
+                    <button [disabled]="disableResend()" type="submit" mat-mini-fab color="accent" style='margin-right: 10px;'>
                         <mat-icon matTooltip="Repeat Ingestion" (click)="clickResendMessage(ingestion.HeaderId, 'Repeat Ingestion?')">repeat</mat-icon>
                     </button>          
                     <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId">
@@ -124,7 +124,7 @@
                     </mat-form-field>
                 </div>
                 <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
-                    <button type="submit" mat-mini-fab color="accent" style='margin-right: 10px;'>
+                    <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent" style='margin-right: 10px;'>
                         <mat-icon matTooltip="Repeat Staging" (click)="clickResendMessage(staging.HeaderId, 'Repeat Staging?')">repeat</mat-icon>
                     </button>
                     <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId">
@@ -191,7 +191,7 @@
                 </mat-form-field>
             </div>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
-                <button type="submit" mat-mini-fab color="accent" style='margin-right: 10px;'>
+                <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent" style='margin-right: 10px;'>
                     <mat-icon matTooltip="Repeat Operation" (click)="clickResendMessage(oper.HeaderId, 'Repeat Operation?')">repeat</mat-icon>
                 </button>
                 <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId">
