@@ -39,15 +39,31 @@ export class DatapipeService {
   findInboxes(pageIndex: number, pageSize: number, query: any): Observable<QueryResult<Inbox>> {
     let filter = '';
     if (query.Ignored) { filter += `+Ignored+eq+${query.Ignored}`; }
-    if (query.Status) { filter += `+Status+eq+${query.Status}`; }
-    if (query.StagingStatus) { filter += `+StagingStatus+eq+${query.StagingStatus}`; }
-    if (query.OperStatus) { filter += `+OperStatus+eq+${query.OperStatus}`; }
     if (query.Source) { filter += `+Source+eq+${query.Source}`; }
     if (query.Flow) { filter += `+Flow+eq+${query.Flow}`; }
     if (query.MsgId) { filter += `+MsgId+eq+${query.MsgId}`; }
     if (query.Element) { filter += `+Element+eq+${query.Element}`; }
     if (query.Subject) { filter += `+Subject+eq+${query.Subject}`; }
     
+    if (query.Status) { 
+      let serializedStatus = query.Status.reduce(function (ret, item) {
+        return ret + '~' + item; 
+      });
+      filter += `+Status+in+${serializedStatus}`; 
+    }
+    if (query.StagingStatus) { 
+      let serializedStagingStatus = query.StagingStatus.reduce(function (ret, item) {
+        return ret + '~' + item; 
+      });
+      filter += `+StagingStatus+in+${serializedStagingStatus}`; 
+    }
+    if (query.OperStatus) { 
+      let serializedOperStatus = query.OperStatus.reduce(function (ret, item) {
+        return ret + '~' + item; 
+      });
+      filter += `+OperStatus+in+${serializedOperStatus}`; 
+    }
+
     if (query.UpdatedTSFrom) {
       const updatedTSFromString = this.dateToString(query.UpdatedTSFrom);
       filter += `+UpdatedTS+gte+${updatedTSFromString}T00:00:00Z`;

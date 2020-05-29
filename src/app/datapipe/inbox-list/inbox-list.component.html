@@ -15,35 +15,29 @@
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
           <mat-form-field floatLabel="always">
             <mat-label class="highlight-field">Status</mat-label>
-            <input matInput type="text" [(ngModel)]="filters.Status" [matAutocomplete]="autoStatus" name="Status"
-              (keyup)="onStatusKeyUp($event, filters.Status)">
-            <mat-autocomplete #autoStatus="matAutocomplete">
+            <mat-select [(ngModel)]="filters.Status" multiple name="Status">
               <mat-option *ngFor="let status of filteredStatus" [value]="status">
                 {{ status }}
               </mat-option>
-            </mat-autocomplete>
+            </mat-select>
           </mat-form-field>
 
           <mat-form-field floatLabel="always">
             <mat-label class="highlight-field">Staging</mat-label>
-            <input matInput type="text" [(ngModel)]="filters.StagingStatus" [matAutocomplete]="autoStagingStatus"
-              name="StagingStatus" (keyup)="onStagingStatusKeyUp($event, filters.StagingStatus)">
-            <mat-autocomplete #autoStagingStatus="matAutocomplete">
-              <mat-option *ngFor="let stagingStatus of filteredStagingStatus" [value]="stagingStatus">
-                {{ stagingStatus }}
+            <mat-select [(ngModel)]="filters.StagingStatus" multiple name="StagingStatus">
+              <mat-option *ngFor="let status of filteredStagingStatus" [value]="status">
+                {{ status }}
               </mat-option>
-            </mat-autocomplete>
+            </mat-select>
           </mat-form-field>
 
           <mat-form-field floatLabel="always">
             <mat-label class="highlight-field">Operation</mat-label>
-            <input matInput type="text" [(ngModel)]="filters.OperStatus" [matAutocomplete]="autoOperStatus" name="Oper"
-              (keyup)="onOperStatusKeyUp($event, filters.OperStatus)">
-            <mat-autocomplete #autoOperStatus="matAutocomplete">
-              <mat-option *ngFor="let operStatus of filteredOperStatus" [value]="operStatus">
-                {{ operStatus }}
+            <mat-select [(ngModel)]="filters.OperStatus" multiple name="OperStatus">
+              <mat-option *ngFor="let status of filteredOperStatus" [value]="status">
+                {{ status }}
               </mat-option>
-            </mat-autocomplete>
+            </mat-select>
           </mat-form-field>
 
           <mat-form-field floatLabel="always">
