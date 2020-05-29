@@ -32,7 +32,7 @@
                 </mat-toolbar-row>
             </mat-toolbar>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-                <mat-form-field floatLabel="always" fxFlex="200px">
+                <mat-form-field floatLabel="always">
                     <mat-label>Updated</mat-label>
                     <input matInput [ngModel]="inbox.UpdatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="UpdatedTS" disabled>
                 </mat-form-field>
@@ -44,6 +44,8 @@
                     <mat-label>Flow</mat-label>
                     <input matInput [(ngModel)]="inbox.Flow" name="Flow" disabled>
                 </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
                 <mat-form-field floatLabel="always">
                     <mat-label>MsgId</mat-label>
                     <input matInput [(ngModel)]="inbox.MsgId" name="MsgId" disabled>
@@ -51,6 +53,10 @@
                 <mat-form-field floatLabel="always">
                     <mat-label>Element</mat-label>
                     <input matInput [(ngModel)]="inbox.Element" name="Element" disabled>
+                </mat-form-field>
+                <mat-form-field floatLabel="always">
+                    <mat-label>Subject</mat-label>
+                    <input matInput [(ngModel)]="inbox.Subject" name="Subject" disabled>
                 </mat-form-field>
             </div>
         </div>
@@ -77,9 +83,11 @@
                     </mat-form-field>
                 </div>
                 <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
-                    <button [disabled]="disableResend()" type="submit" mat-mini-fab color="accent" style='margin-right: 10px;'>
-                        <mat-icon matTooltip="Repeat Ingestion" (click)="clickResendMessage(ingestion.HeaderId, 'Repeat Ingestion?')">repeat</mat-icon>
-                    </button>          
+                    <button [disabled]="disableResend()"
+                      (click)="clickResendMessage(ingestion.HeaderId, 'Repeat Ingestion?')" type="submit" mat-mini-fab
+                      color="accent" style='margin-right: 10px;'>
+                      <mat-icon matTooltip="Repeat Ingestion">repeat</mat-icon>
+                    </button>
                     <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId">
                     <mat-icon 
                         matTooltip="View Trace" 
@@ -124,8 +132,10 @@
                     </mat-form-field>
                 </div>
                 <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
-                    <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent" style='margin-right: 10px;'>
-                        <mat-icon matTooltip="Repeat Staging" (click)="clickResendMessage(staging.HeaderId, 'Repeat Staging?')">repeat</mat-icon>
+                    <button type="submit" [disabled]="disableResend()"
+                      (click)="clickResendMessage(staging.HeaderId, 'Repeat Staging?')" mat-mini-fab color="accent"
+                      style='margin-right: 10px;'>
+                      <mat-icon matTooltip="Repeat Staging">repeat</mat-icon>
                     </button>
                     <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId">
                     <mat-icon 
@@ -191,8 +201,10 @@
                 </mat-form-field>
             </div>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" class="action-bar">
-                <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent" style='margin-right: 10px;'>
-                    <mat-icon matTooltip="Repeat Operation" (click)="clickResendMessage(oper.HeaderId, 'Repeat Operation?')">repeat</mat-icon>
+                <button type="submit" [disabled]="disableResend()"
+                  (click)="clickResendMessage(oper.HeaderId, 'Repeat Operation?')" mat-mini-fab color="accent"
+                  style='margin-right: 10px;'>
+                  <mat-icon matTooltip="Repeat Operation">repeat</mat-icon>
                 </button>
                 <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId">
                   <mat-icon 
