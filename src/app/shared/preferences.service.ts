@@ -11,8 +11,8 @@ export class PreferencesService {
 
   /** inbox-list preferences */
   inboxList = {
-    filtersInitial: { "Ignored": "0" },
-    filters: { "Ignored": "0" },
+    filtersInitial: { "Ignored": "0", "UpdatedTSFromTime":"00:01", "UpdatedTSToTime":"23:59" },
+    filters: { "Ignored": "0", "UpdatedTSFromTime":"00:01", "UpdatedTSToTime":"23:59" },
     pageIndex: 0,
     pageSize: 10,
   };

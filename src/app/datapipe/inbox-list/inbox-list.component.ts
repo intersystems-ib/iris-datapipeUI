@@ -132,6 +132,10 @@ export class InboxListComponent implements AfterViewInit {
    */
   clickResetFilters(): void {
     this.filtersForm.reset(this.preferencesService.inboxList.filtersInitial);
+    this.cdr.detectChanges();
+    this.filters.UpdatedTSFromTime = this.preferencesService.inboxList.filtersInitial.UpdatedTSFromTime;
+    this.filters.UpdatedTSToTime = this.preferencesService.inboxList.filtersInitial.UpdatedTSToTime;
+    
     this.onChangeFilter(null);
   }
 

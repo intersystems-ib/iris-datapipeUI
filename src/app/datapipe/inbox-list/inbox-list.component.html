@@ -76,17 +76,26 @@
 
         <!-- filters row -->
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-          <mat-form-field>
-            <input matInput placeholder="Updated (From)" [matDatepicker]="updatedTSFrom"
+          <mat-form-field floatLabel="always">
+            <input matInput placeholder="Updated Date (From)" [matDatepicker]="updatedTSFrom"
               [(ngModel)]="filters.UpdatedTSFrom" name="updatedTSFrom">
             <mat-datepicker-toggle matSuffix [for]="updatedTSFrom"></mat-datepicker-toggle>
             <mat-datepicker #updatedTSFrom></mat-datepicker>
           </mat-form-field>
-          <mat-form-field>
-            <input matInput placeholder="Updated (To)" [matDatepicker]="updatedTSTo"
+          <mat-form-field floatLabel="always">
+            <input [disabled]="!filters.UpdatedTSFrom" matInput placeholder="Updated Time (From)"[format]="24" [ngxTimepicker]="timeFrom" [(ngModel)]="filters.UpdatedTSFromTime" name="updatedTSFromTime">
+            <ngx-material-timepicker #timeFrom [enableKeyboardInput]="true"></ngx-material-timepicker>
+          </mat-form-field>
+
+          <mat-form-field floatLabel="always">
+            <input matInput placeholder="Updated Date (To)" [matDatepicker]="updatedTSTo"
               [(ngModel)]="filters.UpdatedTSTo" name="updatedTSTo">
             <mat-datepicker-toggle matSuffix [for]="updatedTSTo"></mat-datepicker-toggle>
             <mat-datepicker #updatedTSTo></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field floatLabel="always">
+            <input [disabled]="!filters.UpdatedTSTo" matInput placeholder="Updated Time (To)" [format]="24" [ngxTimepicker]="timeTo" [(ngModel)]="filters.UpdatedTSToTime" name="updatedTSToTime">
+            <ngx-material-timepicker #timeTo [enableKeyboardInput]="true"></ngx-material-timepicker>
           </mat-form-field>
         </div>
 

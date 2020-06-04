@@ -1,6 +1,7 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 import { AlertDisplayComponent } from './alert-display/alert-display.component';
 import { AlertService } from './alert.service';
@@ -26,7 +27,7 @@ import {
   MatDatepickerModule,
   MatNativeDateModule,
   MatTabsModule,
-  MatSelectModule
+  MatSelectModule,
 } from '@angular/material';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
@@ -51,7 +52,7 @@ const mm = [
   MatDatepickerModule,
   MatNativeDateModule,
   MatTabsModule,
-  MatSelectModule
+  MatSelectModule,
 ]
 
 @NgModule({
@@ -59,13 +60,15 @@ const mm = [
   imports: [
     CommonModule,
     FlexLayoutModule,
+    NgxMaterialTimepickerModule,
     ...mm
   ],
   exports: [
     ...mm,
     FlexLayoutModule,
     AlertDisplayComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    NgxMaterialTimepickerModule
   ]
 })
 export class SharedModule {
