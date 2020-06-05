@@ -131,10 +131,20 @@ export class InboxListComponent implements AfterViewInit {
    * Click on reset filters button
    */
   clickResetFilters(): void {
+    this.filters = {};
     this.filtersForm.reset(this.preferencesService.inboxList.filtersInitial);
     this.cdr.detectChanges();
-    this.filters.UpdatedTSFromTime = this.preferencesService.inboxList.filtersInitial.UpdatedTSFromTime;
-    this.filters.UpdatedTSToTime = this.preferencesService.inboxList.filtersInitial.UpdatedTSToTime;
+
+    // set initial values for filters
+    const filtersInitial = this.preferencesService.inboxList.filtersInitial;
+    for (const finitial in this.preferencesService.inboxList.filtersInitial) {
+      if (filtersInitial.hasOwnProperty(finitial)) {
+        const value = filtersInitial[finitial];
+        if (value && value !== '') {
+          this.filters[finitial] = value;
+        }
+      }
+    }
     
     this.onChangeFilter(null);
   }

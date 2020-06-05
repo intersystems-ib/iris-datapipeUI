@@ -70,7 +70,7 @@ export class DatapipeService {
     }
     if (query.UpdatedTSTo) {
       const updatedTSToString = this.dateToString(query.UpdatedTSTo);
-      filter += `+UpdatedTS+lte+${updatedTSToString}T${query.UpdatedTSToTime}:00Z`;
+      filter += `+UpdatedTS+lte+${updatedTSToString}T${query.UpdatedTSToTime}:59Z`;
     }
     let escapedFilter = filter.replace(new RegExp(' ', 'g'), '%09');
     escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
