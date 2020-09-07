@@ -1,5 +1,7 @@
 **DataPipeUI** is a frontend build on *Angular* for [iris-datapipe](https://github.com/intersystems-ib/iris-datapipe), an **InterSystems IRIS** application which provides a set of re-usable components you can use to handle incoming data flow into ingestion, staging and operation phases in a homogeneus and flexible way.
 
+<img src="img/iris-datapipeUI.gif">
+
 Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
 
 # Configuration
