@@ -11,11 +11,11 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class AuthService {
   
-  /** Backend API used to login. We can use any URL that will enforce an IRIS Basic Auth */
-  authApiUrl: string = environment.urlIRISApi + '/rf2/form/info/DataPipe.Data.Inbox';
-
   /** isLoginSubject is used to know if the user is logged in or not */
   isLoginSubject = new BehaviorSubject<boolean>(this.authenticated());
+
+  /** isAdminUser. Backend has authorized user as Admin user or not */
+  isAdminUser: boolean;
 
   /** private user token */
   private _token: BehaviorSubject<string> = new BehaviorSubject<string>(null);
@@ -30,8 +30,11 @@ export class AuthService {
       .subscribe(
         token => {
           // user token changed. 
-          // you can grab user data from server (e.g. preferences) 
-        }
+          // you can grab user data from server (e.g. info, preferences) 
+          if (token) {
+            this.getUserInfo().subscribe();
+          }
+        } 
       );
   }
 
@@ -47,11 +50,12 @@ export class AuthService {
     headers = headers.set('Cache-Control', 'no-cache');
 
     return this.http
-      .get<any>(this.authApiUrl, {
-        headers
-      }).
+      .get<any>(
+        environment.urlIRISApi + '/rf2/form/info/DataPipe.Data.Inbox',
+        {headers}
+      ).
       pipe(
-        map(data => { 
+        map(data => {
           let token = `Basic ${basicheader}`;
           localStorage.setItem(environment.authLocalStorageKey, JSON.stringify({ username, token }));
           this._token.next(token);
@@ -106,6 +110,30 @@ export class AuthService {
    */
   isLoggedIn(): Observable<boolean> {
     return this.isLoginSubject.asObservable();
+  }
+
+
+  /**
+   * Get user information from IRIS and load attributes as needed 
+   */
+  public getUserInfo(): Observable<any> {
+    return this.http
+      .get<any>(
+        environment.urlIRISApi + '/getUserInfo',
+      ).
+      pipe(
+        tap(data => {
+          // load user attributes
+          // this attributes can be read from other app modules
+          this.isAdminUser = data.isAdminUser;
+          
+          return data;
+        }),
+        catchError(err => {
+          this.logout();
+          return throwError(err);
+        })
+      );
   }
   
 }

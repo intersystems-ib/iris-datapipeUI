@@ -7,6 +7,7 @@ import { NgForm } from '@angular/forms';
 import { map, tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { PreferencesService } from 'src/app/shared/preferences.service';
+import { AuthService } from 'src/app/auth/auth.service';
 
 /**
  * Display all shows using a table
@@ -48,6 +49,7 @@ export class InboxListComponent implements AfterViewInit {
     public datapipeService: DatapipeService,
     public dialog: MatDialog,
     public preferencesService: PreferencesService,
+    public authService: AuthService,
   ) { }
 
   /**

@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-inbox-detail',
@@ -29,7 +30,8 @@ export class InboxDetailComponent implements OnInit {
   constructor(
     public datapipeService: DatapipeService,
     private route: ActivatedRoute,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public authService: AuthService,
   ) { }
 
   ngOnInit() {
@@ -93,6 +95,7 @@ export class InboxDetailComponent implements OnInit {
    */
   disableResend() {
     return (
+      this.authService.isAdminUser &&
       this.inbox.Status==="DONE" &&
       this.inbox.StagingStatus==="VALID" &&
       this.inbox.OperStatus==="PROCESSED"

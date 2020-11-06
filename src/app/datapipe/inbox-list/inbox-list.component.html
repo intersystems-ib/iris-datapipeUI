@@ -119,10 +119,10 @@
         <button mat-icon-button routerLink="/datapipe/{{ inbox.Id }}">
           <mat-icon aria-label="Info">info</mat-icon>
         </button>
-        <button *ngIf="inbox.Ignored==1" mat-icon-button (click)="clickIgnore(inbox)" matTooltip="Unignore">
+        <button *ngIf="authService.isAdminUser && inbox.Ignored==1" mat-icon-button (click)="clickIgnore(inbox)" matTooltip="Unignore">
 					<mat-icon aria-label="Hide">visibility_on</mat-icon>
 				</button>
-				<button *ngIf="inbox.Ignored!==1" mat-icon-button (click)="clickIgnore(inbox)" matTooltip="Ignore">
+				<button *ngIf="authService.isAdminUser && inbox.Ignored!==1" mat-icon-button (click)="clickIgnore(inbox)" matTooltip="Ignore">
 					<mat-icon aria-label="Hide">visibility_off</mat-icon>
 				</button>
       </mat-cell>
