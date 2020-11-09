@@ -95,10 +95,10 @@ export class InboxDetailComponent implements OnInit {
    */
   disableResend() {
     return (
-      this.authService.isAdminUser &&
-      this.inbox.Status==="DONE" &&
+      !this.authService.isAdminUser ||
+      (this.inbox.Status==="DONE" &&
       this.inbox.StagingStatus==="VALID" &&
-      this.inbox.OperStatus==="PROCESSED"
+      this.inbox.OperStatus==="PROCESSED")
     );
   }
   
