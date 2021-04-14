@@ -8,6 +8,7 @@ import { map, tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { PreferencesService } from 'src/app/shared/preferences.service';
 import { AuthService } from 'src/app/auth/auth.service';
+import { isNull } from '@angular/compiler/src/output/output_ast';
 
 /**
  * Display all shows using a table
@@ -56,7 +57,7 @@ export class InboxListComponent implements AfterViewInit {
    * Component init
    */
   ngAfterViewInit() {
-    this.status = [ 'INGESTING', 'ERROR-INGESTING', 'STAGING', 'ERROR-STAGING', 'OPERATING', 'ERROR-OPERATING', 'DONE', 'ERROR-GENERAL'];
+    this.status = [ 'DONE', 'OPERATING', 'STAGING','INGESTING', 'ERROR-OPERATING','ERROR-STAGING','ERROR-INGESTING', 'ERROR-GENERAL'];
     this.filteredStatus = this.status;
     this.stagingStatus = [ 'N/A', 'Valid', 'Invalid', 'Warning'];
     this.filteredStagingStatus = this.stagingStatus;
@@ -132,18 +133,39 @@ export class InboxListComponent implements AfterViewInit {
   /**
    * Click on reset filters button
    */
-  clickResetFilters(): void {
+  clickResetFilters(filter): void {
+
+    const oldFilters =this.filters;
+
     this.filters = {};
-    this.filtersForm.reset(this.preferencesService.inboxList.filtersInitial);
+
+    if (filter == "reset") {
+      filter = this.preferencesService.inboxList.filtersInitial
+      this.filtersForm.reset(filter);
+    }
+    if (filter == "all") {
+      filter = this.preferencesService.inboxList.filterAll
+      this.filtersForm.reset(filter);
+    }
+    if (filter == "errors") {
+      filter = this.preferencesService.inboxList.filterErrors
+      this.filtersForm.reset(filter);
+    }
+    if (filter == "warnings") {
+      filter = this.preferencesService.inboxList.filterWarnings
+      this.filtersForm.reset(filter);
+    }
     this.cdr.detectChanges();
 
     // set initial values for filters
-    const filtersInitial = this.preferencesService.inboxList.filtersInitial;
-    for (const finitial in this.preferencesService.inboxList.filtersInitial) {
+    const filtersInitial = filter;
+    for (const finitial in filter) {
       if (filtersInitial.hasOwnProperty(finitial)) {
         const value = filtersInitial[finitial];
-        if (value && value !== '') {
+        if (value && value !== '' && value !== 'SAME') {
           this.filters[finitial] = value;
+        } else if (value === 'SAME') {
+          this.filters[finitial] = oldFilters[finitial]
         }
       }
     }

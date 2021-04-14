@@ -13,7 +13,7 @@
 
         <!-- filters row -->
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <mat-label class="highlight-field">Status</mat-label>
             <mat-select [(ngModel)]="filters.Status" multiple name="Status">
               <mat-option *ngFor="let status of filteredStatus" [value]="status">
@@ -22,7 +22,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <mat-label class="highlight-field">Staging</mat-label>
             <mat-select [(ngModel)]="filters.StagingStatus" multiple name="StagingStatus">
               <mat-option *ngFor="let status of filteredStagingStatus" [value]="status">
@@ -31,7 +31,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <mat-label class="highlight-field">Operation</mat-label>
             <mat-select [(ngModel)]="filters.OperStatus" multiple name="OperStatus">
               <mat-option *ngFor="let status of filteredOperStatus" [value]="status">
@@ -40,7 +40,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <mat-select placeholder="Ignored" [(ngModel)]="filters.Ignored" name="Ignored">
               <mat-option value="1">Yes</mat-option>
               <mat-option value="0">No</mat-option>
@@ -52,23 +52,23 @@
 
         <!-- filters row -->
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <mat-label class="highlight-field">Source</mat-label>
             <input matInput [(ngModel)]="filters.Source" name="Source">
           </mat-form-field>
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <mat-label class="highlight-field">Flow</mat-label>
             <input matInput [(ngModel)]="filters.Flow" name="Flow">
           </mat-form-field>
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <mat-label class="highlight-field">MsgId</mat-label>
             <input matInput [(ngModel)]="filters.MsgId" name="MsgId">
           </mat-form-field>
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px"> 
             <mat-label class="highlight-field">Subject</mat-label>
             <input matInput [(ngModel)]="filters.Subject" name="Subject">
           </mat-form-field>
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <mat-label class="highlight-field">Element</mat-label>
             <input matInput [(ngModel)]="filters.Element" name="Element">
           </mat-form-field>
@@ -76,34 +76,42 @@
 
         <!-- filters row -->
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <input matInput placeholder="Updated Date (From)" [matDatepicker]="updatedTSFrom"
               [(ngModel)]="filters.UpdatedTSFrom" name="updatedTSFrom">
             <mat-datepicker-toggle matSuffix [for]="updatedTSFrom"></mat-datepicker-toggle>
             <mat-datepicker #updatedTSFrom></mat-datepicker>
           </mat-form-field>
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <input [disabled]="!filters.UpdatedTSFrom" matInput placeholder="Updated Time (From)"[format]="24" [ngxTimepicker]="timeFrom" [(ngModel)]="filters.UpdatedTSFromTime" name="updatedTSFromTime">
             <ngx-material-timepicker #timeFrom [enableKeyboardInput]="true"></ngx-material-timepicker>
           </mat-form-field>
 
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <input matInput placeholder="Updated Date (To)" [matDatepicker]="updatedTSTo"
               [(ngModel)]="filters.UpdatedTSTo" name="updatedTSTo">
-            <mat-datepicker-toggle matSuffix [for]="updatedTSTo"></mat-datepicker-toggle>
+            <mat-datepicker-toggle matSuffix [for]="updatedTSTo" ></mat-datepicker-toggle>
             <mat-datepicker #updatedTSTo></mat-datepicker>
           </mat-form-field>
-          <mat-form-field floatLabel="always">
+          <mat-form-field floatLabel="always" fxFlex="200px">
             <input [disabled]="!filters.UpdatedTSTo" matInput placeholder="Updated Time (To)" [format]="24" [ngxTimepicker]="timeTo" [(ngModel)]="filters.UpdatedTSToTime" name="updatedTSToTime">
             <ngx-material-timepicker #timeTo [enableKeyboardInput]="true"></ngx-material-timepicker>
           </mat-form-field>
         </div>
 
         <!-- filters buttons -->
-        <button type="submit" mat-raised-button color="primary" style='margin-right: 10px;' [disabled]="!canSearch()">
-          <mat-icon>search</mat-icon>Search
-        </button>
-        <button type="button" mat-raised-button (click)="clickResetFilters()">Reset</button>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%">
+          <!--mat-icon>star_border</mat-icon-->
+          <!--button type="button" mat-raised-button (click)="clickResetFilters('reset')" style='margin-left:15px;'>Reset</button-->
+          <button type="button" mat-raised-button (click)="clickResetFilters('all')" style='background-color: #999; color:#fff'>All Today</button>
+          <button type="button" mat-raised-button (click)="clickResetFilters('errors')" style='background-color: #999; color:#fff'>Errors</button>
+          <button type="button" mat-raised-button (click)="clickResetFilters('warnings')" style='background-color: #999; color:#fff'>Warnings</button>
+          <span class="fill-space"></span>
+          <button type="submit" mat-raised-button color="primary" [disabled]="!canSearch()"  >
+            <mat-icon>search</mat-icon>Search
+          </button>
+        </div>
+        
       </form>
     </mat-expansion-panel>
   </mat-accordion>
