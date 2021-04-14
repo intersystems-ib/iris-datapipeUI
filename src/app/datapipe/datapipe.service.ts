@@ -260,6 +260,7 @@ export class DatapipeService {
       cssClass: 'staging-' + status.toLowerCase().replace('/', ''),
       icon: status === 'VALID' ? 'thumb_up':
             status === 'INVALID' ? 'thumb_down':
+            status === 'WARNING' ? 'priority_high':
             'not_interested',
       desc: '',
       tooltip: (errorArr) ? errorArr.reduce(function(res, item){ return res + item + '\n'; }, ''):

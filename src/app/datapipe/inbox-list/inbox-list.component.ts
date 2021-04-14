@@ -58,7 +58,7 @@ export class InboxListComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.status = [ 'INGESTING', 'ERROR-INGESTING', 'STAGING', 'ERROR-STAGING', 'OPERATING', 'ERROR-OPERATING', 'DONE', 'ERROR-GENERAL'];
     this.filteredStatus = this.status;
-    this.stagingStatus = [ 'N/A', 'Valid', 'Invalid'];
+    this.stagingStatus = [ 'N/A', 'Valid', 'Invalid', 'Warning'];
     this.filteredStagingStatus = this.stagingStatus;
     this.operStatus = [ 'N/A', 'Processing', 'Processed', 'Error', 'Ignored'];
     this.filteredOperStatus = this.operStatus;
