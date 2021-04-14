@@ -45,19 +45,19 @@ export class DatapipeService {
     if (query.Element) { filter += `+Element+eq+${query.Element}`; }
     if (query.Subject) { filter += `+Subject+eq+${query.Subject}`; }
     
-    if (query.Status) { 
+    if (query.Status && query.Status.length>0) { 
       let serializedStatus = query.Status.reduce(function (ret, item) {
         return ret + '~' + item; 
       });
       filter += `+Status+in+${serializedStatus}`; 
     }
-    if (query.StagingStatus) { 
+    if (query.StagingStatus && query.StagingStatus.length>0 ) { 
       let serializedStagingStatus = query.StagingStatus.reduce(function (ret, item) {
         return ret + '~' + item; 
       });
       filter += `+StagingStatus+in+${serializedStagingStatus}`; 
     }
-    if (query.OperStatus) { 
+    if (query.OperStatus && query.OperStatus.length>0) { 
       let serializedOperStatus = query.OperStatus.reduce(function (ret, item) {
         return ret + '~' + item; 
       });

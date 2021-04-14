@@ -11,8 +11,8 @@ export class PreferencesService {
 
   /** inbox-list preferences */
   inboxList = {
-    filtersInitial: { "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
-    filters: { "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+    filtersInitial: { "Status": ["ERROR-INGESTING", "ERROR-STAGING", "ERROR-OPERATING"], "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+    filters: { "Status": ["ERROR-INGESTING", "ERROR-STAGING", "ERROR-OPERATING"], "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
     pageIndex: 0,
     pageSize: 10,
   };
