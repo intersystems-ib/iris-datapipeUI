@@ -11,10 +11,13 @@ export class PreferencesService {
 
   /** inbox-list preferences */
   inboxList = {
-    filtersInitial: { "Status": ["ERROR-INGESTING", "ERROR-STAGING", "ERROR-OPERATING"], "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
-    filters: { "Status": ["ERROR-INGESTING", "ERROR-STAGING", "ERROR-OPERATING"], "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+    filtersInitial: { "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+    filters: {"Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+    filterAll: {"Ignored": "0",  "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+    filterErrors: { "Status": ["ERROR-INGESTING", "ERROR-STAGING", "ERROR-OPERATING","ERROR-GENERAL"], "Ignored" : "0","UpdatedTSFrom": "SAME", "UpdatedTSFromTime":"SAME", "UpdatedTSTo":"SAME", "UpdatedTSToTime":"SAME" },
+    filterWarnings: { "Ignored" : "0", "StagingStatus" : ["Warning"], "UpdatedTSFrom": "SAME", "UpdatedTSFromTime":"SAME", "UpdatedTSTo":"SAME", "UpdatedTSToTime":"SAME" },
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 50,
   };
 
   constructor() { }
