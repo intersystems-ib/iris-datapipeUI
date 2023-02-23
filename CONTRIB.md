@@ -8,18 +8,29 @@ Please, go through the following steps if you want to contribute to this project
 # Development Environment
 You need a running **iris-datapipe** instance in order to get the iris-datapipeUI working.
 
-You have two options to set up your development environment:
-
 ## Setup
-You need a local `Node.js` installation.
+* Install Node
 
-Install project dependencies using `npm`:
+* Install local Angular
+
 ```
-npm install
+mkdir angular-8
+cd angular-8
+npm install npm@latest
+npm install @angular/cli@8.3.21
 ```
 
-Run development server:
+* Install project dependencies
+
 ```
+cd iris-datapipeUI
+npm install --legacy-peer-deps
+```
+
+* Run development server
+
+```bash
+export NODE_OPTIONS=--openssl-legacy-provider       # see https://github.com/webpack/webpack/issues/14532
 ng serve
 ```
 

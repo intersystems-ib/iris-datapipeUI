@@ -251,10 +251,9 @@ export class DatapipeService {
   /**
    * StagingStatus format 
    */
-  getStagingStatusChipFormat(status: string, errors?: string): any {
-    let errorArr: any[];
-    if (errors) {
-      errorArr = JSON.parse(errors);
+  getStagingStatusChipFormat(status: string, errorArr: any[]): any {
+    if (typeof(errorArr) == "string" && errorArr !== "") {
+      errorArr = JSON.parse(errorArr);
     }
     return { 
       cssClass: 'staging-' + status.toLowerCase().replace('/', ''),
@@ -271,10 +270,9 @@ export class DatapipeService {
   /**
    * OperStatus format
    */
-  getOperStatusChipFormat(status: string, retries?: number, errors?: string): any {
-    let errorArr: any[];
-    if (errors) {
-      errorArr = JSON.parse(errors);
+  getOperStatusChipFormat(status: string, retries?: number, errorArr?: string[]): any {
+    if (typeof(errorArr) == "string" && errorArr !== "") {
+      errorArr = JSON.parse(errorArr);
     }
     return { 
       cssClass: 'oper-' + status.toLowerCase().replace('/', ''),
