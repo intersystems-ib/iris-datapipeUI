@@ -1,83 +1,74 @@
-import { NgModule, ModuleWithProviders } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
-
 import { AlertDisplayComponent } from './alert-display/alert-display.component';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { AlertService } from './alert.service';
 
-import {
-  MatButtonModule,
-  MatToolbarModule,
-  MatIconModule,
-  MatTableModule,
-  MatPaginatorModule,
-  MatSortModule,
-  MatInputModule,
-  MatDividerModule,
-  MatSidenavModule,
-  MatProgressSpinnerModule,
-  MatListModule,
-  MatCardModule,
-  MatTooltipModule,
-  MatGridListModule,
-  MatExpansionModule,
-  MatAutocompleteModule,
-  MatChipsModule,
-  MatDatepickerModule,
-  MatNativeDateModule,
-  MatTabsModule,
-  MatSelectModule,
-} from '@angular/material';
-import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import {MatButtonModule} from '@angular/material/button';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
+import {MatInputModule} from '@angular/material/input';
+import {FormsModule,ReactiveFormsModule} from '@angular/forms';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatTabsModule} from '@angular/material/tabs';
 
 const mm = [ 
-  MatButtonModule, 
+  MatButtonModule,
   MatToolbarModule,
+  MatFormFieldModule,
   MatIconModule,
   MatTableModule,
   MatPaginatorModule,
-  MatSortModule,
-  MatInputModule,
-  MatDividerModule,
-  MatSidenavModule,
-  MatProgressSpinnerModule,
-  MatListModule,
-  MatCardModule,
-  MatTooltipModule,
-  MatGridListModule,
-  MatExpansionModule,
-  MatAutocompleteModule,
-  MatChipsModule,
-  MatDatepickerModule,
-  MatNativeDateModule,
-  MatTabsModule,
   MatSelectModule,
+  MatInputModule,
+  FormsModule,
+  MatProgressSpinnerModule,
+  MatAutocompleteModule,
+  ReactiveFormsModule,
+  MatMenuModule,
+  MatTooltipModule,
+  MatChipsModule,
+  MatExpansionModule,
+  MatDatepickerModule,
+  MatDialogModule,
+  MatDividerModule,
+  MatTabsModule
 ]
 
 @NgModule({
-  declarations: [AlertDisplayComponent, ConfirmDialogComponent],
+  declarations: [
+    AlertDisplayComponent,
+    ConfirmDialogComponent
+  ],
   imports: [
     CommonModule,
-    FlexLayoutModule,
-    NgxMaterialTimepickerModule,
     ...mm
   ],
   exports: [
     ...mm,
-    FlexLayoutModule,
-    AlertDisplayComponent,
     ConfirmDialogComponent,
-    NgxMaterialTimepickerModule
+    AlertDisplayComponent
   ]
 })
-export class SharedModule {
-  static forRoot(): ModuleWithProviders {
-      return {
-          ngModule: SharedModule,
-          providers: [
-            AlertService,
-          ]
-      }
-  }
+export class SharedModule { 
+  static forRoot(): ModuleWithProviders<SharedModule> {
+    return {
+        ngModule: SharedModule,
+        providers: [
+          AlertService,
+        ]
+    }
+}
 }

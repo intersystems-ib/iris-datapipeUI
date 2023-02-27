@@ -1,12 +1,11 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable, throwError } from "rxjs";
-import { map, tap, catchError } from "rxjs/operators";
-import { Inbox, QueryResult, Ingestion, Staging, Oper } from './datapipe.model';
-import { AlertService } from '../shared/alert.service';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { MatDialog } from '@angular/material';
+import { AlertService } from '../shared/alert.service';
+import { Inbox, QueryResult, Ingestion, Staging, Oper } from './datapipe.model';
 import { ViewstreamDialogComponent } from './viewstream-dialog/viewstream-dialog.component';
 
 @Injectable({
@@ -28,7 +27,8 @@ export class DatapipeService {
   constructor(
     private http:HttpClient, 
     private alertService: AlertService,
-    public dialog: MatDialog) { }
+    public dialog: MatDialog
+  ) { }
 
   /**
    * Calls RESTForms2 query based on `DataPipe.Data.Inbox:queryFIND` method.
@@ -46,19 +46,19 @@ export class DatapipeService {
     if (query.Subject) { filter += `+Subject+eq+${query.Subject}`; }
     
     if (query.Status && query.Status.length>0) { 
-      let serializedStatus = query.Status.reduce(function (ret, item) {
+      let serializedStatus = query.Status.reduce(function (ret: any, item: any) {
         return ret + '~' + item; 
       });
       filter += `+Status+in+${serializedStatus}`; 
     }
     if (query.StagingStatus && query.StagingStatus.length>0 ) { 
-      let serializedStagingStatus = query.StagingStatus.reduce(function (ret, item) {
+      let serializedStagingStatus = query.StagingStatus.reduce(function (ret: any, item: any) {
         return ret + '~' + item; 
       });
       filter += `+StagingStatus+in+${serializedStagingStatus}`; 
     }
     if (query.OperStatus && query.OperStatus.length>0) { 
-      let serializedOperStatus = query.OperStatus.reduce(function (ret, item) {
+      let serializedOperStatus = query.OperStatus.reduce(function (ret: any, item: any) {
         return ret + '~' + item; 
       });
       filter += `+OperStatus+in+${serializedOperStatus}`; 
@@ -78,11 +78,12 @@ export class DatapipeService {
     return this.http.get<QueryResult<Inbox>>(
       this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&orderby=1+desc`,
       this.options
-    ).pipe(
+    )
+    .pipe(
       //tap(data => console.log(data))
       catchError(err => {
         this.alertService.error('[findInboxes] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -99,7 +100,7 @@ export class DatapipeService {
       //tap(data => console.log(data)),
       catchError(err => {
         this.alertService.error('[findInboxById] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -116,7 +117,7 @@ export class DatapipeService {
       //tap(data => console.log(data)),
       catchError(err => {
         this.alertService.error('[findIngestionById] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -133,7 +134,7 @@ export class DatapipeService {
       //tap(data => console.log(data)),
       catchError(err => {
         this.alertService.error('[findStagingById] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -150,7 +151,7 @@ export class DatapipeService {
       //tap(data => console.log(data)),
       catchError(err => {
         this.alertService.error('[findOperById] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -167,7 +168,7 @@ export class DatapipeService {
       //tap(data => console.log(data)),
       catchError(err => {
         this.alertService.error('[findIngestionsByInbox] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -184,7 +185,7 @@ export class DatapipeService {
       //tap(data => console.log(data)),
       catchError(err => {
         this.alertService.error('[findStagingsByIngestion] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -201,7 +202,7 @@ export class DatapipeService {
       //tap(data => console.log(data)),
       catchError(err => {
         this.alertService.error('[findOpersByStaging] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -217,7 +218,7 @@ export class DatapipeService {
     ).pipe(
       catchError(err => {
         this.alertService.error('[resendMessage] ' + err.message)
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -234,7 +235,7 @@ export class DatapipeService {
     ).pipe(
         catchError(err => {
           this.alertService.error('[ignoreInbox] ' + err.message)
-          return throwError(err);
+          return throwError(() => err);
         })
       );
   }
@@ -244,14 +245,14 @@ export class DatapipeService {
    */
   getInboxStatusChipFormat(status: string): any {
     return { 
-      cssClass: 'status-' + status.toLowerCase().replace(' ', '-')
+      cssClass: 'status-general status-' + status.toLowerCase().replace(' ', '-')
     }
   }
 
   /**
    * StagingStatus format 
    */
-  getStagingStatusChipFormat(status: string, errorArr: any[]): any {
+  getStagingStatusChipFormat(status: string, errorArr?: any[]): any {
     if (typeof(errorArr) == "string" && errorArr !== "") {
       errorArr = JSON.parse(errorArr);
     }
@@ -275,12 +276,12 @@ export class DatapipeService {
       errorArr = JSON.parse(errorArr);
     }
     return { 
-      cssClass: 'oper-' + status.toLowerCase().replace('/', ''),
+      cssClass: 'oper-general oper-' + status.toLowerCase().replace('/', ''),
       icon: status === 'PROCESSING' ? 'hourglass_empty':
             status === 'PROCESSED' ? 'done':
             status === 'ERROR' ? 'sync_problem':
             'not_interested',
-      desc: (+retries > 1) ? '('+retries+')':
+      desc: (+(retries||0) > 1) ? '('+retries+')':
             '',
       tooltip: (errorArr) ? errorArr.reduce(function(res, item){ return res + item + '\n'; }, ''):
                 ''
@@ -301,7 +302,7 @@ export class DatapipeService {
   /**
    * Opens an Interoperability session
    */
-  clickSession(sessionId): void {
+  clickSession(sessionId: number): void {
     window.open(environment.urlIRIS + '/EnsPortal.VisualTrace.zen?SESSIONID=' + sessionId);
   }
 
@@ -316,5 +317,4 @@ export class DatapipeService {
       data: data
     });
   }
-
 }

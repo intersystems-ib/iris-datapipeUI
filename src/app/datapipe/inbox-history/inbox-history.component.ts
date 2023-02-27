@@ -13,9 +13,9 @@ import { tap, map } from 'rxjs/operators';
 export class InboxHistoryComponent implements OnInit {
 
   @Input()
-  inboxId: number;
+  inboxId?: number;
 
-  inbox$: Observable<Inbox>;
+  inbox$?: Observable<Inbox>;
   loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
@@ -25,7 +25,7 @@ export class InboxHistoryComponent implements OnInit {
 
   ngOnInit() {
     if (!this.inboxId) {
-      this.inboxId = +this.route.snapshot.paramMap.get("inboxId");
+      this.inboxId = Number(this.route.snapshot.paramMap.get("inboxId"));
     }
     this.loadData();
   }
@@ -37,10 +37,12 @@ export class InboxHistoryComponent implements OnInit {
   loadData() {
       this.loading$.next(true);
       
+      this.inboxId = Number(this.inboxId);
       this.inbox$ = this.datapipeService.findInboxById(this.inboxId).pipe(
       map(inbox => {
 
         // retrieve ingestions
+        this.inboxId = Number(this.inboxId);
         inbox.Ingestions$ = this.datapipeService.findIngestionsByInbox(this.inboxId).pipe(
           map(queryResult => {
             let ingestions: Ingestion[] = queryResult['children'];

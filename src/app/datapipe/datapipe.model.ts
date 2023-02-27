@@ -50,6 +50,8 @@ export interface Staging {
     HeaderId: string;
     CreatedTS: Date;
     Status: string;
+    ValidationErrors: { Code: string, Desc: string}[];
+    ValidationErrorsJson: any;
 
     Opers$: Observable<Oper[]>;
 }
@@ -64,6 +66,7 @@ export interface Oper {
     CreatedTS: Date;
     Status: string;
     OperLog: string;
+    OperErrors: { Code: string, Desc: string}[];
 }
 
 /**

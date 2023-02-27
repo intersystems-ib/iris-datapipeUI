@@ -8,66 +8,74 @@ Please, go through the following steps if you want to contribute to this project
 # Development Environment
 You need a running **iris-datapipe** instance in order to get the iris-datapipeUI working.
 
-## Setup
 * Install Node
 
 * Install local Angular
-
 ```
-mkdir angular-8
-cd angular-8
+mkdir angular-15
+cd angular-15
 npm install npm@latest
-npm install @angular/cli@8.3.21
+npm install @angular/cli@15.0.4
 ```
 
-* Install project dependencies
-
+* Clone project
 ```
+git clone https://github.com/intersystems-ib/iris-datapipeUI
 cd iris-datapipeUI
+```
+
+* Install dependencies
+```
 npm install --legacy-peer-deps
 ```
 
 * Run development server
-
-```bash
-export NODE_OPTIONS=--openssl-legacy-provider       # see https://github.com/webpack/webpack/issues/14532
+```
 ng serve
 ```
 
-## Configuration
-Edit [environment.ts](./src/environments/environment.ts):
-* Modify URLs as needed to reach you **iris-datapipe** instance.
+# Util: angular cli commands used
 
-## Application
-* *Credentials*: use your **iris-datapipe** instance credentials.
-* *URL*: http://localhost:4200/datapipe
-
-# APPENDIX. angular/cli commands used
+* Create application
 ```
-ng new DataPipeUI --directory=frontend --routing=true --skipGit --style=scss
-ng add @angular/material
-ng generate module shared
-npm install --save bootstrap
+ng new DataPipeUI --routing=true --style=scss
+mv DataPipeUI iris-datapipeUI
+```
 
+* Install moment (dates), material dependencies
+```
+ng add @angular/material
+npm install --save bootstrap
+npm install --save moment
+npm install --save ngx-material-timepicker
+```
+
+* Modules and components
+```
+ng generate module shared
 ng generate module auth --routing
 ng generate component auth/login
 ng generate component auth/logout
 ng generate service auth/auth
 
 ng generate service shared/alert
+ng generate service shared/info
+ng generate service shared/preferences
 ng generate component shared/alert-display
-
-ng generate module about --routing
-ng generate component about/about
+ng generate component shared/confirm-dialog
 
 ng generate module datapipe --routing
 ng generate component datapipe/inbox-list
 ng generate service datapipe/datapipe
-ng generate component datapipe/inbox-detail
-ng generate component datapipe/viewstream-dialog
-ng generate component datapipe/inbox-info
-ng generate component datapipe/inbox-history
 
-ng generate component shared/confirm-dialog
-ng generate service shared/info
+ng generate component datapipe/inbox-detail
+ng generate component datapipe/inbox-info
+ng generate component datapipe/viewstream-dialog
+ng generate component datapipe/inbox-history
+```
+
+* Install legacy dependencies for text diff
+```
+npm install --save --legacy-peer-deps ngx-text-diff
+npm install --save-dev --legacy-peer-deps @types/diff-match-patch
 ```

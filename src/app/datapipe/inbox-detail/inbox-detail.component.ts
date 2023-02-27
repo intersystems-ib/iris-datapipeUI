@@ -5,8 +5,9 @@ import { DatapipeService } from '../datapipe.service';
 import { ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from 'src/app/auth/auth.service';
+
 
 @Component({
   selector: 'app-inbox-detail',
@@ -16,17 +17,17 @@ import { AuthService } from 'src/app/auth/auth.service';
 export class InboxDetailComponent implements OnInit {
 
   @Input()
-  inboxId: number;
+  inboxId?: number;
 
-  inbox$: Observable<Inbox>;
-  ingestion$: Observable<Ingestion>;
-  staging$: Observable<Staging>;
-  oper$: Observable<Oper>;
+  inbox$?: Observable<Inbox>;
+  ingestion$?: Observable<Ingestion>;
+  staging$?: Observable<Staging>;
+  oper$?: Observable<Oper>;
 
   loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  inbox: Inbox;
-  
+  inbox?: Inbox;
+
   constructor(
     public datapipeService: DatapipeService,
     private route: ActivatedRoute,
@@ -36,7 +37,7 @@ export class InboxDetailComponent implements OnInit {
 
   ngOnInit() {
     if (!this.inboxId) {
-      this.inboxId = +this.route.snapshot.paramMap.get("inboxId");
+      this.inboxId = Number(this.route.snapshot.paramMap.get("inboxId"));
     }
     this.loadData();
   }
@@ -46,20 +47,22 @@ export class InboxDetailComponent implements OnInit {
    */
   loadData() {
     this.loading$.next(true);
-    this.inbox$ = this.datapipeService.findInboxById(this.inboxId).pipe(
-      tap(inbox => { 
-        this.inbox = inbox;
-        this.ingestion$ = this.datapipeService.findIngestionById(inbox.LastIngestion).pipe();
-        if (inbox.LastStaging) {
-          this.staging$ = this.datapipeService.findStagingById(inbox.LastStaging).pipe();
-        }
-        if (inbox.LastOper) {
-          this.oper$ = this.datapipeService.findOperById(inbox.LastOper).pipe();
-        }
-        
-      })
-    );
+    if (this.inboxId) {
+      this.inbox$ = this.datapipeService.findInboxById(this.inboxId).pipe(
+        tap(inbox => { 
+          this.inbox = inbox;
+          this.ingestion$ = this.datapipeService.findIngestionById(inbox.LastIngestion).pipe();
+          if (inbox.LastStaging) {
+            this.staging$ = this.datapipeService.findStagingById(inbox.LastStaging).pipe();
+          }
+          if (inbox.LastOper) {
+            this.oper$ = this.datapipeService.findOperById(inbox.LastOper).pipe();
+          }
+          
+        })
+      );
     this.loading$.next(false);
+    }
   }
 
   /**
@@ -95,11 +98,12 @@ export class InboxDetailComponent implements OnInit {
    */
   disableResend() {
     return (
+      !this.inbox ||
       !this.authService.isAdminUser ||
       (this.inbox.Status==="DONE" &&
       this.inbox.StagingStatus==="VALID" &&
       this.inbox.OperStatus==="PROCESSED")
     );
   }
-  
+
 }

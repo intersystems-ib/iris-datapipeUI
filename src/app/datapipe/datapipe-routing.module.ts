@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { InboxListComponent } from './inbox-list/inbox-list.component';
+import { RouterModule, Routes } from '@angular/router';
 import { InboxInfoComponent } from './inbox-info/inbox-info.component';
-
+import { InboxListComponent } from './inbox-list/inbox-list.component';
 
 export const routes: Routes = [
   {

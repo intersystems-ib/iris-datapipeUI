@@ -1,3 +1,11 @@
+.inline {
+    display: inline-block;
+}
+
+.inline > span button {
+    margin-left: 10px;
+}
+
 .group-1 {
     border-style: solid;
     border-width: 1px;

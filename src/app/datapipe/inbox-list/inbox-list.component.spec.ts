@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InboxListComponent } from './inbox-list.component';
 
@@ -6,14 +6,12 @@ describe('InboxListComponent', () => {
   let component: InboxListComponent;
   let fixture: ComponentFixture<InboxListComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [ InboxListComponent ]
     })
     .compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(InboxListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

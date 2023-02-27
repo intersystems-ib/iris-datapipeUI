@@ -7,91 +7,73 @@
     <div *ngIf="!(loading$ | async)" class="group-container">
 
         <!-- Inbox -->
-        <div  class="element">
-            <div fxLayout="row" fxLayoutGap="2%">
-                <span fxFlex="90px">Inbox</span>
-                <mat-chip-list *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
+        <div class="element">
+            <div class="inline">
+                <span class="inline" style="width:100px;">Inbox</span>
+                <mat-chip-listbox class="inline" *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
                     <mat-chip [ngClass]="format.cssClass">{{ inbox.Status }}</mat-chip>
-                </mat-chip-list>
+                </mat-chip-listbox>
             </div>
 
             <!-- Ingestions -->
             <div *ngFor="let ingestion of (inbox.Ingestions$ | async)" class="element group-1">
-                <div fxLayout="row" fxLayoutGap="2%">
-                    <span fxFlex="90px">Ingestion</span>
-                    <span>{{ ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId">
-                        <mat-icon 
-                        matTooltip="View Trace" 
-                        (click)="datapipeService.clickSession(ingestion.HeaderId)">
-                            zoom_in
-                        </mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;'>
-                        <mat-icon 
-                        matTooltip="Model Data" 
-                        (click)="clickIngestionStream(ingestion.Id)">
-                            code
-                        </mat-icon>
-                    </button>
+                <div class="inline">
+                    <span class="inline" style="width:100px">Ingestion</span>
+                    <span class="inline">{{ ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                    <span class="inline">
+                        <button class="inline" mat-mini-fab color="link" [disabled]="!ingestion.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
+                            <mat-icon>zoom_in</mat-icon>
+                        </button>
+                        <button class="inline" mat-mini-fab color="link" matTooltip="Model Data" (click)="clickIngestionStream(ingestion.Id)">
+                            <mat-icon>code</mat-icon>
+                        </button>
+                    </span>
                 </div>
                 
                 <!-- Stagings -->
                 <div *ngFor="let staging of (ingestion.Stagings$ | async)" class="element group-2">
-                    <div fxLayout="row" fxLayoutGap="2%">
-                        <span fxFlex="90px">Staging</span>
-                        <span>{{ staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
-                        <mat-chip-list *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status, staging.ValidationErrorsJson); let format">
+                    <div class="inline">
+                        <span class="inline" style="width:100px">Staging</span>
+                        <span class="inline">{{ staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                        <mat-chip-listbox class="inline" style="margin: 0 10px 0 10px;" *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status, staging.ValidationErrorsJson); let format">
                             <mat-chip [ngClass]="format.cssClass">
                             <mat-icon [matTooltip]="format.tooltip">
                                 {{ format.icon }}
                             </mat-icon>
                             {{ format.desc }}
                             </mat-chip>
-                        </mat-chip-list>
-                        <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId">
-                            <mat-icon 
-                            matTooltip="View Trace" 
-                            (click)="datapipeService.clickSession(staging.HeaderId)">
-                                zoom_in
-                            </mat-icon>
-                        </button>
-                        <button mat-mini-fab color="link" style='margin-right: 10px;'>
-                            <mat-icon 
-                                matTooltip="Model Normalized Data" 
-                                (click)="clickStagingStream(staging.Id)">
-                                code
-                            </mat-icon>
-                        </button>
+                        </mat-chip-listbox>
+                        <span class="inline">
+                            <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
+                                <mat-icon>zoom_in</mat-icon>
+                            </button>
+                            <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data" (click)="clickStagingStream(staging.Id)">
+                                <mat-icon>code</mat-icon>
+                            </button>
+                        </span>
                     </div>
 
                     <!-- Operations -->
                     <div *ngFor="let oper of (staging.Opers$ | async)" class="element">
-                        <div fxLayout="row" fxLayoutGap="2%">
-                            <span fxFlex="90px">Operation</span>
-                            <span>{{ oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
-                            <mat-chip-list *ngIf="datapipeService.getOperStatusChipFormat(oper.Status); let format">
+                        <div class="inline">
+                            <span class="inline" style="width:100px">Operation</span>
+                            <span class="inline">{{ oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                            <mat-chip-listbox class="inline" style="margin: 0 10px 0 10px;" *ngIf="datapipeService.getOperStatusChipFormat(oper.Status); let format">
                                 <mat-chip [ngClass]="format.cssClass">
                                 <mat-icon>
                                     {{ format.icon }}
                                 </mat-icon>
                                 {{ format.desc }}
                                 </mat-chip>
-                            </mat-chip-list>
-                            <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId">
-                                <mat-icon 
-                                matTooltip="View Trace" 
-                                (click)="datapipeService.clickSession(oper.HeaderId)">
-                                    zoom_in
-                                </mat-icon>
-                            </button>
-                            <button mat-mini-fab color="link" style='margin-right: 10px;'>
-                                <mat-icon 
-                                    matTooltip="Operation Log" 
-                                    (click)="clickOperationLogStream(oper.Id)">
-                                    description
-                                </mat-icon>
-                            </button>
+                            </mat-chip-listbox>
+                            <span class="inline">
+                                <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
+                                    <mat-icon>zoom_in</mat-icon>
+                                </button>
+                                <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Operation Log" (click)="clickOperationLogStream(oper.Id)">
+                                    <mat-icon>description</mat-icon>
+                                </button>
+                            </span>
                         </div>
                     </div>
                 </div>

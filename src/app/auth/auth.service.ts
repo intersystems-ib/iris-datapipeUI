@@ -15,10 +15,10 @@ export class AuthService {
   isLoginSubject = new BehaviorSubject<boolean>(this.authenticated());
 
   /** isAdminUser. Backend has authorized user as Admin user or not */
-  isAdminUser: boolean;
+  isAdminUser: boolean = false;
 
   /** private user token */
-  private _token: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  private _token: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   /** 
    * Constructor 
@@ -85,7 +85,7 @@ export class AuthService {
    * Returns true if user is authenticated
    */
   public authenticated(): boolean {
-    const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey));
+    const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey) || '{}');
     const token = currentUser && currentUser.token;
     if (token) {
       if (this._token) {
@@ -100,7 +100,7 @@ export class AuthService {
    * Returns stored user token (if any)
    */
   getToken(): string {
-    const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey));
+    const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey) || '{}');
     const token = currentUser && currentUser.token;
     return token;
   }
