@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InboxHistoryComponent } from './inbox-history.component';
 
@@ -6,14 +6,12 @@ describe('InboxHistoryComponent', () => {
   let component: InboxHistoryComponent;
   let fixture: ComponentFixture<InboxHistoryComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [ InboxHistoryComponent ]
     })
     .compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(InboxHistoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

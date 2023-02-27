@@ -10,12 +10,12 @@ import { AlertService } from '../alert.service';
 })
 export class AlertDisplayComponent implements OnInit, OnDestroy {
 
-  @Input() id: string;
+  @Input() id?: string;
 
   /** Alerts to display */
   alerts: Alert[] = [];
 
-  subscription: Subscription;
+  subscription?: Subscription;
 
   /**
    * Constructor
@@ -39,7 +39,9 @@ export class AlertDisplayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
       // unsubscribe to avoid memory leaks
-      this.subscription.unsubscribe();
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
   }
 
   removeAlert(alert: Alert) {

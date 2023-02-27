@@ -1,217 +1,215 @@
 <div class="">
-  <p class="h2">Inbox List</p>
+    <p class="h2">Inbox List</p>
 
-  <!-- filters form -->
-  <mat-accordion>
-    <mat-expansion-panel [expanded]="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <mat-icon style='margin-right:5px;'>filter_list</mat-icon>Filters
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <form #filtersForm="ngForm" (ngSubmit)="search()">
+    <!-- filters form -->
+    <mat-accordion>
+        <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+            <mat-icon style='margin-right:5px;'>filter_list</mat-icon>Filters
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form #filtersForm="ngForm" (ngSubmit)="search()">
 
-        <!-- filters row -->
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <mat-label class="highlight-field">Status</mat-label>
-            <mat-select [(ngModel)]="filters.Status" multiple name="Status">
-              <mat-option *ngFor="let status of filteredStatus" [value]="status">
-                {{ status }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+            <!-- filters row -->
+            <div class="button-row">
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Status</mat-label>
+                <mat-select [(ngModel)]="filters.Status" multiple name="Status">
+                <mat-option *ngFor="let status of filteredStatus" [value]="status">
+                    {{ status }}
+                </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <mat-label class="highlight-field">Staging</mat-label>
-            <mat-select [(ngModel)]="filters.StagingStatus" multiple name="StagingStatus">
-              <mat-option *ngFor="let status of filteredStagingStatus" [value]="status">
-                {{ status }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Staging</mat-label>
+                <mat-select [(ngModel)]="filters.StagingStatus" multiple name="StagingStatus">
+                <mat-option *ngFor="let status of filteredStagingStatus" [value]="status">
+                    {{ status }}
+                </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <mat-label class="highlight-field">Operation</mat-label>
-            <mat-select [(ngModel)]="filters.OperStatus" multiple name="OperStatus">
-              <mat-option *ngFor="let status of filteredOperStatus" [value]="status">
-                {{ status }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Operation</mat-label>
+                <mat-select [(ngModel)]="filters.OperStatus" multiple name="OperStatus">
+                <mat-option *ngFor="let status of filteredOperStatus" [value]="status">
+                    {{ status }}
+                </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <mat-select placeholder="Ignored" [(ngModel)]="filters.Ignored" name="Ignored">
-              <mat-option value="1">Yes</mat-option>
-              <mat-option value="0">No</mat-option>
-              <mat-option [value]="null"></mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Ignored</mat-label>
+                <mat-select placeholder="Ignored" [(ngModel)]="filters.Ignored" name="Ignored">
+                <mat-option value="1">Yes</mat-option>
+                <mat-option value="0">No</mat-option>
+                <mat-option [value]="null"></mat-option>
+                </mat-select>
+            </mat-form-field>
 
-        </div>
+            </div>
 
-        <!-- filters row -->
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <mat-label class="highlight-field">Source</mat-label>
-            <input matInput [(ngModel)]="filters.Source" name="Source">
-          </mat-form-field>
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <mat-label class="highlight-field">Flow</mat-label>
-            <input matInput [(ngModel)]="filters.Flow" name="Flow">
-          </mat-form-field>
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <mat-label class="highlight-field">MsgId</mat-label>
-            <input matInput [(ngModel)]="filters.MsgId" name="MsgId">
-          </mat-form-field>
-          <mat-form-field floatLabel="always" fxFlex="200px"> 
-            <mat-label class="highlight-field">Subject</mat-label>
-            <input matInput [(ngModel)]="filters.Subject" name="Subject">
-          </mat-form-field>
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <mat-label class="highlight-field">Element</mat-label>
-            <input matInput [(ngModel)]="filters.Element" name="Element">
-          </mat-form-field>
-        </div>
+            <!-- filters row -->
+            <div class="button-row">
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Source</mat-label>
+                <input matInput [(ngModel)]="filters.Source" name="Source">
+            </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Flow</mat-label>
+                <input matInput [(ngModel)]="filters.Flow" name="Flow">
+            </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">MsgId</mat-label>
+                <input matInput [(ngModel)]="filters.MsgId" name="MsgId">
+            </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px"> 
+                <mat-label class="highlight-field">Subject</mat-label>
+                <input matInput [(ngModel)]="filters.Subject" name="Subject">
+            </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Element</mat-label>
+                <input matInput [(ngModel)]="filters.Element" name="Element">
+            </mat-form-field>
+            </div>
 
-        <!-- filters row -->
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <input matInput placeholder="Updated Date (From)" [matDatepicker]="updatedTSFrom"
-              [(ngModel)]="filters.UpdatedTSFrom" name="updatedTSFrom">
-            <mat-datepicker-toggle matSuffix [for]="updatedTSFrom"></mat-datepicker-toggle>
-            <mat-datepicker #updatedTSFrom></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <input [disabled]="!filters.UpdatedTSFrom" matInput placeholder="Updated Time (From)"[format]="24" [ngxTimepicker]="timeFrom" [(ngModel)]="filters.UpdatedTSFromTime" name="updatedTSFromTime">
-            <ngx-material-timepicker #timeFrom [enableKeyboardInput]="true"></ngx-material-timepicker>
-          </mat-form-field>
+            <!-- filters row -->
+            <div class="button-row">
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <input matInput placeholder="Updated Date (From)" [matDatepicker]="updatedTSFrom"
+                [(ngModel)]="filters.UpdatedTSFrom" name="updatedTSFrom">
+                <mat-datepicker-toggle matSuffix [for]="updatedTSFrom"></mat-datepicker-toggle>
+                <mat-datepicker #updatedTSFrom></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <input [disabled]="!filters.UpdatedTSFrom" matInput placeholder="Updated Time (From)" [(ngModel)]="filters.UpdatedTSFromTime" name="updatedTSFromTime">
+            </mat-form-field>
 
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <input matInput placeholder="Updated Date (To)" [matDatepicker]="updatedTSTo"
-              [(ngModel)]="filters.UpdatedTSTo" name="updatedTSTo">
-            <mat-datepicker-toggle matSuffix [for]="updatedTSTo" ></mat-datepicker-toggle>
-            <mat-datepicker #updatedTSTo></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field floatLabel="always" fxFlex="200px">
-            <input [disabled]="!filters.UpdatedTSTo" matInput placeholder="Updated Time (To)" [format]="24" [ngxTimepicker]="timeTo" [(ngModel)]="filters.UpdatedTSToTime" name="updatedTSToTime">
-            <ngx-material-timepicker #timeTo [enableKeyboardInput]="true"></ngx-material-timepicker>
-          </mat-form-field>
-        </div>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <input matInput placeholder="Updated Date (To)" [matDatepicker]="updatedTSTo"
+                [(ngModel)]="filters.UpdatedTSTo" name="updatedTSTo">
+                <mat-datepicker-toggle matSuffix [for]="updatedTSTo" ></mat-datepicker-toggle>
+                <mat-datepicker #updatedTSTo></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <input [disabled]="!filters.UpdatedTSTo" matInput placeholder="Updated Time (To)" [(ngModel)]="filters.UpdatedTSToTime" name="updatedTSToTime">
+            </mat-form-field>
+            </div>
 
-        <!-- filters buttons -->
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%">
-          <!--mat-icon>star_border</mat-icon-->
-          <!--button type="button" mat-raised-button (click)="clickResetFilters('reset')" style='margin-left:15px;'>Reset</button-->
-          <button type="button" mat-raised-button (click)="clickResetFilters('all')" style='background-color: #999; color:#fff'>All Today</button>
-          <button type="button" mat-raised-button (click)="clickResetFilters('errors')" style='background-color: #999; color:#fff'>Errors</button>
-          <button type="button" mat-raised-button (click)="clickResetFilters('warnings')" style='background-color: #999; color:#fff'>Warnings</button>
-          <span class="fill-space"></span>
-          <button type="submit" mat-raised-button color="primary" [disabled]="!canSearch()"  >
-            <mat-icon>search</mat-icon>Search
-          </button>
-        </div>
-        
-      </form>
-    </mat-expansion-panel>
-  </mat-accordion>
+            <!-- filters buttons -->
+            <div class="button-row">
+            <button type="button" mat-raised-button (click)="clickResetFilters('all')" style='background-color: #999; color:#fff'>All Today</button>
+            <button type="button" mat-raised-button (click)="clickResetFilters('errors')" style='background-color: #999; color:#fff'>Errors</button>
+            <button type="button" mat-raised-button (click)="clickResetFilters('warnings')" style='background-color: #999; color:#fff'>Warnings</button>
+            <span class="fill-space"></span>
+            <button type="submit" mat-raised-button color="primary" [disabled]="!canSearch()"  >
+                <mat-icon>search</mat-icon>Search
+            </button>
+            </div>
+            
+        </form>
+        </mat-expansion-panel>
+    </mat-accordion>
 
 
-  <!-- results table -->
-  <mat-table class="result-table mat-elevation-z8" [dataSource]="inboxes$ | async">
-    
-    <ng-container matColumnDef="actions">
-      <mat-header-cell *matHeaderCellDef fxFlex="100px">
-      </mat-header-cell>
-      <mat-cell *matCellDef="let inbox" fxFlex="100px">
-        <button mat-icon-button routerLink="/datapipe/{{ inbox.Id }}">
-          <mat-icon aria-label="Info">info</mat-icon>
-        </button>
-        <button *ngIf="authService.isAdminUser && inbox.Ignored==1" mat-icon-button (click)="clickIgnore(inbox)" matTooltip="Unignore">
-					<mat-icon aria-label="Hide">visibility_on</mat-icon>
-				</button>
-				<button *ngIf="authService.isAdminUser && inbox.Ignored!==1" mat-icon-button (click)="clickIgnore(inbox)" matTooltip="Ignore">
-					<mat-icon aria-label="Hide">visibility_off</mat-icon>
-				</button>
-      </mat-cell>
-    </ng-container>
-    
-    <ng-container matColumnDef="Id">
-      <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
-      <mat-cell *matCellDef="let inbox">{{ inbox.Id }}</mat-cell>
-    </ng-container>
+    <!-- results table -->
+    <table mat-table [dataSource]="dataSource">
 
-    <ng-container matColumnDef="Source">
-      <mat-header-cell *matHeaderCellDef>Source</mat-header-cell>
-      <mat-cell *matCellDef="let inbox">{{ inbox.Source }}</mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef width="150px"> </th>
+            <td mat-cell *matCellDef="let inbox"> 
+                <button matTooltip="Details" mat-icon-button routerLink="/datapipe/{{ inbox.Id }}">
+                    <mat-icon aria-label="info">info</mat-icon>
+                </button>
+                
+                <button matTooltip="Unignore" mat-icon-button *ngIf="(authService.isAdminUser && inbox.Ignored==1)" (click)="clickIgnore(inbox)">
+                    <mat-icon aria-label="Hide">visibility_on</mat-icon>
+                </button>
 
-    <ng-container matColumnDef="Flow">
-      <mat-header-cell *matHeaderCellDef>Flow</mat-header-cell>
-      <mat-cell *matCellDef="let inbox">{{ inbox.Flow }}</mat-cell>
-    </ng-container>
+                <button matTooltip="Ignore" mat-icon-button *ngIf="(authService.isAdminUser && inbox.Ignored!==1)" (click)="clickIgnore(inbox)">
+                    <mat-icon aria-label="Hide">visibility_off</mat-icon>
+                </button>
+            </td>
+        </ng-container>
 
-    <ng-container matColumnDef="MsgId">
-      <mat-header-cell *matHeaderCellDef>MsgId</mat-header-cell>
-      <mat-cell *matCellDef="let inbox">{{ inbox.MsgId }}</mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="Id">
+            <th mat-header-cell *matHeaderCellDef> Id </th>
+            <td mat-cell *matCellDef="let inbox"> {{inbox.Id}} </td>
+        </ng-container>
 
-    <ng-container matColumnDef="Subject">
-      <mat-header-cell *matHeaderCellDef>Subject</mat-header-cell>
-      <mat-cell *matCellDef="let inbox">{{ inbox.Subject }}</mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="Source">
+            <th mat-header-cell *matHeaderCellDef> Source </th>
+            <td mat-cell *matCellDef="let inbox"> {{inbox.Source}} </td>
+        </ng-container>
 
-    <ng-container matColumnDef="Element">
-      <mat-header-cell *matHeaderCellDef>Element</mat-header-cell>
-      <mat-cell *matCellDef="let inbox">{{ inbox.Element }}</mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="Flow">
+            <th mat-header-cell *matHeaderCellDef> Flow </th>
+            <td mat-cell *matCellDef="let inbox"> {{inbox.Flow}} </td>
+        </ng-container>
 
-    <ng-container matColumnDef="UpdatedTS">
-      <mat-header-cell *matHeaderCellDef fxFlex="170px" fxHide.xs>Updated</mat-header-cell>
-      <mat-cell *matCellDef="let inbox" fxFlex="170px" fxHide.xs>{{ inbox.UpdatedTS | date:'dd/MM/yyyy HH:mm:ss':'GMT' }}</mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="MsgId">
+            <th mat-header-cell *matHeaderCellDef> MsgId </th>
+            <td mat-cell *matCellDef="let inbox"> {{inbox.MsgId}} </td>
+        </ng-container>
 
-    <ng-container matColumnDef="Status">
-      <mat-header-cell *matHeaderCellDef fxFlex="180px" fxHide.xs>Status</mat-header-cell>
-      <mat-cell *matCellDef="let inbox" fxFlex="180px" fxHide.xs>
-        <mat-chip-list *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
-          <mat-chip [ngClass]="format.cssClass">{{ inbox.Status }}</mat-chip>
-        </mat-chip-list>
-      </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="Subject">
+            <th mat-header-cell *matHeaderCellDef> Subject </th>
+            <td mat-cell *matCellDef="let inbox"> {{inbox.Subject}} </td>
+        </ng-container>
 
-    <ng-container matColumnDef="StagingStatus">
-      <mat-header-cell *matHeaderCellDef fxHide.xs>Staging</mat-header-cell>
-      <mat-cell *matCellDef="let inbox" fxHide.xs>
-        <mat-chip-list *ngIf="datapipeService.getStagingStatusChipFormat(inbox.StagingStatus,inbox.ValidationErrors); let format">
-          <mat-chip [ngClass]="format.cssClass">
-            <mat-icon [matTooltip]="format.tooltip">
-              {{ format.icon }}
-            </mat-icon>
-            {{ format.desc }}
-          </mat-chip>
-        </mat-chip-list>
-      </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="Element">
+            <th mat-header-cell *matHeaderCellDef> Element </th>
+            <td mat-cell *matCellDef="let inbox"> {{inbox.Element}} </td>
+        </ng-container>
 
-    <ng-container matColumnDef="OperStatus">
-      <mat-header-cell *matHeaderCellDef fxHide.xs>Operation</mat-header-cell>
-      <mat-cell *matCellDef="let inbox" fxHide.xs>
-        <mat-chip-list *ngIf="datapipeService.getOperStatusChipFormat(inbox.OperStatus, inbox.OperRetries, inbox.OperErrors); let format">
-          <mat-chip [ngClass]="format.cssClass">
-            <mat-icon [matTooltip]="format.tooltip">
-              {{ format.icon }}
-            </mat-icon>
-            {{ format.desc }}
-          </mat-chip>
-        </mat-chip-list>
-      </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="UpdatedTS">
+            <th mat-header-cell *matHeaderCellDef width="170px"> Updated </th>
+            <td mat-cell *matCellDef="let inbox"> {{ inbox.UpdatedTS | date:'dd/MM/yyyy HH:mm:ss':'GMT' }} </td>
+        </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-  </mat-table>
+        <ng-container matColumnDef="Status">
+            <th mat-header-cell *matHeaderCellDef width="180px"> Status </th>
+            <td mat-cell *matCellDef="let inbox"> 
+                <span *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
+                    <mat-chip [ngClass]="format.cssClass">{{ inbox.Status }}</mat-chip>
+                </span>
+            </td>
+        </ng-container>
 
-  <mat-paginator #paginator [length]="totalResults" [pageSize]="20" [pageSizeOptions]="[10, 20, 50]"
-    (page)="onChangePage($event)"></mat-paginator>
+        <ng-container matColumnDef="StagingStatus">
+            <th mat-header-cell *matHeaderCellDef width="180px"> Staging </th>
+            <td mat-cell *matCellDef="let inbox"> 
+                <span *ngIf="datapipeService.getStagingStatusChipFormat(inbox.StagingStatus,inbox.ValidationErrors); let format">
+                    <mat-chip [ngClass]="format.cssClass">
+                        <mat-icon [matTooltip]="format.tooltip" style="margin-top:4px">
+                            {{ format.icon }}
+                        </mat-icon>
+                        {{ format.desc }}
+                    </mat-chip>
+                </span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="OperStatus">
+            <th mat-header-cell *matHeaderCellDef width="180px"> Operation </th>
+            <td mat-cell *matCellDef="let inbox"> 
+                <span *ngIf="datapipeService.getOperStatusChipFormat(inbox.OperStatus, inbox.OperRetries, inbox.OperErrors); let format">
+                    <mat-chip [ngClass]="format.cssClass">
+                        <mat-icon [matTooltip]="format.tooltip" style="margin-top:4px">
+                            {{ format.icon }}
+                        </mat-icon>
+                        {{ format.desc }}
+                    </mat-chip>
+                </span>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+    <mat-paginator #paginator [length]="totalResults" [pageSize]="20" [pageSizeOptions]="[10, 20, 50]" (page)="onChangePage($event)"></mat-paginator>
+
 </div>

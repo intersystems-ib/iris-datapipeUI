@@ -7,13 +7,13 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./inbox-info.component.scss']
 })
 export class InboxInfoComponent implements OnInit {
-
-  inboxId: number;
+  
+  inboxId?: number;
 
   constructor(private route: ActivatedRoute,) { }
 
   ngOnInit() {
-    this.inboxId = +this.route.snapshot.paramMap.get("inboxId");
+    this.inboxId = Number(this.route.snapshot.paramMap.get("inboxId"));
   }
 
 }

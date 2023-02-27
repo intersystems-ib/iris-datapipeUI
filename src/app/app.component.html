@@ -29,9 +29,11 @@
 </div>
 
 <div class="footer">
-	<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" fxLayoutAlign="center">
-		<span [matTooltip]="info.srcTooltip">
-			{{ info.name }} v{{ info.version }} #{{ info.srcVersion }}
-		</span>
+	<div>
+    <p align="center">
+      <span [matTooltip]="info.srcTooltip">
+        {{ info.name }} v{{ info.version }} #{{ info.srcVersion }}
+      </span>
+    </p>
 	</div>
 </div>

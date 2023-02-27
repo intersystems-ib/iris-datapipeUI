@@ -10,11 +10,10 @@ import { AlertService } from '../../shared/alert.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
-
-  form: FormGroup;
-  loading: boolean;
-  returnUrl: string;
+export class LoginComponent {
+  form!: FormGroup;
+  loading!: boolean;
+  returnUrl!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,7 +47,7 @@ export class LoginComponent implements OnInit {
       },
       error => {
         this.loading = false;
-        this.alertService.error("[Login] Wrong username or password");
+        //this.alertService.error("[Login] Wrong username or password");
       }
     );
     

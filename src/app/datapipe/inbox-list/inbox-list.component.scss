@@ -1,13 +1,7 @@
-.container {
-    margin-top: 5px;
+.button-row mat-form-field {
+    padding-right: 5px;
 }
 
-.result-table {
-    margin-top: 5px;
+.button-row button {
+    margin-right: 5px;
 }
-
-/** mat-tooltip. break lines */
-::ng-deep .mat-tooltip  {
-    white-space: pre-line  !important;
-}
-

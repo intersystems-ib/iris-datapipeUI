@@ -10,58 +10,71 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 /** Inbox status chips */
+.status-general .mat-mdc-chip-action-label {
+	color: #fff !important;
+	font-weight: 500;
+}
+
 .status-ingesting, .status-staging, .status-operating {
 	background-color:#f5a973 !important;
-	color: #fff !important; 
-	font-weight: bold;
 }
+
 .status-done {
 	background-color: #407829 !important;
-	color: #fff !important;
-	font-weight: bold;
 }
+
 .status-error-ingesting, .status-error-staging, .status-error-operating, .status-error-general {
 	background-color:#f57c6e !important;
-	color: #fff !important; 
-	font-weight: bold;
 }
 
 /** Staging Status chips */
 .staging-valid {
 	background-color:#aed689 !important;
-	color: #407829 !important; 
+}
+.staging-valid .mat-mdc-chip-action-label {
+	color: #407829 !important;
 }
 .staging-invalid {
 	background-color:#f57c6e !important;
-	color: #fff !important; 
 }
+.staging-invalid .mat-mdc-chip-action-label {
+	color: #9d0808 !important;
+} 
 .staging-warning {
 	background-color:#ffc107 !important;
-	color: #343a40 !important; 
+}
+.staging-warning .mat-mdc-chip-action-label {
+	color: #343a40 !important;
 }
 .staging-na {
 	background-color:#bbb !important;
+}
+.staging-na .mat-mdc-chip-action-label {
 	color: #eee !important; 
 }
 
 /** Oper Status chips */
+.oper-general .mat-mdc-chip-action-label {
+	color: #fff !important;
+}
 .oper-processing {
     background-color: #17a2b8 !important;
-    color: #fff !important;
 }
 .oper-processed {
 	background-color:#aed689 !important;
+}
+.oper-processed .mat-mdc-chip-action-label {
 	color: #407829 !important; 
 }
 .oper-error {
-	background-color:#f57c6e !important;
-	color: #fff !important; 
+	background-color:#f57c6e !important; 
 }
 .oper-na {
 	background-color:#bbb !important;
-	color: #eee !important;  
+}
+.oper-na .mat-mdc-chip-action-label {
+	color: #eee !important; 
 }
 .oper-ignored {
-	background-color:#9370DB !important;
-	color: #fff !important; 
+	background-color:#9370DB !important; 
 }

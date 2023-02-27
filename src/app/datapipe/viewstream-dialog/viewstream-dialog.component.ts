@@ -1,10 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NgxTextDiffModule } from 'ngx-text-diff';
 
-/**
- * View Stream dialog
- */
 @Component({
   selector: 'app-viewstream-dialog',
   templateUrl: './viewstream-dialog.component.html',
@@ -13,16 +10,16 @@ import { NgxTextDiffModule } from 'ngx-text-diff';
 export class ViewstreamDialogComponent implements OnInit {
 
   /** title of the dialog */
-  title: string;
+  title?: string;
 
   /** icon of the dialog */
-  icon: string;
+  icon?: string;
 
   /** stream1  */
-  stream1: string;
+  stream1: string = '';
 
   /** stream2 */
-  stream2: string;
+  stream2: string = '';
 
   constructor(
     public dialogRef: MatDialogRef<ViewstreamDialogComponent>,

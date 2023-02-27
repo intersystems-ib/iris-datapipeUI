@@ -1,21 +1,28 @@
 import { Injectable } from '@angular/core';
 
-/**
- * Preferences Service.
- * Singleton service used to store preferences
- */
+export interface InboxListPref {
+  filters: any,
+  filtersPreset: { [key: string]: any }
+  pageIndex: number,
+  pageSize: number
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class PreferencesService {
 
   /** inbox-list preferences */
-  inboxList = {
-    filtersInitial: { "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+  inboxList: InboxListPref = {
     filters: {"Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
-    filterAll: {"Ignored": "0",  "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
-    filterErrors: { "Status": ["ERROR-INGESTING", "ERROR-STAGING", "ERROR-OPERATING","ERROR-GENERAL"], "Ignored" : "0","UpdatedTSFrom": "SAME", "UpdatedTSFromTime":"SAME", "UpdatedTSTo":"SAME", "UpdatedTSToTime":"SAME" },
-    filterWarnings: { "Ignored" : "0", "StagingStatus" : ["Warning"], "UpdatedTSFrom": "SAME", "UpdatedTSFromTime":"SAME", "UpdatedTSTo":"SAME", "UpdatedTSToTime":"SAME" },
+
+    filtersPreset: {
+      initial: { "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+      all: {"Ignored": "0",  "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+      errors: { "Status": ["ERROR-INGESTING", "ERROR-STAGING", "ERROR-OPERATING","ERROR-GENERAL"], "Ignored" : "0", "UpdatedTSFrom": null, "UpdatedTSFromTime": null, "UpdatedTSTo": null, "UpdatedTSToTime": null },
+      warnings: { "Ignored" : "0", "StagingStatus" : ["Warning"], "UpdatedTSFrom": null, "UpdatedTSFromTime": null, "UpdatedTSTo": null, "UpdatedTSToTime": null },
+    },
+
     pageIndex: 0,
     pageSize: 50,
   };

@@ -1,13 +1,11 @@
-<mat-icon color="accent">help_outline</mat-icon>
-<span> {{ title }}</span>
-<mat-divider></mat-divider>
-
-<div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0.5%" style='margin-top: 20px;'>
-	<div>
-	{{ text }}
-	</div>
+<h1 mat-dialog-title>
+    <mat-icon color="accent">help_outline</mat-icon> 
+    {{ title }}
+</h1>
+<div mat-dialog-content>
+    {{ text }}
 </div>
-<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1%" fxLayoutAlign="end" style='margin-top: 30px;'>
-	<button mat-raised-button color="primary" (click)="onAccept()" style='margin-right: 10px;'>Accept</button>
-	<button mat-raised-button (click)="onCancel()" style='margin-right: 10px;'>Cancel</button>
+<div mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onAccept()">Accept</button>
+	<button mat-raised-button (click)="onCancel()">Cancel</button>
 </div>
