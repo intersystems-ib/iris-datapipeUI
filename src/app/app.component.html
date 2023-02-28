@@ -1,39 +1,63 @@
-<mat-toolbar color="primary" [ngClass]="envToolbarClass">
-  <!-- left aligned-->
-  <button mat-button routerLink="/datapipe">
-    Search
-  </button>
 
-  <span class="fill-space"></span>
-  <span>datapipeUI</span>
+<mat-sidenav-container fullscreen>
+  
+  <!-- sidenav menu -->
+  <mat-sidenav #sidenav>
+    <mat-nav-list (click)="sidenav.close()">
+      
+      <a mat-list-item routerLink="/datapipe">
+        <mat-icon matListItemIcon>search</mat-icon>
+        <span matListItemTitle>Search</span>
+      </a>
 
-  <!-- right aligned -->
-  <span class="fill-space"></span>
+      <a mat-list-item routerLink="/auth/login" *ngIf="!(isLoggedIn$ | async)">
+        <mat-icon matListItemIcon>login</mat-icon>
+        <span matListItemTitle>Login</span>
+      </a>
 
-  <button mat-button routerLink="/auth/login" *ngIf="!(isLoggedIn$ | async)">
-    login
-  </button>
-  <button mat-button routerLink="/auth/logout" *ngIf="(isLoggedIn$ | async)">
-    logout
-  </button>
+      <a mat-list-item routerLink="/auth/logout" *ngIf="(isLoggedIn$ | async)">
+        <mat-icon matListItemIcon>logout</mat-icon>
+        <span matListItemTitle>Logout</span>
+      </a>
 
-  <span style='margin-right:20px;' [matTooltip]="envTooltip">
-    {{ envDescription }}
-  </span>
-</mat-toolbar>
+    </mat-nav-list>
+  </mat-sidenav>
 
-<app-alert-display></app-alert-display>
+  <!-- main -->
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" [ngClass]="envToolbarClass">
 
-<div class="main-content">
-  <router-outlet></router-outlet>
-</div>
-
-<div class="footer">
-	<div>
-    <p align="center">
-      <span [matTooltip]="info.srcTooltip">
-        {{ info.name }} v{{ info.version }} #{{ info.srcVersion }}
+      <!-- left aligned-->
+      <button class="menu-button" mat-icon-button (click)="sidenav.open('mouse')">
+        <mat-icon>menu</mat-icon>
+      </button>
+    
+      <span class="fill-space"></span>
+      <span>datapipeUI</span>
+    
+      <!-- right aligned -->
+      <span class="fill-space"></span>
+    
+      <span style='margin-right:20px;' [matTooltip]="envTooltip">
+        {{ envDescription }}
       </span>
-    </p>
-	</div>
-</div>
+    </mat-toolbar>
+    
+    <app-alert-display></app-alert-display>
+    
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+    
+    <div class="footer">
+      <div>
+        <p align="center">
+          <span [matTooltip]="info.srcTooltip">
+            {{ info.name }} v{{ info.version }} #{{ info.srcVersion }}
+          </span>
+        </p>
+      </div>
+    </div>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -23,6 +23,8 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
 
 const mm = [ 
   MatButtonModule,
@@ -44,7 +46,9 @@ const mm = [
   MatDatepickerModule,
   MatDialogModule,
   MatDividerModule,
-  MatTabsModule
+  MatTabsModule,
+  MatSidenavModule,
+  MatListModule
 ]
 
 @NgModule({
