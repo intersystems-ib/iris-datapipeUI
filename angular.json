@@ -31,7 +31,8 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/ngx-diff/styles/default-theme.css"
             ],
             "scripts": []
           },
@@ -151,7 +152,8 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/ngx-diff/styles/default-theme.css"
             ],
             "scripts": []
           }
