@@ -122,10 +122,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "DataPipeUI:build:production"
+              "buildTarget": "DataPipeUI:build:production"
             },
             "development": {
-              "browserTarget": "DataPipeUI:build:development"
+              "buildTarget": "DataPipeUI:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -133,7 +133,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "DataPipeUI:build"
+            "buildTarget": "DataPipeUI:build"
           }
         },
         "test": {
