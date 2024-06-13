@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './auth.service';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
 import { AuthGuard } from './auth.guard';
 
@@ -13,20 +13,14 @@ import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 
 
-@NgModule({
-  declarations: [
-    LoginComponent,
-    LogoutComponent
-  ],
-  imports: [
-    HttpClientModule,
-    CommonModule,
-    AuthRoutingModule,
-    SharedModule,
-    FormsModule, 
-    ReactiveFormsModule,
-  ]
-})
+@NgModule({ declarations: [
+        LoginComponent,
+        LogoutComponent
+    ], imports: [CommonModule,
+        AuthRoutingModule,
+        SharedModule,
+        FormsModule,
+        ReactiveFormsModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AuthModule {
   static forRoot(): ModuleWithProviders<AuthModule> {
       return {
