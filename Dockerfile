@@ -3,7 +3,7 @@
 ########
 ## build: angular app distribution package 
 ######## 
-FROM node:18.12.0-alpine AS build
+FROM node:20.11.1-alpine AS build
 
 # angular build options
 ARG NG_BUILD_OPTS
@@ -20,7 +20,7 @@ RUN git config --global --add safe.directory /app
 RUN sh stamp-version.sh
 
 # -- install deps & build distribution
-RUN npm install --legacy-peer-deps
+RUN npm install
 RUN echo ${NG_BUILD_OPTS}
 RUN npm run ${NG_BUILD_OPTS}
 

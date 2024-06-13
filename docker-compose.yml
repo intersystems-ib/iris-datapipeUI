@@ -15,3 +15,4 @@ services:
 networks:
   default:
       name: datapipe-network
+      external: true
