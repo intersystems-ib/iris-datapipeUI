@@ -29,5 +29,5 @@ RUN npm run ${NG_BUILD_OPTS}
 ########
 FROM nginx AS run
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist/data-pipe-ui /usr/share/nginx/html
+COPY --from=build /app/dist/data-pipe-ui/browser /usr/share/nginx/html
 WORKDIR /usr/share/nginx/html
