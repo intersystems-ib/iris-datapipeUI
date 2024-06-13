@@ -10,7 +10,7 @@ import { InboxInfoComponent } from './inbox-info/inbox-info.component';
 import { ViewstreamDialogComponent } from './viewstream-dialog/viewstream-dialog.component';
 import { InboxHistoryComponent } from './inbox-history/inbox-history.component';
 
-import { NgxTextDiffModule } from 'ngx-text-diff';
+import { NgxDiffModule } from 'ngx-diff';
 
 
 @NgModule({
@@ -25,7 +25,7 @@ import { NgxTextDiffModule } from 'ngx-text-diff';
     CommonModule,
     DatapipeRoutingModule,
     SharedModule,
-    NgxTextDiffModule
+    NgxDiffModule
   ]
 })
 export class DatapipeModule { }
