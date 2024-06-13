@@ -26,7 +26,7 @@
     "bootstrap": "^5.2.3",
     "diff-match-patch-ts": "^0.5.1",
     "moment": "^2.29.4",
-    "ngx-diff": "^8.0.0",
+    "ngx-diff": "^8.0.4",
     "ngx-material-timepicker": "^5.5.3",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
