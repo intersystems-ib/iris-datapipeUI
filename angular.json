@@ -15,11 +15,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/data-pipe-ui",
+            "outputPath": {
+              "base": "dist/data-pipe-ui"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -31,9 +32,11 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/ngx-diff/styles/default-theme.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "src/main.ts"
           },
           "configurations": {
             "base": {
@@ -43,9 +46,7 @@
                   "with": "src/environments/environment.base.ts"
                 }
               ],
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -108,9 +109,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -122,10 +121,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "DataPipeUI:build:production"
+              "buildTarget": "DataPipeUI:build:production"
             },
             "development": {
-              "browserTarget": "DataPipeUI:build:development"
+              "buildTarget": "DataPipeUI:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -133,7 +132,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "DataPipeUI:build"
+            "buildTarget": "DataPipeUI:build"
           }
         },
         "test": {
@@ -151,7 +150,8 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/ngx-diff/styles/default-theme.css"
             ],
             "scripts": []
           }

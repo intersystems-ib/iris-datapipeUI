@@ -12,10 +12,10 @@ You need a running **iris-datapipe** instance in order to get the iris-datapipeU
 
 * Install local Angular
 ```
-mkdir angular-15
-cd angular-15
+mkdir angular-18
+cd angular-18
 npm install npm@latest
-npm install @angular/cli@15.0.4
+npm install @angular/cli@18.0.4
 ```
 
 * Clone project
@@ -26,7 +26,7 @@ cd iris-datapipeUI
 
 * Install dependencies
 ```
-npm install --legacy-peer-deps
+npm install
 ```
 
 * Run development server
@@ -72,10 +72,4 @@ ng generate component datapipe/inbox-detail
 ng generate component datapipe/inbox-info
 ng generate component datapipe/viewstream-dialog
 ng generate component datapipe/inbox-history
-```
-
-* Install legacy dependencies for text diff
-```
-npm install --save --legacy-peer-deps ngx-text-diff
-npm install --save-dev --legacy-peer-deps @types/diff-match-patch
 ```
