@@ -27,7 +27,7 @@
     "diff-match-patch-ts": "^0.5.1",
     "moment": "^2.29.4",
     "ngx-diff": "^8.0.4",
-    "ngx-material-timepicker": "^5.5.3",
+    "ngx-material-timepicker": "^13.1.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.7"
