@@ -10,12 +10,18 @@ import { environment } from '../../environments/environment';
  */
 @Injectable()
 export class AuthService {
+
+  /** username */
+  username: string = "";
+
+  /** user full name */
+  fullName: string = "";
+
+  /** user permissions */
+  permissions: any = {};
   
   /** isLoginSubject is used to know if the user is logged in or not */
   isLoginSubject = new BehaviorSubject<boolean>(this.authenticated());
-
-  /** isAdminUser. Backend has authorized user as Admin user or not */
-  isAdminUser: boolean = false;
 
   /** private user token */
   private _token: BehaviorSubject<string> = new BehaviorSubject<string>('');
@@ -24,18 +30,6 @@ export class AuthService {
    * Constructor 
    */
   constructor(private http: HttpClient, private router: Router) {
-    document.execCommand('ClearAuthenticationCache', false);
-    this._token
-      .asObservable()
-      .subscribe(
-        token => {
-          // user token changed. 
-          // you can grab user data from server (e.g. info, preferences) 
-          if (token) {
-            this.getUserInfo().subscribe();
-          }
-        } 
-      );
   }
 
   /**
@@ -50,8 +44,9 @@ export class AuthService {
     headers = headers.set('Cache-Control', 'no-cache');
 
     return this.http
-      .get<any>(
-        environment.urlIRISApi + '/rf2/form/info/DataPipe.Data.Inbox',
+      .post<any>(
+        environment.urlIRISApi + '/login',
+        {},
         {headers}
       ).
       pipe(
@@ -61,6 +56,7 @@ export class AuthService {
           this._token.next(token);
           setTimeout(() => {
             this.isLoginSubject.next(true);
+            this.getUserInfo().subscribe();
           });
           return username;
         }),
@@ -124,8 +120,8 @@ export class AuthService {
       pipe(
         tap(data => {
           // load user attributes
-          // this attributes can be read from other app modules
-          this.isAdminUser = data.isAdminUser;
+          this.fullName = data.fullName;
+          this.permissions = data.permissions;
           
           return data;
         }),
@@ -134,6 +130,22 @@ export class AuthService {
           return throwError(err);
         })
       );
+  }
+
+  /**
+   * Check that user has a permission with a given level
+   * @param permission
+   * @param level 
+   * @returns 
+   */
+  public checkPermission(permission: string, level: string): boolean {
+    let permitted: boolean = false;
+
+    if (this.permissions[permission]) {
+      let permissions = this.permissions[permission].toUpperCase();
+      permitted = permissions.includes(level.toUpperCase());
+    }
+    return permitted;
   }
   
 }

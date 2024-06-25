@@ -124,11 +124,11 @@
                     <mat-icon aria-label="info">info</mat-icon>
                 </button>
                 
-                <button matTooltip="Unignore" mat-icon-button *ngIf="(authService.isAdminUser && inbox.Ignored==1)" (click)="clickIgnore(inbox)">
+                <button matTooltip="Unignore" mat-icon-button *ngIf="(authService.checkPermission('DP_ADMIN', 'U') && inbox.Ignored==1)" (click)="clickIgnore(inbox)">
                     <mat-icon aria-label="Hide">visibility_on</mat-icon>
                 </button>
 
-                <button matTooltip="Ignore" mat-icon-button *ngIf="(authService.isAdminUser && inbox.Ignored!==1)" (click)="clickIgnore(inbox)">
+                <button matTooltip="Ignore" mat-icon-button *ngIf="(authService.checkPermission('DP_ADMIN', 'U') && inbox.Ignored!==1)" (click)="clickIgnore(inbox)">
                     <mat-icon aria-label="Hide">visibility_off</mat-icon>
                 </button>
             </td>

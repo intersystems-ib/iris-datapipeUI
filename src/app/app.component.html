@@ -2,10 +2,16 @@
 <mat-sidenav-container fullscreen>
   
   <!-- sidenav menu -->
-  <mat-sidenav #sidenav>
+  <mat-sidenav #sidenav class="custom-drawer-inner-container">
     <mat-nav-list (click)="sidenav.close()">
+
+      <img src="./assets/img/logo-small.png" alt="DataPipe" class="custom-navbarIcon">
+
+      <span class="custom-navbarTitle">
+        DataPipe
+      </span>
       
-      <a mat-list-item routerLink="/datapipe">
+      <a mat-list-item routerLink="/datapipe" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_SEARCH', 'U')">
         <mat-icon matListItemIcon>search</mat-icon>
         <span matListItemTitle>Search</span>
       </a>
@@ -14,13 +20,18 @@
         <mat-icon matListItemIcon>login</mat-icon>
         <span matListItemTitle>Login</span>
       </a>
-
-      <a mat-list-item routerLink="/auth/logout" *ngIf="(isLoggedIn$ | async)">
-        <mat-icon matListItemIcon>logout</mat-icon>
-        <span matListItemTitle>Logout</span>
-      </a>
-
     </mat-nav-list>
+
+    <div class="footer">
+      <div>
+        <p style="text-align:center">
+          <span [matTooltip]="info.srcTooltip">
+            {{ info.name }} v{{ info.version }}
+          </span>
+        </p>
+      </div>
+    </div>
+
   </mat-sidenav>
 
   <!-- main -->
@@ -38,9 +49,21 @@
       <!-- right aligned -->
       <span class="fill-space"></span>
     
-      <span style='margin-right:20px;' [matTooltip]="envTooltip">
-        {{ envDescription }}
-      </span>
+      <!-- user options -->
+      <button *ngIf="(isLoggedIn$ | async)" mat-icon-button [matMenuTriggerFor]="userMenu">
+        <span style="font-size:medium;font-weight:300;position:absolute;right:0px;top:10px;">
+          <mat-icon>account_circle</mat-icon>
+          <span style="position:relative;top:-5px">&nbsp;{{ authService.fullName }}&nbsp;</span>
+          <mat-icon>arrow_drop_down</mat-icon>
+        </span>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="navigate('/auth/logout')">
+          <mat-icon matListItemIcon>logout</mat-icon>Logout
+        </button>
+      </mat-menu>
+
     </mat-toolbar>
     
     <app-alert-display></app-alert-display>
@@ -51,7 +74,8 @@
     
     <div class="footer">
       <div>
-        <p align="center">
+        <p style="text-align:center;">
+          <img src="./assets/img/logo-small.png" alt="BOS" class="custom-navbarIcon">
           <span [matTooltip]="info.srcTooltip">
             {{ info.name }} v{{ info.version }} #{{ info.srcVersion }}
           </span>

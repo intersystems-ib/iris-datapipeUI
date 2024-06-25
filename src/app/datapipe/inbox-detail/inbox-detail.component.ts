@@ -99,7 +99,7 @@ export class InboxDetailComponent implements OnInit {
   disableResend() {
     return (
       !this.inbox ||
-      !this.authService.isAdminUser ||
+      !this.authService.checkPermission("DP_ADMIN", "U") ||
       (this.inbox.Status==="DONE" &&
       this.inbox.StagingStatus==="VALID" &&
       this.inbox.OperStatus==="PROCESSED")

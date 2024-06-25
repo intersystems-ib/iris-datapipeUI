@@ -13,23 +13,30 @@ export class AuthGuard  {
   constructor(private authService: AuthService, private router: Router) {}
 
   /**
-   * Returns true if a authentication-protected URL can be activated
-   * This method will be called by every URL that is authentication-protected in the application
+   * Returns true if a protected URL can be activated
+   * This method will be called by every URL that is protected in the application
    */
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> {
-    return this.checkLogin(state.url);
-  }
-
-  /**
-   * Returns true if user authenticated, otherwise it will redirect the user to login page
-   * @param url 
-   */
-  checkLogin(url: string): boolean | Observable<boolean> {
+    let canActivate = false;
     if (this.authService.authenticated()) {
-      return true;
+      switch (state.url) {
+        case '/datapipe': {
+          canActivate = this.authService.checkPermission("DP_MENU_SEARCH", "R") 
+          break;
+        }
+        case '/dashboard': {
+          canActivate = this.authService.checkPermission("DP_MENU_DASHBOARD", "R") 
+          break;
+        }
+      }
+      if (!canActivate) {
+        // optionally redirect to error page
+      }
+      return canActivate;
     }
-
-    this.router.navigate(['/auth/login'], { queryParams: { returnUrl: url }});
+    
+    // user not logged-in, redirect to login
+    this.router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url }});
     return false;
   }
   
