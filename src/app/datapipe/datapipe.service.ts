@@ -5,7 +5,7 @@ import moment from 'moment';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AlertService } from '../shared/alert.service';
-import { Inbox, QueryResult, Ingestion, Staging, Oper } from './datapipe.model';
+import { Inbox, QueryResult, Ingestion, Staging, Oper, Pipe } from './datapipe.model';
 import { ViewstreamDialogComponent } from './viewstream-dialog/viewstream-dialog.component';
 
 @Injectable({
@@ -40,7 +40,6 @@ export class DatapipeService {
     let filter = '';
     if (query.Ignored) { filter += `+Ignored+eq+${query.Ignored}`; }
     if (query.Source) { filter += `+Source+eq+${query.Source}`; }
-    if (query.Flow) { filter += `+Flow+eq+${query.Flow}`; }
     if (query.MsgId) { filter += `+MsgId+eq+${query.MsgId}`; }
     if (query.Element) { filter += `+Element+eq+${query.Element}`; }
     if (query.Subject) { filter += `+Subject+eq+${query.Subject}`; }
@@ -63,6 +62,12 @@ export class DatapipeService {
       });
       filter += `+OperStatus+in+${serializedOperStatus}`; 
     }
+    if (query.Pipe && query.Pipe.length>0) { 
+      let serializedPipe = query.Pipe.reduce(function (ret: any, item: any) {
+        return ret + '~' + item; 
+      });
+      filter += `+Pipe+in+${serializedPipe}`; 
+    }
 
     if (query.UpdatedTSFrom) {
       const updatedTSFromString = this.dateToString(query.UpdatedTSFrom);
@@ -76,7 +81,7 @@ export class DatapipeService {
     escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
     
     return this.http.get<QueryResult<Inbox>>(
-      this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&orderby=1+desc`,
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/custom/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&orderby=1+desc`,
       this.options
     )
     .pipe(
@@ -162,7 +167,7 @@ export class DatapipeService {
    */
   findIngestionsByInbox(id: number): Observable<QueryResult<Ingestion>> {
     return this.http.get<QueryResult<Ingestion>>(
-      this.urlBase + `/rf2/form/objects/DataPipe.Data.Ingestion/find?filter=Inbox+eq+${id}&orderby=1+desc`,
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Ingestion/custom/find?filter=Inbox+eq+${id}&orderby=1+desc`,
       this.options
     ).pipe(
       //tap(data => console.log(data)),
@@ -179,7 +184,7 @@ export class DatapipeService {
    */
   findStagingsByIngestion(id: number): Observable<QueryResult<Staging>> {
     return this.http.get<QueryResult<Staging>>(
-      this.urlBase + `/rf2/form/objects/DataPipe.Data.Staging/find?filter=Ingestion+eq+${id}&orderby=1+desc`,
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Staging/custom/find?filter=Ingestion+eq+${id}&orderby=1+desc`,
       this.options
     ).pipe(
       //tap(data => console.log(data)),
@@ -196,12 +201,29 @@ export class DatapipeService {
    */
   findOpersByStaging(id: number): Observable<QueryResult<Oper>> {
     return this.http.get<QueryResult<Oper>>(
-      this.urlBase + `/rf2/form/objects/DataPipe.Data.Oper/find?filter=Staging+eq+${id}&orderby=1+desc`,
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Oper/custom/find?filter=Staging+eq+${id}&orderby=1+desc`,
       this.options
     ).pipe(
       //tap(data => console.log(data)),
       catchError(err => {
         this.alertService.error('[findOpersByStaging] ' + err.message)
+        return throwError(() => err);
+      })
+    );
+  }
+
+  /**
+   * Returns ingestions of a given inbox
+   * @param id 
+   */
+  findPipes(): Observable<QueryResult<Pipe>> {
+    return this.http.get<QueryResult<Pipe>>(
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Pipe/custom/find?filter=&orderby=1+desc`,
+      this.options
+    ).pipe(
+      //tap(data => console.log(data)),
+      catchError(err => {
+        this.alertService.error('[findPipes] ' + err.message)
         return throwError(() => err);
       })
     );

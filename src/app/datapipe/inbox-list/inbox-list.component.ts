@@ -24,7 +24,7 @@ export class InboxListComponent implements AfterViewInit {
   totalResults: number = 0;
 
   /** columns that will be displayed */
-  displayedColumns = ['actions', 'Source', 'Flow', 'MsgId', 'Subject', 'Element', 'UpdatedTS', 'Status', 'StagingStatus', 'OperStatus'];
+  displayedColumns = ['actions', 'Source', 'Pipe', 'MsgId', 'Subject', 'Element', 'UpdatedTS', 'Status', 'StagingStatus', 'OperStatus'];
 
   /** filters that are using to query the server */
   filters: any = {};
@@ -36,6 +36,7 @@ export class InboxListComponent implements AfterViewInit {
   filteredStagingStatus: any[];
   operStatus: any[];
   filteredOperStatus: any[];
+  filteredPipes: any[];
 
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
   
@@ -53,6 +54,11 @@ export class InboxListComponent implements AfterViewInit {
       this.filteredStagingStatus = this.stagingStatus;
       this.operStatus = [ 'N/A', 'Processing', 'Processed', 'Error', 'Ignored'];
       this.filteredOperStatus = this.operStatus;
+
+      this.filteredPipes = [];
+      this.datapipeService.findPipes().subscribe((res) => {
+        this.filteredPipes = res.children;
+      });
   }
 
   /**

@@ -57,10 +57,16 @@
                 <mat-label class="highlight-field">Source</mat-label>
                 <input matInput [(ngModel)]="filters.Source" name="Source">
             </mat-form-field>
-            <mat-form-field floatLabel="always" style="width: 200px">
-                <mat-label class="highlight-field">Flow</mat-label>
-                <input matInput [(ngModel)]="filters.Flow" name="Flow">
+            
+            <mat-form-field floatLabel="always" style="width: 400px">
+                <mat-label class="highlight-field">Pipe</mat-label>
+                <mat-select [(ngModel)]="filters.Pipe" multiple name="Pipe">
+                <mat-option *ngFor="let pipe of filteredPipes" [value]="pipe.Code">
+                    <u><small>{{ pipe.Code }}</small></u> - {{ pipe.Description }}
+                </mat-option>
+                </mat-select>
             </mat-form-field>
+        
             <mat-form-field floatLabel="always" style="width: 200px">
                 <mat-label class="highlight-field">MsgId</mat-label>
                 <input matInput [(ngModel)]="filters.MsgId" name="MsgId">
@@ -144,9 +150,9 @@
             <td mat-cell *matCellDef="let inbox"> {{inbox.Source}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="Flow">
-            <th mat-header-cell *matHeaderCellDef> Flow </th>
-            <td mat-cell *matCellDef="let inbox"> {{inbox.Flow}} </td>
+        <ng-container matColumnDef="Pipe">
+            <th mat-header-cell *matHeaderCellDef> Pipe </th>
+            <td mat-cell *matCellDef="let inbox"> {{inbox.Pipe}} </td>
         </ng-container>
 
         <ng-container matColumnDef="MsgId">
