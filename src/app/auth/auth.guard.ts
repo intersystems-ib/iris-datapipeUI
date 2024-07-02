@@ -19,15 +19,11 @@ export class AuthGuard  {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> {
     let canActivate = false;
     if (this.authService.authenticated()) {
-      switch (state.url) {
-        case '/datapipe': {
+      if (state.url.startsWith("/datapipe")) {
           canActivate = this.authService.checkPermission("DP_MENU_SEARCH", "R") 
-          break;
-        }
-        case '/dashboard': {
-          canActivate = this.authService.checkPermission("DP_MENU_DASHBOARD", "R") 
-          break;
-        }
+      }
+      else if (state.url.startsWith("/dashboard")) {
+          canActivate = this.authService.checkPermission("DP_MENU_DASHBOARD", "R")
       }
       if (!canActivate) {
         // optionally redirect to error page
