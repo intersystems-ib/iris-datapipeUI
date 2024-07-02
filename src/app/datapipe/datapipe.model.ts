@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 export interface Inbox {
     Id: number;
     Source: string;
-    Pipe: string;
+    Pipe: Pipe;
     MsgId: string;
     Subject: string;
     Element: string;
