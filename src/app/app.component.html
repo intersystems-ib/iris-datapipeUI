@@ -11,6 +11,11 @@
         DataPipe
       </span>
       
+      <a mat-list-item routerLink="/datapipe/dashboard" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_DASHBOARD', 'U')">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+
       <a mat-list-item routerLink="/datapipe" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_SEARCH', 'U')">
         <mat-icon matListItemIcon>search</mat-icon>
         <span matListItemTitle>Search</span>

@@ -72,4 +72,5 @@ ng generate component datapipe/inbox-detail
 ng generate component datapipe/inbox-info
 ng generate component datapipe/viewstream-dialog
 ng generate component datapipe/inbox-history
+ng generate component datapipe/dashboard
 ```
