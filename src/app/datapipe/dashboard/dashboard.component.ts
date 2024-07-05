@@ -4,7 +4,8 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { PreferencesService } from 'src/app/shared/preferences.service';
 import { DatapipeService } from '../datapipe.service';
 
-import { ApexAxisChartSeries, ApexChart, ApexNonAxisChartSeries, ApexTitleSubtitle, ApexXAxis, ChartComponent } from 'ng-apexcharts';
+import { ApexAxisChartSeries, ApexChart, ApexNonAxisChartSeries, ApexTitleSubtitle, ApexXAxis, ChartComponent, ChartType } from 'ng-apexcharts';
+import { Router } from '@angular/router';
 
 export interface ChartOptions {
   series: ApexAxisChartSeries | ApexNonAxisChartSeries;
@@ -24,6 +25,7 @@ export class DashboardComponent implements AfterViewInit {
 @ViewChild("chartActivityByStatus", {static: false}) chartActivityByStatus!: ChartComponent;
 public chartActivityByStatusOptions: Partial<ChartOptions> | any;
 public chartActivityByStatusReady: boolean = false;
+public chartActivityByStatusChart: Partial<ApexChart> | any;
 
 /** filters that are using to query the server */
 filters: any = {};
@@ -33,6 +35,7 @@ constructor(
   public datapipeService: DatapipeService,
   public preferencesService: PreferencesService,
   public authService: AuthService,
+  private router: Router
 ) {
   this.setActivityByStatusOptions();
 }
@@ -40,6 +43,7 @@ constructor(
 /** component init */
 ngAfterViewInit() {
   setTimeout(() => {
+    this.filters = this.preferencesService.dashboard.filters;
     this.getData();
   });
 }
@@ -70,6 +74,25 @@ setActivityByStatusOptions() {
       labels: {}
     },
     xaxis: {
+    }
+  }
+
+  this.chartActivityByStatusChart = {
+    type: 'bar', width: 525, stacked: true, toolbar: { show: true },
+    events: {
+      dataPointSelection: (event: any, chartContext: any, config: any) => {
+        // series: e.g. Ok, Errors
+        const type = config.w.config.series[config.seriesIndex].name;
+        // xaxis category: e.g. HL7-ADT
+        const pipe = config.w.config.xaxis.categories[config.dataPointIndex];
+        // actual value
+        const value = config.w.config.series[config.seriesIndex].data[config.dataPointIndex];
+        
+        // open datapipe search some query parameters
+        this.router.navigate(['datapipe'], {
+          queryParams: { pipe: pipe, type: type} 
+        }).then();
+      }
     }
   }
 }

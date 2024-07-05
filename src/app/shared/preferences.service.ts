@@ -7,6 +7,11 @@ export interface InboxListPref {
   pageSize: number
 }
 
+export interface DashboardPref {
+  filters: any,
+  filtersPreset: { [key: string]: any }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -25,6 +30,15 @@ export class PreferencesService {
 
     pageIndex: 0,
     pageSize: 50,
+  };
+
+  /** dashboard preferences */
+  dashboard: DashboardPref = {
+    filters: {"UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+
+    filtersPreset: {
+      initial: { "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+    },
   };
 
   constructor() { }

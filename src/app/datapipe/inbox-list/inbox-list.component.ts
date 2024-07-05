@@ -9,6 +9,7 @@ import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-di
 import { PreferencesService } from 'src/app/shared/preferences.service';
 import { Inbox } from '../datapipe.model';
 import { DatapipeService } from '../datapipe.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-inbox-list',
@@ -37,6 +38,7 @@ export class InboxListComponent implements AfterViewInit {
   operStatus: any[];
   filteredOperStatus: any[];
   filteredPipes: any[];
+  params: any;
 
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
   
@@ -47,7 +49,14 @@ export class InboxListComponent implements AfterViewInit {
     public preferencesService: PreferencesService,
     public authService: AuthService,
     public dialog: MatDialog,
+    private router: ActivatedRoute
   ) {
+      // retrieve query params from url
+      this.params = {};
+      this.router.queryParamMap.subscribe((p: any) => {
+        this.params = p['params'];
+      }) 
+
       this.status = [ 'DONE', 'OPERATING', 'STAGING','INGESTING', 'ERROR-OPERATING','ERROR-STAGING','ERROR-INGESTING', 'ERROR-GENERAL'];
       this.filteredStatus = this.status;
       this.stagingStatus = [ 'N/A', 'Valid', 'Invalid', 'Warning'];
@@ -66,7 +75,18 @@ export class InboxListComponent implements AfterViewInit {
    */
   ngAfterViewInit() {
       setTimeout(() => {
+        // load last used filters
         this.filters = this.preferencesService.inboxList.filters;
+        // handle query params
+        if (this.params.pipe) {
+          this.filters.Pipe = [this.params.pipe];
+        }
+        if (this.params.type === 'Errors') {
+          this.filters.Status = ['ERROR-OPERATING','ERROR-STAGING','ERROR-INGESTING', 'ERROR-GENERAL'];
+        }
+        if (this.params.type === 'Ok') {
+          this.filters.Status = ['DONE', 'OPERATING', 'STAGING','INGESTING'];
+        }
         this.paginator.pageIndex = this.preferencesService.inboxList.pageIndex;
         this.paginator.pageSize = this.preferencesService.inboxList.pageSize;
         this.getDataPage(this.paginator.pageIndex, this.paginator.pageSize);
