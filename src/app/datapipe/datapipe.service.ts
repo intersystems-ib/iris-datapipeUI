@@ -230,6 +230,35 @@ export class DatapipeService {
   }
 
   /**
+   * Returns ingestions of a given inbox
+   * @param id 
+   */
+  getInboxActivity(query: any): Observable<any> {
+    let filter = '';
+    if (query.UpdatedTSFrom) {
+      const updatedTSFromString = this.dateToString(query.UpdatedTSFrom);
+      filter += `+UpdatedTS+gte+${updatedTSFromString}T${query.UpdatedTSFromTime}:00Z`;
+    }
+    if (query.UpdatedTSTo) {
+      const updatedTSToString = this.dateToString(query.UpdatedTSTo);
+      filter += `+UpdatedTS+lte+${updatedTSToString}T${query.UpdatedTSToTime}:59Z`;
+    }
+    let escapedFilter = filter.replace(new RegExp(' ', 'g'), '%09');
+    escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
+
+    return this.http.get<any>(
+      this.urlBase + `/inboxActivity?filter=${escapedFilter}`,
+      this.options
+    ).pipe(
+      //tap(data => console.log(data)),
+      catchError(err => {
+        this.alertService.error('[getInboxActivity] ' + err.message)
+        return throwError(() => err);
+      })
+    );
+  }
+
+  /**
    * Resend an Interop message
    */
   resendMessage(msgId: number) {
