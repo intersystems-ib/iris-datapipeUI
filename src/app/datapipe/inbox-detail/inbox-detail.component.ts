@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 @Component({
   selector: 'app-inbox-detail',
   templateUrl: './inbox-detail.component.html',
-  styleUrls: ['./inbox-detail.component.scss']
+  styleUrls: ['./inbox-detail.component.scss'],
 })
 export class InboxDetailComponent implements OnInit {
 
@@ -32,7 +32,7 @@ export class InboxDetailComponent implements OnInit {
     public datapipeService: DatapipeService,
     private route: ActivatedRoute,
     public dialog: MatDialog,
-    public authService: AuthService,
+    public authService: AuthService
   ) { }
 
   ngOnInit() {
