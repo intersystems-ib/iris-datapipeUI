@@ -5,8 +5,9 @@
     </div>
 
     <div class="section-container" *ngIf="!(loading$ | async)">
-        
+
         <!-- button bar -->
+
         <div class="button-bar">
             <p align="center">
                 <button mat-mini-fab color="link" matTooltip="Reload" style='margin-right: 10px;' (click)="loadData()">
@@ -14,6 +15,203 @@
                 </button>
             </p>
         </div>
+        <div class="arrow" *ngIf="(inbox$ | async) as inbox">
+            <mat-chip-listbox *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
+                <mat-chip [ngClass]="format.cssClass" style="margin-left: 20px;">{{ inbox.Status }}</mat-chip>
+            </mat-chip-listbox>
+        </div>
+        <div class="card-container">
+            <mat-card class="dp-card" appearance="outlined" *ngIf="(inbox$ | async) as inbox">
+                <mat-card-header>
+                    <div mat-card-avatar><img mat-card-image src="assets/img/inbox.png" class="circular-avatar"></div>
+                    <mat-card-title>INBOX</mat-card-title>
+                    <mat-card-subtitle>Incomming messages</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="info-section">
+                        <div class="info-row">
+                            <mat-icon>access_time</mat-icon>
+                            <div>
+                                <div class="info-label">Updated</div>
+                                <div>{{inbox.UpdatedTS}}</div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <mat-icon>mail</mat-icon>
+                            <div>
+                                <div class="info-label">Message Id</div>
+                                <div>{{inbox.MsgId}}</div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <mat-icon>swap_horiz</mat-icon>
+                            <div>
+                                <div class="info-label">Flow</div>
+                                <div>{{inbox.Flow}}</div>
+                            </div>
+                            <mat-icon style="margin-left: 40px;">source</mat-icon>
+                            <div>
+                                <div class="info-label">Source</div>
+                                <div>{{inbox.Source}}</div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <mat-icon>inventory</mat-icon>
+                            <div>
+                                <div class="info-label">Element</div>
+                                <div>{{inbox.Element}}</div>
+                            </div>
+                            <mat-icon style="margin-left: 40px;">man</mat-icon>
+                            <div>
+                                <div class="info-label">Subject</div>
+                                <div>{{inbox.Subject}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                </mat-card-actions>
+            </mat-card>
+
+            <mat-card class="dp-card" appearance="outlined" *ngIf="(ingestion$ | async) as ingestion">
+                <mat-card-header>
+                    <div mat-card-avatar><img mat-card-image src="assets/img/ingestion-2.png" class="circular-avatar">
+                    </div>
+                    <mat-card-title>INGESTION</mat-card-title>
+                    <mat-card-subtitle>Data Load</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="info-section">
+                        <div class="info-row">
+                            <mat-icon>access_time</mat-icon>
+                            <div>
+                                <div class="info-label">Created</div>
+                                <div>{{ingestion.CreatedTS}}</div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <mat-icon>device_hub</mat-icon>
+                            <div>
+                                <div class="info-label">Model Name</div>
+                                <div>{{ingestion.ModelName}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button matTooltip="Repeat Ingestion" [disabled]="disableResend()"
+                        (click)="clickResendMessage(+ingestion.HeaderId, 'Repeat Ingestion?')" type="submit"
+                        mat-mini-fab color="accent" style='margin-right: 10px;'>
+                        <mat-icon>repeat</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId"
+                        matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
+                        <mat-icon>zoom_in</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Data" (click)="datapipeService.clickViewStream({
+                            title: 'Model Data', icon: 'code', stream1: ingestion.ModelData})">
+                        <mat-icon>code</mat-icon>
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+
+            <mat-card class="dp-card" appearance="outlined" *ngIf="(staging$ | async) as staging">
+                <mat-card-header>
+                    <div mat-card-avatar><img mat-card-image src="assets/img/email-automation.png"
+                            class="circular-avatar">
+                    </div>
+                    <mat-card-title>STAGING</mat-card-title>
+                    <mat-card-subtitle>Message Processing</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="info-section">
+                        <div class="info-row">
+                            <mat-icon>access_time</mat-icon>
+                            <div>
+                                <div class="info-label">Updated</div>
+                                <div>{{staging.CreatedTS}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button type="submit" [disabled]="disableResend()" matTooltip="Repeat Staging"
+                        (click)="clickResendMessage(+staging.HeaderId, 'Repeat Staging?')" mat-mini-fab color="accent"
+                        style='margin-right: 10px;'>
+                        <mat-icon>repeat</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId"
+                        matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
+                        <mat-icon>zoom_in</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data"
+                        (click)="datapipeService.clickViewStream({
+                    title: 'Model Normalized Data', icon: 'code', stream1: staging.ModelNormData})">
+                        <mat-icon>code</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.ModelNormData"
+                        matTooltip="Model Data Vs. Normalization" (click)="datapipeService.clickViewStream({
+                    title: 'Model Data Vs. Normalization',
+                    icon: 'compare',
+                    stream2: staging.ModelNormData})">
+                        <mat-icon>compare</mat-icon>
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+
+
+            <mat-card class="dp-card" appearance="outlined" *ngIf="(oper$ | async) as oper">
+                <mat-card-header>
+                    <div mat-card-avatar><img mat-card-image src="assets/img/results.png" class="circular-avatar">
+                    </div>
+                    <mat-card-title>OPERATION</mat-card-title>
+                    <mat-card-subtitle>Message Processing</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="info-section">
+                        <div class="info-row">
+                            <mat-icon>access_time</mat-icon>
+                            <div>
+                                <div class="info-label">Updated</div>
+                                <div>{{oper.CreatedTS}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <div>
+                        <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent"
+                            style='margin-right: 10px;' matTooltip="Repeat Operation"
+                            (click)="clickResendMessage(+oper.HeaderId, 'Repeat Operation?')">
+                            <mat-icon>repeat</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId"
+                            matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
+                            <mat-icon>zoom_in</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Operation Log"
+                            (click)="datapipeService.clickViewStream({
+                                        title: 'Operation Log', 
+                                        icon: 'description', 
+                                        stream1: oper.OperLog})">
+                            <mat-icon>description</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-actions>
+                <mat-card-actions>
+                    <div class="errors-container" *ngIf="oper.OperErrors">
+                        <div mat-subheader>Operation Errors:</div>
+                        <ul>
+                            <li *ngFor="let error of (oper.OperErrors)">
+                                {{ error.Code }}: {{ error.Desc }}
+                            </li>
+                        </ul>
+                    </div>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+
+
 
         <!-- Inbox -->
         <div class="section" *ngIf="(inbox$ | async) as inbox">
@@ -28,7 +226,8 @@
             <div>
                 <mat-form-field floatLabel="always">
                     <mat-label>Updated</mat-label>
-                    <input matInput [ngModel]="inbox.UpdatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="UpdatedTS" disabled>
+                    <input matInput [ngModel]="inbox.UpdatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="UpdatedTS"
+                        disabled>
                 </mat-form-field>
                 <mat-form-field floatLabel="always">
                     <mat-label>Source</mat-label>
@@ -67,7 +266,8 @@
                 <div>
                     <mat-form-field floatLabel="always">
                         <mat-label>Created</mat-label>
-                        <input matInput [ngModel]="ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="CreatedTS" disabled>
+                        <input matInput [ngModel]="ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'"
+                            name="CreatedTS" disabled>
                     </mat-form-field>
                     <mat-form-field floatLabel="always" style="width:75%">
                         <mat-label>Model Name</mat-label>
@@ -76,12 +276,13 @@
                 </div>
                 <div class="action-bar">
                     <button matTooltip="Repeat Ingestion" [disabled]="disableResend()"
-                      (click)="clickResendMessage(+ingestion.HeaderId, 'Repeat Ingestion?')" type="submit" mat-mini-fab
-                      color="accent" style='margin-right: 10px;'>
-                      <mat-icon>repeat</mat-icon>
+                        (click)="clickResendMessage(+ingestion.HeaderId, 'Repeat Ingestion?')" type="submit"
+                        mat-mini-fab color="accent" style='margin-right: 10px;'>
+                        <mat-icon>repeat</mat-icon>
                     </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
-                    <mat-icon>zoom_in</mat-icon>
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId"
+                        matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
+                        <mat-icon>zoom_in</mat-icon>
                     </button>
                     <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Data" (click)="datapipeService.clickViewStream({
                         title: 'Model Data', icon: 'code', stream1: ingestion.ModelData})">
@@ -95,12 +296,13 @@
                 <mat-toolbar>
                     <mat-toolbar-row>
                         <span style="width:100px">Staging</span>
-                        <mat-chip-listbox *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status); let format">
+                        <mat-chip-listbox
+                            *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status); let format">
                             <mat-chip [ngClass]="format.cssClass">
-                            <mat-icon>
-                                {{ format.icon }}
-                            </mat-icon>
-                            {{ format.desc }}
+                                <mat-icon>
+                                    {{ format.icon }}
+                                </mat-icon>
+                                {{ format.desc }}
                             </mat-chip>
                         </mat-chip-listbox>
                     </mat-toolbar-row>
@@ -108,23 +310,27 @@
                 <div>
                     <mat-form-field floatLabel="always" style="width:100%;">
                         <mat-label>Created</mat-label>
-                        <input matInput [ngModel]="staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="CreatedTS" disabled>
+                        <input matInput [ngModel]="staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'"
+                            name="CreatedTS" disabled>
                     </mat-form-field>
                 </div>
                 <div class="action-bar">
                     <button type="submit" [disabled]="disableResend()" matTooltip="Repeat Staging"
-                      (click)="clickResendMessage(+staging.HeaderId, 'Repeat Staging?')" mat-mini-fab color="accent"
-                      style='margin-right: 10px;'>
+                        (click)="clickResendMessage(+staging.HeaderId, 'Repeat Staging?')" mat-mini-fab color="accent"
+                        style='margin-right: 10px;'>
                         <mat-icon>repeat</mat-icon>
                     </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId"
+                        matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
                         <mat-icon>zoom_in</mat-icon>
                     </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data" (click)="datapipeService.clickViewStream({
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data"
+                        (click)="datapipeService.clickViewStream({
                         title: 'Model Normalized Data', icon: 'code', stream1: staging.ModelNormData})">
                         <mat-icon>code</mat-icon>
                     </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.ModelNormData" matTooltip="Model Data Vs. Normalization" (click)="datapipeService.clickViewStream({
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.ModelNormData"
+                        matTooltip="Model Data Vs. Normalization" (click)="datapipeService.clickViewStream({
                         title: 'Model Data Vs. Normalization',
                         icon: 'compare',
                         stream1: ingestion.ModelData,
@@ -151,7 +357,7 @@
                     <mat-chip-listbox *ngIf="datapipeService.getOperStatusChipFormat(oper.Status); let format">
                         <mat-chip [ngClass]="format.cssClass">
                             <mat-icon>
-                            {{ format.icon }}
+                                {{ format.icon }}
                             </mat-icon>
                             {{ format.desc }}
                         </mat-chip>
@@ -161,15 +367,19 @@
             <div>
                 <mat-form-field floatLabel="always" style="width:100%;">
                     <mat-label>Created</mat-label>
-                    <input matInput [ngModel]="oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="CreatedTS" disabled>
+                    <input matInput [ngModel]="oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="CreatedTS"
+                        disabled>
                 </mat-form-field>
             </div>
             <div class="action-bar">
-                <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent" style='margin-right: 10px;' matTooltip="Repeat Operation" (click)="clickResendMessage(+oper.HeaderId, 'Repeat Operation?')">
-                  <mat-icon>repeat</mat-icon>
+                <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent"
+                    style='margin-right: 10px;' matTooltip="Repeat Operation"
+                    (click)="clickResendMessage(+oper.HeaderId, 'Repeat Operation?')">
+                    <mat-icon>repeat</mat-icon>
                 </button>
-                <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
-                    <mat-icon >zoom_in</mat-icon>
+                <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId"
+                    matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
+                    <mat-icon>zoom_in</mat-icon>
                 </button>
                 <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Operation Log" (click)="datapipeService.clickViewStream({
                     title: 'Operation Log', icon: 'description', stream1: oper.OperLog})">
