@@ -7,33 +7,52 @@
     <div class="section-container" *ngIf="!(loading$ | async)">
 
         <!-- button bar -->
-
         <div class="button-bar">
-            <p align="center">
-                <button mat-mini-fab color="link" matTooltip="Reload" style='margin-right: 10px;' (click)="loadData()">
+            <p>
+                <button mat-mini-fab color="link" matTooltip="Reload" (click)="loadData()">
                     <mat-icon>refresh</mat-icon>
                 </button>
             </p>
         </div>
-        <div class="arrow" *ngIf="(inbox$ | async) as inbox">
-            <mat-chip-listbox *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
-                <mat-chip [ngClass]="format.cssClass" style="margin-left: 20px;">{{ inbox.Status }}</mat-chip>
-            </mat-chip-listbox>
+
+        <div class="gradient" *ngIf="(inbox$ | async) as inbox">
+            <span>&nbsp;</span>
         </div>
+
+        <!-- Inbox -->
         <div class="card-container">
             <mat-card class="dp-card" appearance="outlined" *ngIf="(inbox$ | async) as inbox">
                 <mat-card-header>
                     <div mat-card-avatar><img mat-card-image src="assets/img/inbox.png" class="circular-avatar"></div>
                     <mat-card-title>INBOX</mat-card-title>
-                    <mat-card-subtitle>Incomming messages</mat-card-subtitle>
+                    <mat-card-subtitle>Incoming data</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
+                    <div class="chip-container">
+                        <mat-chip-listbox *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
+                            <mat-chip [ngClass]="format.cssClass">{{ inbox.Status }}</mat-chip>
+                        </mat-chip-listbox>
+                    </div>
                     <div class="info-section">
                         <div class="info-row">
                             <mat-icon>access_time</mat-icon>
                             <div>
                                 <div class="info-label">Updated</div>
-                                <div>{{inbox.UpdatedTS}}</div>
+                                <div>{{inbox.UpdatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'}}</div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <mat-icon>swap_horiz</mat-icon>
+                            <div>
+                                <div class="info-label">Flow</div>
+                                <div>{{inbox.Pipe.Code}} - {{inbox.Pipe.Description}}</div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <mat-icon>source</mat-icon>
+                            <div>
+                                <div class="info-label">Source</div>
+                                <div>{{inbox.Source}}</div>
                             </div>
                         </div>
                         <div class="info-row">
@@ -44,24 +63,14 @@
                             </div>
                         </div>
                         <div class="info-row">
-                            <mat-icon>swap_horiz</mat-icon>
-                            <div>
-                                <div class="info-label">Flow</div>
-                                <div>{{inbox.Flow}}</div>
-                            </div>
-                            <mat-icon style="margin-left: 40px;">source</mat-icon>
-                            <div>
-                                <div class="info-label">Source</div>
-                                <div>{{inbox.Source}}</div>
-                            </div>
-                        </div>
-                        <div class="info-row">
                             <mat-icon>inventory</mat-icon>
                             <div>
                                 <div class="info-label">Element</div>
                                 <div>{{inbox.Element}}</div>
                             </div>
-                            <mat-icon style="margin-left: 40px;">man</mat-icon>
+                        </div>
+                        <div class="info-row">
+                            <mat-icon>man</mat-icon>
                             <div>
                                 <div class="info-label">Subject</div>
                                 <div>{{inbox.Subject}}</div>
@@ -72,7 +81,8 @@
                 <mat-card-actions>
                 </mat-card-actions>
             </mat-card>
-
+            
+            <!-- Ingestion -->
             <mat-card class="dp-card" appearance="outlined" *ngIf="(ingestion$ | async) as ingestion">
                 <mat-card-header>
                     <div mat-card-avatar><img mat-card-image src="assets/img/ingestion-2.png" class="circular-avatar">
@@ -81,12 +91,15 @@
                     <mat-card-subtitle>Data Load</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
+                    <div class="chip-container">
+                        <span>&nbsp;</span>
+                    </div>
                     <div class="info-section">
                         <div class="info-row">
                             <mat-icon>access_time</mat-icon>
                             <div>
                                 <div class="info-label">Created</div>
-                                <div>{{ingestion.CreatedTS}}</div>
+                                <div>{{ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'}}</div>
                             </div>
                         </div>
                         <div class="info-row">
@@ -115,21 +128,33 @@
                 </mat-card-actions>
             </mat-card>
 
+            <!-- Staging -->
             <mat-card class="dp-card" appearance="outlined" *ngIf="(staging$ | async) as staging">
                 <mat-card-header>
                     <div mat-card-avatar><img mat-card-image src="assets/img/email-automation.png"
                             class="circular-avatar">
                     </div>
                     <mat-card-title>STAGING</mat-card-title>
-                    <mat-card-subtitle>Message Processing</mat-card-subtitle>
+                    <mat-card-subtitle>Normalize & Validate</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
+                    <div class="chip-container">
+                        <mat-chip-listbox
+                                *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status); let format">
+                                <mat-chip [ngClass]="format.cssClass">
+                                    <mat-icon>
+                                        {{ format.icon }}
+                                    </mat-icon>
+                                    {{ format.desc }}
+                                </mat-chip>
+                        </mat-chip-listbox>
+                    </div>
                     <div class="info-section">
                         <div class="info-row">
                             <mat-icon>access_time</mat-icon>
                             <div>
-                                <div class="info-label">Updated</div>
-                                <div>{{staging.CreatedTS}}</div>
+                                <div class="info-label">Created</div>
+                                <div>{{staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'}}</div>
                             </div>
                         </div>
                     </div>
@@ -149,31 +174,42 @@
                     title: 'Model Normalized Data', icon: 'code', stream1: staging.ModelNormData})">
                         <mat-icon>code</mat-icon>
                     </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.ModelNormData"
+                    <button mat-mini-fab color="link" style='margin-right: 10px;' *ngIf="(ingestion$ | async) as ingestion" [disabled]="!staging.ModelNormData"
                         matTooltip="Model Data Vs. Normalization" (click)="datapipeService.clickViewStream({
-                    title: 'Model Data Vs. Normalization',
-                    icon: 'compare',
-                    stream2: staging.ModelNormData})">
+                        title: 'Model Data Vs. Normalization',
+                        icon: 'compare',
+                        stream1: ingestion.ModelData,
+                        stream2: staging.ModelNormData})">
                         <mat-icon>compare</mat-icon>
                     </button>
                 </mat-card-actions>
             </mat-card>
 
-
+            <!-- Operation -->
             <mat-card class="dp-card" appearance="outlined" *ngIf="(oper$ | async) as oper">
                 <mat-card-header>
                     <div mat-card-avatar><img mat-card-image src="assets/img/results.png" class="circular-avatar">
                     </div>
                     <mat-card-title>OPERATION</mat-card-title>
-                    <mat-card-subtitle>Message Processing</mat-card-subtitle>
+                    <mat-card-subtitle>Data Processing</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
+                    <div class="chip-container">
+                        <mat-chip-listbox *ngIf="datapipeService.getOperStatusChipFormat(oper.Status); let format">
+                            <mat-chip [ngClass]="format.cssClass">
+                                <mat-icon>
+                                    {{ format.icon }}
+                                </mat-icon>
+                                {{ format.desc }}
+                            </mat-chip>
+                        </mat-chip-listbox>
+                    </div>
                     <div class="info-section">
                         <div class="info-row">
                             <mat-icon>access_time</mat-icon>
                             <div>
-                                <div class="info-label">Updated</div>
-                                <div>{{oper.CreatedTS}}</div>
+                                <div class="info-label">Created</div>
+                                <div>{{oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'}}</div>
                             </div>
                         </div>
                     </div>
@@ -209,191 +245,6 @@
                     </div>
                 </mat-card-actions>
             </mat-card>
-        </div>
-
-
-
-        <!-- Inbox -->
-        <div class="section" *ngIf="(inbox$ | async) as inbox">
-            <mat-toolbar>
-                <mat-toolbar-row>
-                    <span style="width: 100px">Inbox</span>
-                    <mat-chip-listbox *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
-                        <mat-chip [ngClass]="format.cssClass">{{ inbox.Status }}</mat-chip>
-                    </mat-chip-listbox>
-                </mat-toolbar-row>
-            </mat-toolbar>
-            <div>
-                <mat-form-field floatLabel="always">
-                    <mat-label>Updated</mat-label>
-                    <input matInput [ngModel]="inbox.UpdatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="UpdatedTS"
-                        disabled>
-                </mat-form-field>
-                <mat-form-field floatLabel="always">
-                    <mat-label>Source</mat-label>
-                    <input matInput [(ngModel)]="inbox.Source" name="Source" disabled>
-                </mat-form-field>
-                <mat-form-field floatLabel="always">
-                    <mat-label>Pipe</mat-label>
-                    <input matInput [(ngModel)]="inbox.Pipe.Code" name="Pipe" disabled>
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field floatLabel="always">
-                    <mat-label>MsgId</mat-label>
-                    <input matInput [(ngModel)]="inbox.MsgId" name="MsgId" disabled>
-                </mat-form-field>
-                <mat-form-field floatLabel="always">
-                    <mat-label>Element</mat-label>
-                    <input matInput [(ngModel)]="inbox.Element" name="Element" disabled>
-                </mat-form-field>
-                <mat-form-field floatLabel="always">
-                    <mat-label>Subject</mat-label>
-                    <input matInput [(ngModel)]="inbox.Subject" name="Subject" disabled>
-                </mat-form-field>
-            </div>
-        </div>
-
-        <!-- ingestion object needed also in Staging compare butto -->
-        <div *ngIf="(ingestion$ | async) as ingestion">
-            <!-- Ingestion -->
-            <div class="section">
-                <mat-toolbar>
-                    <mat-toolbar-row>
-                        <span style="width:90px;">Ingestion</span>
-                    </mat-toolbar-row>
-                </mat-toolbar>
-                <div>
-                    <mat-form-field floatLabel="always">
-                        <mat-label>Created</mat-label>
-                        <input matInput [ngModel]="ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'"
-                            name="CreatedTS" disabled>
-                    </mat-form-field>
-                    <mat-form-field floatLabel="always" style="width:75%">
-                        <mat-label>Model Name</mat-label>
-                        <input matInput [(ngModel)]="ingestion.ModelName" name="ModelName" disabled>
-                    </mat-form-field>
-                </div>
-                <div class="action-bar">
-                    <button matTooltip="Repeat Ingestion" [disabled]="disableResend()"
-                        (click)="clickResendMessage(+ingestion.HeaderId, 'Repeat Ingestion?')" type="submit"
-                        mat-mini-fab color="accent" style='margin-right: 10px;'>
-                        <mat-icon>repeat</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId"
-                        matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
-                        <mat-icon>zoom_in</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Data" (click)="datapipeService.clickViewStream({
-                        title: 'Model Data', icon: 'code', stream1: ingestion.ModelData})">
-                        <mat-icon>code</mat-icon>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Staging -->
-            <div class="section" *ngIf="(staging$ | async) as staging">
-                <mat-toolbar>
-                    <mat-toolbar-row>
-                        <span style="width:100px">Staging</span>
-                        <mat-chip-listbox
-                            *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status); let format">
-                            <mat-chip [ngClass]="format.cssClass">
-                                <mat-icon>
-                                    {{ format.icon }}
-                                </mat-icon>
-                                {{ format.desc }}
-                            </mat-chip>
-                        </mat-chip-listbox>
-                    </mat-toolbar-row>
-                </mat-toolbar>
-                <div>
-                    <mat-form-field floatLabel="always" style="width:100%;">
-                        <mat-label>Created</mat-label>
-                        <input matInput [ngModel]="staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'"
-                            name="CreatedTS" disabled>
-                    </mat-form-field>
-                </div>
-                <div class="action-bar">
-                    <button type="submit" [disabled]="disableResend()" matTooltip="Repeat Staging"
-                        (click)="clickResendMessage(+staging.HeaderId, 'Repeat Staging?')" mat-mini-fab color="accent"
-                        style='margin-right: 10px;'>
-                        <mat-icon>repeat</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId"
-                        matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
-                        <mat-icon>zoom_in</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data"
-                        (click)="datapipeService.clickViewStream({
-                        title: 'Model Normalized Data', icon: 'code', stream1: staging.ModelNormData})">
-                        <mat-icon>code</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.ModelNormData"
-                        matTooltip="Model Data Vs. Normalization" (click)="datapipeService.clickViewStream({
-                        title: 'Model Data Vs. Normalization',
-                        icon: 'compare',
-                        stream1: ingestion.ModelData,
-                        stream2: staging.ModelNormData})">
-                        <mat-icon>compare</mat-icon>
-                    </button>
-                </div>
-                <div class="errors-container" *ngIf="staging.ValidationErrors">
-                    <div mat-subheader>Validation Errors:</div>
-                    <ul>
-                        <li *ngFor="let error of (staging.ValidationErrors)">
-                            {{ error.Code }}: {{ error.Desc }}
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Oper -->
-        <div class="section" *ngIf="(oper$ | async) as oper">
-            <mat-toolbar>
-                <mat-toolbar-row>
-                    <span style="width:100px;">Operation</span>
-                    <mat-chip-listbox *ngIf="datapipeService.getOperStatusChipFormat(oper.Status); let format">
-                        <mat-chip [ngClass]="format.cssClass">
-                            <mat-icon>
-                                {{ format.icon }}
-                            </mat-icon>
-                            {{ format.desc }}
-                        </mat-chip>
-                    </mat-chip-listbox>
-                </mat-toolbar-row>
-            </mat-toolbar>
-            <div>
-                <mat-form-field floatLabel="always" style="width:100%;">
-                    <mat-label>Created</mat-label>
-                    <input matInput [ngModel]="oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'" name="CreatedTS"
-                        disabled>
-                </mat-form-field>
-            </div>
-            <div class="action-bar">
-                <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent"
-                    style='margin-right: 10px;' matTooltip="Repeat Operation"
-                    (click)="clickResendMessage(+oper.HeaderId, 'Repeat Operation?')">
-                    <mat-icon>repeat</mat-icon>
-                </button>
-                <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId"
-                    matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
-                    <mat-icon>zoom_in</mat-icon>
-                </button>
-                <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Operation Log" (click)="datapipeService.clickViewStream({
-                    title: 'Operation Log', icon: 'description', stream1: oper.OperLog})">
-                    <mat-icon>description</mat-icon>
-                </button>
-            </div>
-            <div class="errors-container" *ngIf="oper.OperErrors">
-                <div mat-subheader>Operation Errors:</div>
-                <ul>
-                    <li *ngFor="let error of (oper.OperErrors)">
-                        {{ error.Code }}: {{ error.Desc }}
-                    </li>
-                </ul>
-            </div>
         </div>
 
     </div>
