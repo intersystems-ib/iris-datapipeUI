@@ -87,10 +87,15 @@ setActivityByStatusOptions() {
         const pipe = config.w.config.xaxis.categories[config.dataPointIndex];
         // actual value
         const value = config.w.config.series[config.seriesIndex].data[config.dataPointIndex];
-        
+
+        // date filter values
+        let from = this.datapipeService.dateToString(this.filters.UpdatedTSFrom) + "T" + this.filters.UpdatedTSFromTime;
+        let to = this.datapipeService.dateToString(this.filters.UpdatedTSTo) + "T" + this.filters.UpdatedTSToTime;
+
         // open datapipe search some query parameters
-        this.router.navigate(['datapipe'], {
-          queryParams: { pipe: pipe, type: type} 
+        this.router.navigate(['datapipe'
+        ], {
+          queryParams: { pipe: pipe, type: type, from: from, to: to} 
         }).then();
       }
     }

@@ -77,6 +77,7 @@ export class InboxListComponent implements AfterViewInit {
       setTimeout(() => {
         // load last used filters
         this.filters = this.preferencesService.inboxList.filters;
+
         // handle query params
         if (this.params.pipe) {
           this.filters.Pipe = [this.params.pipe];
@@ -86,6 +87,12 @@ export class InboxListComponent implements AfterViewInit {
         }
         if (this.params.type === 'Ok') {
           this.filters.Status = ['DONE', 'OPERATING', 'STAGING','INGESTING'];
+        }
+        if (this.params.from) {
+          this.filters.UpdatedTSFrom = this.params.from.slice(0, 10);
+        }
+        if (this.params.to) {
+          this.filters.UpdatedTSTo = this.params.to.slice(0, 10);
         }
         this.paginator.pageIndex = this.preferencesService.inboxList.pageIndex;
         this.paginator.pageSize = this.preferencesService.inboxList.pageSize;

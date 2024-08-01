@@ -44,16 +44,18 @@
         </mat-expansion-panel>
     </mat-accordion>
 
-    <apx-chart #chartActivityByStatus *ngIf="chartActivityByStatusReady"
-        [series]="chartActivityByStatusOptions.series"
-        [plotOptions]="chartActivityByStatusOptions.plotOptions"
-        [xaxis]="chartActivityByStatusOptions.xaxis"
-        [chart]="chartActivityByStatusChart"
-        [dataLabels]="chartActivityByStatusOptions.dataLabels"
-        [colors]="chartActivityByStatusOptions.colors" [tooltip]="chartActivityByStatusOptions.tooltip"
-        [yaxis]="chartActivityByStatusOptions.yaxis" [title]="{ text: 'Activity By Status'}"
-        [legend]="{ position: 'top',width: 450  }">
-    </apx-chart>
+    <div class="chart-container">
+        <apx-chart #chartActivityByStatus *ngIf="chartActivityByStatusReady"
+            [series]="chartActivityByStatusOptions.series"
+            [plotOptions]="chartActivityByStatusOptions.plotOptions"
+            [xaxis]="chartActivityByStatusOptions.xaxis"
+            [chart]="chartActivityByStatusChart"
+            [dataLabels]="chartActivityByStatusOptions.dataLabels"
+            [colors]="chartActivityByStatusOptions.colors" [tooltip]="chartActivityByStatusOptions.tooltip"
+            [yaxis]="chartActivityByStatusOptions.yaxis" [title]="{ text: 'Activity By Status'}"
+            [legend]="{ position: 'top',width: 450  }">
+        </apx-chart>
+    </div>
 
 </div>
 
