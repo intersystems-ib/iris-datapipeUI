@@ -24,7 +24,7 @@ public dataSource = new MatTableDataSource<Pipe>();
 totalResults: number = 0;
 
 /** columns that will be displayed */
-displayedColumns = ['actions', 'Code', 'Description'];
+displayedColumns = ['actions', 'Code', 'Description', 'SecurityResource'];
 
 /** filters that are using to query the server */
 filters: any = {};

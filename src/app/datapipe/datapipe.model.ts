@@ -75,6 +75,7 @@ export interface Oper {
 export interface Pipe {
     Code: string;
     Description: string;
+    SecurityResource: string;
 }
 
 /**
