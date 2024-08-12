@@ -65,7 +65,7 @@ export class InboxListComponent implements AfterViewInit {
       this.filteredOperStatus = this.operStatus;
 
       this.filteredPipes = [];
-      this.datapipeService.findPipes().subscribe((res) => {
+      this.datapipeService.findPipes(1, 100, {}).subscribe((res) => {
         this.filteredPipes = res.children;
       });
   }

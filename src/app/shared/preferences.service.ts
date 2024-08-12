@@ -12,6 +12,13 @@ export interface DashboardPref {
   filtersPreset: { [key: string]: any }
 }
 
+export interface PipeListPref {
+  filters: any,
+  filtersPreset: { [key: string]: any },
+  pageIndex: number,
+  pageSize: number
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -39,6 +46,18 @@ export class PreferencesService {
     filtersPreset: {
       initial: { "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
     },
+  };
+
+  /** pipe-list preferences */
+  pipeList: PipeListPref = {
+    filters: {"UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+
+    filtersPreset: {
+      initial: { "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
+    },
+    
+    pageIndex: 0,
+    pageSize: 50,
   };
 
   constructor() { }

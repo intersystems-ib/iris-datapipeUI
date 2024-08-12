@@ -21,6 +21,13 @@
         <span matListItemTitle>Search</span>
       </a>
 
+      <mat-divider></mat-divider>
+
+      <a mat-list-item routerLink="/datapipe/pipe" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_PIPELIST', 'U')">
+        <mat-icon matListItemIcon>account_tree</mat-icon>
+        <span matListItemTitle>Pipes</span>
+      </a>
+
       <a mat-list-item routerLink="/auth/login" *ngIf="!(isLoggedIn$ | async)">
         <mat-icon matListItemIcon>login</mat-icon>
         <span matListItemTitle>Login</span>

@@ -76,4 +76,5 @@ ng generate component datapipe/dashboard
 
 npm install apexcharts ng-apexcharts --save
 
+ng generate component datapipe/pipe-list
 ```

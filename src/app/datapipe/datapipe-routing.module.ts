@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { InboxInfoComponent } from './inbox-info/inbox-info.component';
 import { InboxListComponent } from './inbox-list/inbox-list.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { PipeListComponent } from './pipe-list/pipe-list.component';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,10 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent
+  },
+  {
+    path: 'pipe',
+    component: PipeListComponent
   },
   {
     path: ':inboxId',

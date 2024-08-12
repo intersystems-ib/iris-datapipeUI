@@ -81,7 +81,7 @@ export class DatapipeService {
     escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
     
     return this.http.get<QueryResult<Inbox>>(
-      this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/custom/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&orderby=1+desc`,
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/custom/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&collation=UPPER&orderby=1+desc`,
       this.options
     )
     .pipe(
@@ -213,12 +213,19 @@ export class DatapipeService {
   }
 
   /**
-   * Returns ingestions of a given inbox
+   * Returns Pipes that can be listed
    * @param id 
    */
-  findPipes(): Observable<QueryResult<Pipe>> {
+  findPipes(pageIndex: number, pageSize: number, query: any): Observable<QueryResult<Pipe>> {
+    let filter = '';
+    if (query.Code) { filter += `+Code+contains+${query.Code}`; }
+    if (query.Description) { filter += `+Description+contains+${query.Description}`; }
+
+    let escapedFilter = filter.replace(new RegExp(' ', 'g'), '%09');
+    escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
+
     return this.http.get<QueryResult<Pipe>>(
-      this.urlBase + `/rf2/form/objects/DataPipe.Data.Pipe/custom/find?filter=&orderby=1+desc`,
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Pipe/custom/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&collation=UPPER&orderby=1+desc`,
       this.options
     ).pipe(
       //tap(data => console.log(data)),
@@ -230,7 +237,7 @@ export class DatapipeService {
   }
 
   /**
-   * Returns ingestions of a given inbox
+   * Returns inbox activity (dashboard)
    * @param id 
    */
   getInboxActivity(query: any): Observable<any> {
