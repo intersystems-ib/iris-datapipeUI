@@ -62,6 +62,7 @@ export class AuthService {
             }
             );
           });
+          this.username = username;
           return username;
         }),
         catchError(err => {
@@ -76,6 +77,10 @@ export class AuthService {
    */
   public logout(): void {
     localStorage.removeItem(environment.authLocalStorageKey);
+    this.username = '';
+    this.fullName = '';
+    this.permissions = {};
+
     setTimeout(() => {
       this.isLoginSubject.next(false);
       this._token.next('');
@@ -123,6 +128,7 @@ export class AuthService {
       pipe(
         tap(data => {
           // load user attributes
+          this.username = data.username;
           this.fullName = data.fullName;
           this.permissions = data.permissions;
           

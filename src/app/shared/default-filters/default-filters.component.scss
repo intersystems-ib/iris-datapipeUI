@@ -1,0 +1,86 @@
+/* your-component.component.css */
+
+.shake {
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+  }
+  
+  @keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  }
+
+  .fav-button {
+    margin-left: 10px; 
+    color: #00B2A9; 
+    position: relative;
+    z-index: 1;
+  }
+  
+  .edit-field {
+    border: none; 
+    background: transparent; 
+    color: #4050b5; 
+    width: auto;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .icon-buttons {
+    display: flex;
+    justify-content: left;
+    position: absolute;
+    top:-10px;
+    left: 0px;
+    width: auto;
+    z-index: 3;
+  }
+  
+  .icon-buttons button.small-icon-button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    min-width: 0;
+    margin: 0 10px;
+    box-shadow: none;
+  }
+  
+  .add-favorite-button {
+    color: #00B2A9;
+    margin-left: 10px;
+    position: relative;
+    top: 10px;
+  }
+  
+  .cancel-button {
+    color: gray;
+  }
+  
+  .cancel-icon {
+    color: gray;
+  }
+  
+  .plus-icon {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 14px;
+    color: #00B2A9;
+  }
+
+  .edit-mode .mat-icon {
+    color: #4050b5 !important;
+  }
+  
+  .edit-mode span {
+    color: #4050b5 !important;
+  }

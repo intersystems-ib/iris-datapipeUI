@@ -2,6 +2,7 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AlertDisplayComponent } from './alert-display/alert-display.component';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { DefaultFiltersComponent } from './default-filters/default-filters.component';
 import { AlertService } from './alert.service';
 
 import {MatButtonModule} from '@angular/material/button';
@@ -56,7 +57,8 @@ const mm = [
 @NgModule({
   declarations: [
     AlertDisplayComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    DefaultFiltersComponent
   ],
   imports: [
     CommonModule,
@@ -65,7 +67,8 @@ const mm = [
   exports: [
     ...mm,
     ConfirmDialogComponent,
-    AlertDisplayComponent
+    AlertDisplayComponent,
+    DefaultFiltersComponent
   ]
 })
 export class SharedModule { 

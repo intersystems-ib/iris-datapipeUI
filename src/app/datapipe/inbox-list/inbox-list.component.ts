@@ -40,6 +40,15 @@ export class InboxListComponent implements AfterViewInit {
   filteredPipes: any[];
   params: any;
 
+  /** whether master data is completely loaded or not */
+  masterDataLoaded: boolean = false;
+
+  /** fav filters loaded */
+  defaultFiltersComponentLoaded: boolean = false;
+
+  /** filter fields that will not be stored in favs */
+  skippedFilterInFavs = ['UpdatedTSFrom', 'UpdatedTSFromTime', 'UpdatedTSTo', 'UpdatedTSToTime'];
+
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
   
   @ViewChild('filtersForm', {static: true}) filtersForm!: NgForm;
@@ -67,6 +76,7 @@ export class InboxListComponent implements AfterViewInit {
       this.filteredPipes = [];
       this.datapipeService.findPipes(1, 100, {}).subscribe((res) => {
         this.filteredPipes = res.children;
+        this.masterDataLoaded = true;
       });
   }
 
@@ -183,7 +193,7 @@ export class InboxListComponent implements AfterViewInit {
    * Returns if the user can perform a search depending on the value of the filter fields
    */
   canSearch(): boolean {
-    return true;
+    return (this.masterDataLoaded && this.defaultFiltersComponentLoaded);
   }
 
   /**
@@ -203,6 +213,44 @@ export class InboxListComponent implements AfterViewInit {
         )
       }
     });
+  }
+
+
+  /** Load a clicked fav filter */
+  loadFavFilter(loadedFilters: any, isResetFilters: boolean =  false) {
+    // get the current value of those filters that are not stored in the favorites and must keep their values (skippedFilters)
+    let skippedFilters: { [key: string]: any } = {};
+    if (!isResetFilters) {
+
+      this.skippedFilterInFavs.forEach(field => {
+        try {
+          skippedFilters[field] = this.filters[field];
+        } catch (e) {
+        }
+      });
+    }
+
+    this.filters = loadedFilters;
+
+    if (!isResetFilters) {
+      // reset the value of the skipped filters
+      Object.keys(skippedFilters).forEach(field => {
+        try {
+          this.filters[field] = skippedFilters[field];
+        } catch (e) {
+        }
+      });
+
+      // save current filters in preferences so that filters are kept when going back
+      this.preferencesService.inboxList.filters = this.filters;
+    }
+
+    this.search();
+  }
+
+  /** Fav filters are loaded and ready to be used */
+  favFiltersReady(firstFavFilter: any) {
+    this.defaultFiltersComponentLoaded = true;
   }
 
 }

@@ -113,6 +113,12 @@
             <button type="submit" mat-raised-button color="primary" [disabled]="!canSearch()"  >
                 <mat-icon>search</mat-icon>Search
             </button>
+            <app-default-filters #defaultFilterComponent 
+                [(filters)]="this.filters" 
+                (clickLoad)="loadFavFilter($event)"
+                [disabledButtons]="!this.masterDataLoaded"
+                [SettingKey]="'INBOXLIST_FILTERS'" [skippedFields]="skippedFilterInFavs"
+                (loadingDone)="this.favFiltersReady($event)" />
             </div>
             
         </form>

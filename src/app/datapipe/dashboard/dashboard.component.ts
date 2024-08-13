@@ -78,7 +78,7 @@ setActivityByStatusOptions() {
   }
 
   this.chartActivityByStatusChart = {
-    type: 'bar', width: 525, stacked: true, toolbar: { show: true },
+    type: 'bar', width: 1000, stacked: true, toolbar: { show: true },
     events: {
       dataPointSelection: (event: any, chartContext: any, config: any) => {
         // series: e.g. Ok, Errors
