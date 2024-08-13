@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import moment from 'moment';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AlertService } from '../shared/alert.service';
 import { Inbox, QueryResult, Ingestion, Staging, Oper, Pipe } from './datapipe.model';
@@ -237,6 +237,24 @@ export class DatapipeService {
   }
 
   /**
+   * Returns a pipe by a given code
+   * @param code 
+   */
+  findPipeByCode(code: string): Observable<Pipe> {
+    return this.http.get<QueryResult<Pipe>>(
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Pipe/custom/find?filter=Code+eq+${code}`,
+      this.options
+    ).pipe(
+      //tap(data => console.log(data)),
+      map(data => data.children[0]),
+      catchError(err => {
+        this.alertService.error('[findPipesByCode] ' + err.message)
+        return throwError(() => err);
+      })
+    );
+  }
+
+  /**
    * Returns inbox activity (dashboard)
    * @param id 
    */
@@ -375,4 +393,39 @@ export class DatapipeService {
       data: data
     });
   }
+
+
+  /**
+   * Create a new Pipe
+   */
+  createPipe(pipe: Pipe) {
+    return this.http.post(
+      this.urlBase + `/objects/DataPipe.Data.Pipe`,
+      pipe,
+      this.options
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[createPipe] ' + err.message)
+        return throwError(() => err);
+      })
+    );
+  }
+
+  /**
+   * Update a Pipe
+   */
+  updatePipe(pipeCode:string, pipe: Pipe) {
+    return this.http.put(
+      this.urlBase + `/objects/DataPipe.Data.Pipe/${pipeCode}`,
+      pipe,
+      this.options
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[updatePipe] ' + err.message)
+        return throwError(() => err);
+      })
+    );
+  }
+
+
 }

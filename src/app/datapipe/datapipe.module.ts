@@ -13,6 +13,7 @@ import { ViewstreamDialogComponent } from './viewstream-dialog/viewstream-dialog
 import { InboxHistoryComponent } from './inbox-history/inbox-history.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PipeListComponent } from './pipe-list/pipe-list.component';
+import { PipeDetailComponent } from './pipe-detail/pipe-detail.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { PipeListComponent } from './pipe-list/pipe-list.component';
     InboxHistoryComponent,
     DashboardComponent,
     PipeListComponent,
+    PipeDetailComponent,
   ],
   imports: [
     CommonModule,

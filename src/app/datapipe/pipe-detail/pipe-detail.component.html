@@ -1,0 +1,42 @@
+<div class="">
+
+    <div class="spinner-container" *ngIf="(loading$ | async)">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <form #pipeForm="ngForm" (ngSubmit)="save()">        
+        <div *ngIf="pipe">
+            
+            <div class="section">
+                <mat-form-field floatLabel="always" class="field-s">
+                    <mat-label>Code</mat-label>
+                    <input matInput required [(ngModel)]="pipe.Code" name="Code">
+                </mat-form-field>
+            </div>
+            
+            <div class="section">
+                <mat-form-field floatLabel="always" class="field-l">
+                    <mat-label>Description</mat-label>
+                    <input matInput required [(ngModel)]="pipe.Description" name="Description">
+                </mat-form-field>
+            </div> 
+
+            <div class="section">
+                <mat-form-field floatLabel="always" class="field-l">
+                    <mat-label>Security Resource</mat-label>
+                    <input matInput [(ngModel)]="pipe.SecurityResource" name="SecurityResource">
+                </mat-form-field>
+            </div> 
+                
+            <mat-toolbar class="bottom-toolbar">
+                <button mat-raised-button color="primary" (click)="goBack()" style="margin-right:5px;float:right;">
+                    <mat-icon>arrow_back_ios</mat-icon>Back
+                </button>
+                <button mat-raised-button color="primary" type="submit" [disabled]="(pipeForm.pristine)">
+                    <mat-icon>save</mat-icon>Save
+                </button>
+            </mat-toolbar>
+
+        </div>
+    </form>
+</div>

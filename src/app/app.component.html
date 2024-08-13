@@ -23,7 +23,7 @@
 
       <mat-divider></mat-divider>
 
-      <a mat-list-item routerLink="/datapipe/pipe" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_PIPELIST', 'U')">
+      <a mat-list-item routerLink="/datapipe/admin/pipe" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_ADMIN', 'U')">
         <mat-icon matListItemIcon>account_tree</mat-icon>
         <span matListItemTitle>Pipes</span>
       </a>

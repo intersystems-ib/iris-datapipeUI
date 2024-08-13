@@ -156,14 +156,14 @@ clickResetFilters(): void {
  * @param navIndex navigation index (e.g. index in the current data page)
  */
 openDetails(s: Pipe) {
-  this.router.navigate([`/datapipe/pipe/${s.Code}`]);
+  this.router.navigate([`/datapipe/admin/pipe/${s.Code}`]);
 }
 
 /**
  * Opens details component to create a new schedule
  */
 create() {
-  this.router.navigate([`/learning/pipe/new`]);
+  this.router.navigate([`/datapipe/admin/pipe/new`], { queryParams: { create: true } } );
 }
 
 }
