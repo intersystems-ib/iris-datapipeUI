@@ -6,15 +6,6 @@
 
     <div class="section-container" *ngIf="!(loading$ | async)">
 
-        <!-- button bar -->
-        <div class="button-bar">
-            <p>
-                <button mat-mini-fab color="link" matTooltip="Reload" (click)="loadData()">
-                    <mat-icon>refresh</mat-icon>
-                </button>
-            </p>
-        </div>
-
         <div class="gradient" *ngIf="(inbox$ | async) as inbox">
             <span>&nbsp;</span>
         </div>
@@ -248,4 +239,12 @@
         </div>
 
     </div>
+
+    <mat-toolbar class="bottom-toolbar">
+        <button mat-raised-button color="primary" (click)="loadData()" style="margin-right:5px;float:right;">
+            <mat-icon>refresh</mat-icon>Reload
+        </button>
+    </mat-toolbar>
+
 </div>
+
