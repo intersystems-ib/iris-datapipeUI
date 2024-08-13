@@ -35,9 +35,10 @@ export class AuthService {
   /**
    * Login into the app (implements Basic HTTP auth with IRIS backend)
    * @param username 
-   * @param password 
+   * @param password
+   * @param redirectTo url to redirect after login 
    */
-  public login(username: string, password: string): Observable<string> {
+  public login(username: string, password: string, redirectTo: string): Observable<string> {
     let basicheader = btoa(encodeURI(username+":"+password));
     let headers = new HttpHeaders();
     headers = headers.set('Authorization', 'Basic ' + basicheader);
@@ -56,13 +57,16 @@ export class AuthService {
           this._token.next(token);
           setTimeout(() => {
             this.isLoginSubject.next(true);
-            this.getUserInfo().subscribe();
+            this.getUserInfo().subscribe( d => {
+              this.router.navigateByUrl(redirectTo);  
+            }
+            );
           });
           return username;
         }),
         catchError(err => {
           this.logout();
-          return throwError(err);
+          return throwError(() => err);
         })
       );
   }
@@ -74,15 +78,15 @@ export class AuthService {
     localStorage.removeItem(environment.authLocalStorageKey);
     setTimeout(() => {
       this.isLoginSubject.next(false);
+      this._token.next('');
     });
   }
 
   /**
    * Returns true if user is authenticated
    */
-  public authenticated(): boolean {
-    const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey) || '{}');
-    const token = currentUser && currentUser.token;
+  private authenticated(): boolean {
+    const token = this.getToken();
     if (token) {
       if (this._token) {
         this._token.next(token);
@@ -95,7 +99,7 @@ export class AuthService {
   /**
    * Returns stored user token (if any)
    */
-  getToken(): string {
+  public getToken(): string {
     const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey) || '{}');
     const token = currentUser && currentUser.token;
     return token;
@@ -104,10 +108,9 @@ export class AuthService {
   /**
    * Returns an Observable that can be used across the application to know if the user is logged in
    */
-  isLoggedIn(): Observable<boolean> {
+  public isLoggedIn(): Observable<boolean> {
     return this.isLoginSubject.asObservable();
   }
-
 
   /**
    * Get user information from IRIS and load attributes as needed 
@@ -127,7 +130,7 @@ export class AuthService {
         }),
         catchError(err => {
           this.logout();
-          return throwError(err);
+          return throwError(() => err);
         })
       );
   }
