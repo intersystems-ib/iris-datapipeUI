@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import moment from 'moment';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -386,12 +386,12 @@ export class DatapipeService {
    * Opens a dialog displaying a data stream
    * @param data 
    */
-  clickViewStream(data: any): void {
+  clickViewStream(data: any): MatDialogRef<ViewstreamDialogComponent> {
     const dialogRef = this.dialog.open(ViewstreamDialogComponent, {
       width: '90vw',
-      height: '90vh',
       data: data
     });
+    return dialogRef;
   }
 
 
@@ -422,6 +422,23 @@ export class DatapipeService {
     ).pipe(
       catchError(err => {
         this.alertService.error('[updatePipe] ' + err.message)
+        return throwError(() => err);
+      })
+    );
+  }
+
+
+  /**
+   * Update OperRequest after manually editing normalized data
+   */
+  updateOperRequest(operHeaderId: number, editedNormData: string) {
+    return this.http.put(
+      this.urlBase + `/operRequest/${operHeaderId}`,
+      editedNormData,
+      this.options
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[updateOperRequest] ' + err.message)
         return throwError(() => err);
       })
     );

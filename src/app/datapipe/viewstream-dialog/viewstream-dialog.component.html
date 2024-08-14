@@ -8,8 +8,13 @@
 		</mat-card-header>
 		<mat-card-content>
 			<!-- option: viewing stream1 -->
-			<div class="stream-container" *ngIf=(!stream2)>
-				<pre>{{ stream1 }}</pre>
+			<div class="stream-container" *ngIf="(!stream2) && (!editMode)">
+				<pre class="code-container">{{ stream1 }}</pre>
+			</div>
+
+			<!-- option: editing stream1 -->
+			<div class="stream-container" *ngIf="editMode">
+				<textarea class="code-container" [(ngModel)]="stream1" [rows]="stream1Lines"></textarea>
 			</div>
 
 			<!-- option: viewving stream1 Vs stream2 -->
@@ -21,6 +26,14 @@
 				/>
 			</div>
 		</mat-card-content>
+
+		<mat-card-footer *ngIf="editMode">
+			<mat-toolbar style="display: flex; justify-content: flex-end;">
+				<button mat-raised-button color="accent" (click)="onSave()" style="margin-right:5px;float:right;">
+					<mat-icon>send</mat-icon>Send
+				</button>
+			</mat-toolbar>
+		</mat-card-footer>
 	</mat-card>
 
 </div>

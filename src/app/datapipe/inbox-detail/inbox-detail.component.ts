@@ -114,4 +114,43 @@ export class InboxDetailComponent implements OnInit {
     this.router.navigate([`/datapipe`]);
   }
 
+  /** 
+   * Click on editing (manually) normalized data
+   * @param operHeaderId operation header id message
+   * @param normData original normalized data
+   */
+  clickEditNormData(operHeaderId: number, normData: string) {
+
+    const confirmDialog = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: '⚠️ Warning!', text: 'Are you sure you want to manually overwrite Normalized data re-run operation?' }
+    });
+
+    confirmDialog.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        const dialogRef = this.datapipeService.clickViewStream({
+          title: 'Edit Normalized Data & Re-run Operation',
+          subtitle: '⚠️ This will manually overwrite Normalized and re-run operation with the overridden data', 
+          icon: 'edit',
+          editMode: true, 
+          stream1: normData}
+        );
+    
+        dialogRef.afterClosed().subscribe(editedData => {
+          if (editedData) {
+            this.datapipeService.updateOperRequest(operHeaderId, editedData).subscribe(data => {
+              this.loading$.next(true);
+              setTimeout(() => {
+                this.loadData();
+                this.loading$.next(false);
+              }, 2000);
+            });
+          }
+        });
+      }
+    });
+
+    
+  }
+
 }

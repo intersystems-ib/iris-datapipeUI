@@ -152,7 +152,9 @@
                         </button>
                         <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data"
                             (click)="datapipeService.clickViewStream({
-                        title: 'Model Normalized Data', icon: 'code', stream1: staging.ModelNormData})">
+                                title: 'Model Normalized Data', 
+                                icon: 'code', 
+                                stream1: staging.ModelNormData})">
                             <mat-icon>code</mat-icon>
                         </button>
                         <button mat-mini-fab color="link" style='margin-right: 10px;' *ngIf="(ingestion$ | async) as ingestion" [disabled]="!staging.ModelNormData"
@@ -226,6 +228,10 @@
                                             icon: 'description', 
                                             stream1: oper.OperLog})">
                                 <mat-icon>description</mat-icon>
+                            </button>
+                            <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Edit Normalized Data" *ngIf="(staging$ | async) as staging" [disabled]="(!oper.HeaderId) || !authService.checkPermission('DP_ADMIN', 'U')"
+                                (click)="clickEditNormData(+oper.HeaderId, staging.ModelNormData)">
+                                <mat-icon>edit</mat-icon>
                             </button>
                         </div>
                     </div>
