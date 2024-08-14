@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Inbox, Ingestion, Staging, Oper } from '../datapipe.model';
 import { DatapipeService } from '../datapipe.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,7 +32,8 @@ export class InboxDetailComponent implements OnInit {
     public datapipeService: DatapipeService,
     private route: ActivatedRoute,
     public dialog: MatDialog,
-    public authService: AuthService
+    public authService: AuthService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -104,6 +105,13 @@ export class InboxDetailComponent implements OnInit {
       this.inbox.StagingStatus==="VALID" &&
       this.inbox.OperStatus==="PROCESSED")
     );
+  }
+
+  /** 
+   * Go back 
+   */
+  goBack(): void {
+    this.router.navigate([`/datapipe`]);
   }
 
 }

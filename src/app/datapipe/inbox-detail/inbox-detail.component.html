@@ -12,13 +12,13 @@
 
         <!-- Inbox -->
         <div class="card-container">
-            <mat-card class="dp-card" appearance="outlined" *ngIf="(inbox$ | async) as inbox">
-                <mat-card-header>
+            <mat-card class="dp-card mat-card" appearance="outlined" *ngIf="(inbox$ | async) as inbox">
+                <mat-card-header class="mat-card-header">
                     <div mat-card-avatar><img mat-card-image src="assets/img/inbox.png" class="circular-avatar"></div>
                     <mat-card-title>INBOX</mat-card-title>
                     <mat-card-subtitle>Incoming data</mat-card-subtitle>
                 </mat-card-header>
-                <mat-card-content>
+                <mat-card-content class="mat-card-content">
                     <div class="chip-container">
                         <mat-chip-listbox *ngIf="datapipeService.getInboxStatusChipFormat(inbox.Status); let format">
                             <mat-chip [ngClass]="format.cssClass">{{ inbox.Status }}</mat-chip>
@@ -69,21 +69,36 @@
                         </div>
                     </div>
                 </mat-card-content>
-                <mat-card-actions>
-                </mat-card-actions>
+                <mat-card-footer class="mat-card-footer">
+                </mat-card-footer>
             </mat-card>
             
             <!-- Ingestion -->
-            <mat-card class="dp-card" appearance="outlined" *ngIf="(ingestion$ | async) as ingestion">
-                <mat-card-header>
+            <mat-card class="dp-card mat-card" appearance="outlined" *ngIf="(ingestion$ | async) as ingestion">
+                <mat-card-header class="mat-card-header">
                     <div mat-card-avatar><img mat-card-image src="assets/img/ingestion-2.png" class="circular-avatar">
                     </div>
                     <mat-card-title>INGESTION</mat-card-title>
                     <mat-card-subtitle>Data Load</mat-card-subtitle>
                 </mat-card-header>
-                <mat-card-content>
+                <mat-card-content class="mat-card-content">
                     <div class="chip-container">
                         <span>&nbsp;</span>
+                    </div>
+                    <div class="actions-section">
+                        <button matTooltip="Repeat Ingestion" [disabled]="disableResend()"
+                            (click)="clickResendMessage(+ingestion.HeaderId, 'Repeat Ingestion?')" type="submit"
+                            mat-mini-fab color="accent" style='margin-right: 10px;'>
+                            <mat-icon>repeat</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId"
+                            matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
+                            <mat-icon>zoom_in</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Data" (click)="datapipeService.clickViewStream({
+                                title: 'Model Data', icon: 'code', stream1: ingestion.ModelData})">
+                            <mat-icon>code</mat-icon>
+                        </button>
                     </div>
                     <div class="info-section">
                         <div class="info-row">
@@ -102,33 +117,18 @@
                         </div>
                     </div>
                 </mat-card-content>
-                <mat-card-actions>
-                    <button matTooltip="Repeat Ingestion" [disabled]="disableResend()"
-                        (click)="clickResendMessage(+ingestion.HeaderId, 'Repeat Ingestion?')" type="submit"
-                        mat-mini-fab color="accent" style='margin-right: 10px;'>
-                        <mat-icon>repeat</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId"
-                        matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
-                        <mat-icon>zoom_in</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Data" (click)="datapipeService.clickViewStream({
-                            title: 'Model Data', icon: 'code', stream1: ingestion.ModelData})">
-                        <mat-icon>code</mat-icon>
-                    </button>
-                </mat-card-actions>
             </mat-card>
 
             <!-- Staging -->
-            <mat-card class="dp-card" appearance="outlined" *ngIf="(staging$ | async) as staging">
-                <mat-card-header>
+            <mat-card class="dp-card mat-card" appearance="outlined" *ngIf="(staging$ | async) as staging">
+                <mat-card-header class="mat-card-header">
                     <div mat-card-avatar><img mat-card-image src="assets/img/email-automation.png"
                             class="circular-avatar">
                     </div>
                     <mat-card-title>STAGING</mat-card-title>
                     <mat-card-subtitle>Normalize & Validate</mat-card-subtitle>
                 </mat-card-header>
-                <mat-card-content>
+                <mat-card-content class="mat-card-content">
                     <div class="chip-container">
                         <mat-chip-listbox
                                 *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status); let format">
@@ -140,6 +140,30 @@
                                 </mat-chip>
                         </mat-chip-listbox>
                     </div>
+                    <div class="actions-section">
+                        <button type="submit" [disabled]="disableResend()" matTooltip="Repeat Staging"
+                            (click)="clickResendMessage(+staging.HeaderId, 'Repeat Staging?')" mat-mini-fab color="accent"
+                            style='margin-right: 10px;'>
+                            <mat-icon>repeat</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId"
+                            matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
+                            <mat-icon>zoom_in</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data"
+                            (click)="datapipeService.clickViewStream({
+                        title: 'Model Normalized Data', icon: 'code', stream1: staging.ModelNormData})">
+                            <mat-icon>code</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="link" style='margin-right: 10px;' *ngIf="(ingestion$ | async) as ingestion" [disabled]="!staging.ModelNormData"
+                            matTooltip="Model Data Vs. Normalization" (click)="datapipeService.clickViewStream({
+                            title: 'Model Data Vs. Normalization',
+                            icon: 'compare',
+                            stream1: ingestion.ModelData,
+                            stream2: staging.ModelNormData})">
+                            <mat-icon>compare</mat-icon>
+                        </button>
+                    </div>
                     <div class="info-section">
                         <div class="info-row">
                             <mat-icon>access_time</mat-icon>
@@ -149,42 +173,32 @@
                             </div>
                         </div>
                     </div>
+                    <div class="errors-container" *ngIf="staging.ValidationErrors">
+                        <div class="error-row">
+                            <mat-icon>error_outline</mat-icon>
+                            <div>
+                                <div class="error-label">Validation Errors</div>
+                            </div>
+                        </div>
+                        <mat-list class="error-list">
+                            <mat-list-item *ngFor="let error of (staging.ValidationErrors)" class="error-list-item">
+                                <span matListItemTitle>{{ error.Code }}</span> 
+                                <span>{{ error.Desc }}</span>
+                            </mat-list-item>
+                        </mat-list>
+                    </div>
                 </mat-card-content>
-                <mat-card-actions>
-                    <button type="submit" [disabled]="disableResend()" matTooltip="Repeat Staging"
-                        (click)="clickResendMessage(+staging.HeaderId, 'Repeat Staging?')" mat-mini-fab color="accent"
-                        style='margin-right: 10px;'>
-                        <mat-icon>repeat</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId"
-                        matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
-                        <mat-icon>zoom_in</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data"
-                        (click)="datapipeService.clickViewStream({
-                    title: 'Model Normalized Data', icon: 'code', stream1: staging.ModelNormData})">
-                        <mat-icon>code</mat-icon>
-                    </button>
-                    <button mat-mini-fab color="link" style='margin-right: 10px;' *ngIf="(ingestion$ | async) as ingestion" [disabled]="!staging.ModelNormData"
-                        matTooltip="Model Data Vs. Normalization" (click)="datapipeService.clickViewStream({
-                        title: 'Model Data Vs. Normalization',
-                        icon: 'compare',
-                        stream1: ingestion.ModelData,
-                        stream2: staging.ModelNormData})">
-                        <mat-icon>compare</mat-icon>
-                    </button>
-                </mat-card-actions>
             </mat-card>
 
             <!-- Operation -->
-            <mat-card class="dp-card" appearance="outlined" *ngIf="(oper$ | async) as oper">
-                <mat-card-header>
+            <mat-card class="dp-card mat-card" appearance="outlined" *ngIf="(oper$ | async) as oper">
+                <mat-card-header class="mat-card-header">
                     <div mat-card-avatar><img mat-card-image src="assets/img/results.png" class="circular-avatar">
                     </div>
                     <mat-card-title>OPERATION</mat-card-title>
                     <mat-card-subtitle>Data Processing</mat-card-subtitle>
                 </mat-card-header>
-                <mat-card-content>
+                <mat-card-content class="mat-card-content">
                     <div class="chip-container">
                         <mat-chip-listbox *ngIf="datapipeService.getOperStatusChipFormat(oper.Status); let format">
                             <mat-chip [ngClass]="format.cssClass">
@@ -195,6 +209,26 @@
                             </mat-chip>
                         </mat-chip-listbox>
                     </div>
+                    <div class="actions-section">
+                        <div>
+                            <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent"
+                                style='margin-right: 10px;' matTooltip="Repeat Operation"
+                                (click)="clickResendMessage(+oper.HeaderId, 'Repeat Operation?')">
+                                <mat-icon>repeat</mat-icon>
+                            </button>
+                            <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId"
+                                matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
+                                <mat-icon>zoom_in</mat-icon>
+                            </button>
+                            <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Operation Log"
+                                (click)="datapipeService.clickViewStream({
+                                            title: 'Operation Log', 
+                                            icon: 'description', 
+                                            stream1: oper.OperLog})">
+                                <mat-icon>description</mat-icon>
+                            </button>
+                        </div>
+                    </div>
                     <div class="info-section">
                         <div class="info-row">
                             <mat-icon>access_time</mat-icon>
@@ -204,43 +238,30 @@
                             </div>
                         </div>
                     </div>
-                </mat-card-content>
-                <mat-card-actions>
-                    <div>
-                        <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent"
-                            style='margin-right: 10px;' matTooltip="Repeat Operation"
-                            (click)="clickResendMessage(+oper.HeaderId, 'Repeat Operation?')">
-                            <mat-icon>repeat</mat-icon>
-                        </button>
-                        <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId"
-                            matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
-                            <mat-icon>zoom_in</mat-icon>
-                        </button>
-                        <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Operation Log"
-                            (click)="datapipeService.clickViewStream({
-                                        title: 'Operation Log', 
-                                        icon: 'description', 
-                                        stream1: oper.OperLog})">
-                            <mat-icon>description</mat-icon>
-                        </button>
-                    </div>
-                </mat-card-actions>
-                <mat-card-actions>
                     <div class="errors-container" *ngIf="oper.OperErrors">
-                        <div mat-subheader>Operation Errors:</div>
-                        <ul>
-                            <li *ngFor="let error of (oper.OperErrors)">
-                                {{ error.Code }}: {{ error.Desc }}
-                            </li>
-                        </ul>
+                        <div class="error-row">
+                            <mat-icon>error_outline</mat-icon>
+                            <div>
+                                <div class="error-label">Operation Errors</div>
+                            </div>
+                        </div>
+                        <mat-list class="error-list">
+                            <mat-list-item *ngFor="let error of (oper.OperErrors)">
+                                <span matListItemTitle>{{ error.Code }}</span> 
+                                <span>{{ error.Desc }}</span>
+                            </mat-list-item>
+                        </mat-list>
                     </div>
-                </mat-card-actions>
+                </mat-card-content>
             </mat-card>
         </div>
 
     </div>
 
     <mat-toolbar class="bottom-toolbar">
+        <button mat-raised-button (click)="goBack()" style="margin-right:5px;float:right;">
+            <mat-icon>arrow_back_ios</mat-icon>Back
+        </button>
         <button mat-raised-button color="primary" (click)="loadData()" style="margin-right:5px;float:right;">
             <mat-icon>refresh</mat-icon>Reload
         </button>

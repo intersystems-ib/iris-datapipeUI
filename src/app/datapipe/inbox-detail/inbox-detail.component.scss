@@ -6,108 +6,143 @@
     justify-content: space-between;
   }
   
-  .dp-card {
-    flex: 1 1 calc(25% - 20px); /* Ajusta el ancho para acomodar cuatro tarjetas por fila */
-    box-sizing: border-box;
-    margin-bottom: 20px; /* Espacio inferior entre las filas */
-  }
-  
-  .info-card {
-    margin: 20px auto; /* Centra la tarjeta */
-    padding: 20px;
-    border: 1px solid #e0e0e0; /* Borde ligero */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
-    border-radius: 10px; /* Bordes redondeados */
-    transition: transform 0.3s; /* Animación suave al hacer hover */
-  }
-  
-  .info-card:hover {
-    transform: scale(1.05); /* Escala la tarjeta al hacer hover */
-  }
-  .circular-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.5px solid #3f51b5; /* Borde color primario */
-    padding: 5px;
-  }
+.dp-card {
+  flex: 1 1 calc(25% - 20px); /* Ajusta el ancho para acomodar cuatro tarjetas por fila */
+  box-sizing: border-box;
+  margin-bottom: 20px; /* Espacio inferior entre las filas */
+}
 
-  :root {
-    --gradient-color: #407829; /* Define tu color de gradiente aquí */
-  }
+.info-card {
+  margin: 20px auto; /* Centra la tarjeta */
+  padding: 20px;
+  border: 1px solid #e0e0e0; /* Borde ligero */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  border-radius: 10px; /* Bordes redondeados */
+  transition: transform 0.3s; /* Animación suave al hacer hover */
+}
 
-  .gradient {
-    width: 100%;
-    background: linear-gradient(to right, transparent, #ccc);
-    margin-top: 10px;
-  }
-  
-  
-  .circular-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .mat-card-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .mat-card-title {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #3f51b5; /* Color primario */
-  }
-  
-  .mat-card-subtitle {
-    font-size: 1em;
-    color: #757575; /* Color secundario */
-  }
+.info-card:hover {
+  transform: scale(1.05); /* Escala la tarjeta al hacer hover */
+}
+.circular-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0.5px solid #3f51b5; /* Borde color primario */
+  padding: 5px;
+}
 
-  .card-actions {
-    margin-bottom: 10px; /* Empuja las acciones hacia la parte inferior */
-  }
-  
-  
-  .info-section {
-    margin-top: 20px;
-  }
-  
-  .info-row {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-    font-size: 1.1em;
-  }
-  
-  .info-row mat-icon {
-    margin-right: 10px;
-    color: #3f51b5; /* Color primario */
-  }
-  
-  .info-row > div {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .info-label {
-    font-size: 0.85em;
-    color: #757575; /* Color secundario */
-    margin-bottom: 2px;
-  }
+:root {
+  --gradient-color: #407829; /* Define tu color de gradiente aquí */
+}
 
-  .chip-container {
-    min-height: 40px;
-  }
+.gradient {
+  width: 100%;
+  background: linear-gradient(to right, transparent, #ccc);
+  margin-top: 10px;
+}
 
-  .button-bar {
-    margin-top: 10px;
-    margin-right: 10px;
-    text-align: center;
-  }
+
+.circular-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.mat-card-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #3f51b5; /* Color primario */
+}
+
+.mat-card-subtitle {
+  font-size: 1em;
+  color: #757575; /* Color secundario */
+}
+
+.card-actions {
+  margin-bottom: 10px; /* Empuja las acciones hacia la parte inferior */
+}
+
+
+.info-section {
+  margin-top: 20px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 1.1em;
+}
+
+.info-row mat-icon {
+  margin-right: 10px;
+  color: #3f51b5; /* Color primario */
+}
+
+.info-row > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.85em;
+  color: #757575; /* Color secundario */
+  margin-bottom: 2px;
+}
+
+.error-row {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 1.1em;
+}
+
+.error-row mat-icon {
+  margin-right: 10px;
+  color: #b50f38;
+}
+
+.error-row > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.error-label {
+  font-size: 0.85em;
+  color: #b50f38;
+  margin-bottom: 2px;
+}
+
+.error-list {
+  margin-top: -5px;
+}
+
+.error-list-item {
+  margin-top: -10px;
+}
+
+.chip-container {
+  min-height: 40px;
+}
+
+.button-bar {
+  margin-top: 10px;
+  margin-right: 10px;
+  text-align: center;
+}
+
+.actions-section {
+  margin: 5px 0px 5px 5px;
+}
