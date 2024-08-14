@@ -11,6 +11,9 @@ export class ViewstreamDialogComponent implements OnInit {
   /** title of the dialog */
   title?: string;
 
+  /** subtitle of the dialog */
+  subtitle?: string;
+
   /** icon of the dialog */
   icon?: string;
 
@@ -30,6 +33,7 @@ export class ViewstreamDialogComponent implements OnInit {
    */
   ngOnInit() {
     this.title = this.data.title;
+    this.subtitle = this.data.subtitle;
     this.icon = this.data.icon;
     this.stream1 = this.data.stream1;
     this.stream2 = this.data.stream2;
