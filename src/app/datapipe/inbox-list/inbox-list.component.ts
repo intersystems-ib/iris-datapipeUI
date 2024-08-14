@@ -186,6 +186,9 @@ export class InboxListComponent implements AfterViewInit {
 
     // update filters
     this.filters = newFilters;
+
+    // save current filters in preferences so that filters are kept when going back
+    this.preferencesService.inboxList.filters = this.filters;
     this.onChangeFilter();
   }
 
