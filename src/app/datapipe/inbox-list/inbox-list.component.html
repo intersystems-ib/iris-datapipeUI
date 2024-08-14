@@ -129,19 +129,27 @@
     <!-- results table -->
     <table mat-table [dataSource]="dataSource">
 
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef width="10px">&nbsp;
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()"
+                    [disabled]="(totalResults<=0)">
+                </mat-checkbox>
+            </th>
+			<td mat-cell *matCellDef="let row">
+				<mat-checkbox (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+			</td>
+		</ng-container>
+
         <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef width="150px"> </th>
-            <td mat-cell *matCellDef="let inbox"> 
+            <th mat-header-cell *matHeaderCellDef width="10px"> </th>
+            <td mat-cell *matCellDef="let inbox">
                 <button matTooltip="Details" mat-icon-button routerLink="/datapipe/{{ inbox.Id }}">
                     <mat-icon aria-label="info">info</mat-icon>
-                </button>
-                
-                <button matTooltip="Unignore" mat-icon-button *ngIf="(authService.checkPermission('DP_ADMIN', 'U') && inbox.Ignored==1)" (click)="clickIgnore(inbox)">
-                    <mat-icon aria-label="Hide">visibility_on</mat-icon>
-                </button>
-
-                <button matTooltip="Ignore" mat-icon-button *ngIf="(authService.checkPermission('DP_ADMIN', 'U') && inbox.Ignored!==1)" (click)="clickIgnore(inbox)">
-                    <mat-icon aria-label="Hide">visibility_off</mat-icon>
                 </button>
             </td>
         </ng-container>
@@ -223,5 +231,19 @@
 
     </table>
     <mat-paginator #paginator [length]="totalResults" [pageSize]="20" [pageSizeOptions]="[10, 20, 50]" (page)="onChangePage($event)"></mat-paginator>
+
+    <mat-toolbar class="bottom-toolbar">
+        <div *ngIf="!selection.isEmpty()" style="font-size: 14px; margin-right:10px;">
+            <span>{{ selection.selected.length }} rows selected</span>
+        </div>
+        <button mat-raised-button style="margin-right:5px;float:right;" matTooltip="Change visibility" [disabled]="selection.isEmpty() || !authService.checkPermission('DP_ADMIN', 'U')" (click)="hideSelection()">
+            <mat-icon>visibility</mat-icon>Hide
+        </button>
+        <!--
+        <button mat-raised-button style="margin-right:5px;float:right;" matTooltip="Repeat Ingestion, Staging or Operation" [disabled]="selection.isEmpty() || !authService.checkPermission('DP_ADMIN', 'U')">
+            <mat-icon>repeat</mat-icon>Repeat
+        </button>
+        -->
+    </mat-toolbar>
 
 </div>

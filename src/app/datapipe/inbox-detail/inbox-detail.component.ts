@@ -123,14 +123,14 @@ export class InboxDetailComponent implements OnInit {
 
     const confirmDialog = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: { title: '⚠️ Warning!', text: 'Are you sure you want to manually overwrite Normalized data re-run operation?' }
+      data: { title: '⚠️ Warning!', text: 'Do you want to manually overwrite Normalized data and repeat operation?' }
     });
 
     confirmDialog.afterClosed().subscribe(confirmation => {
       if (confirmation) {
         const dialogRef = this.datapipeService.clickViewStream({
-          title: 'Edit Normalized Data & Re-run Operation',
-          subtitle: '⚠️ This will manually overwrite Normalized and re-run operation with the overridden data', 
+          title: 'Edit Normalized Data & Repeat Operation',
+          subtitle: '⚠️ This will manually overwrite Normalized data and repeat operation with the overridden data', 
           icon: 'edit',
           editMode: true, 
           stream1: normData}

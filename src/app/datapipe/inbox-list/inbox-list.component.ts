@@ -10,6 +10,7 @@ import { PreferencesService } from 'src/app/shared/preferences.service';
 import { Inbox } from '../datapipe.model';
 import { DatapipeService } from '../datapipe.service';
 import { ActivatedRoute } from '@angular/router';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-inbox-list',
@@ -25,7 +26,7 @@ export class InboxListComponent implements AfterViewInit {
   totalResults: number = 0;
 
   /** columns that will be displayed */
-  displayedColumns = ['actions', 'Source', 'Pipe', 'MsgId', 'Subject', 'Element', 'UpdatedTS', 'Status', 'StagingStatus', 'OperStatus'];
+  displayedColumns = ['select', 'actions', 'Source', 'Pipe', 'MsgId', 'Subject', 'Element', 'UpdatedTS', 'Status', 'StagingStatus', 'OperStatus'];
 
   /** filters that are using to query the server */
   filters: any = {};
@@ -48,6 +49,8 @@ export class InboxListComponent implements AfterViewInit {
 
   /** filter fields that will not be stored in favs */
   skippedFilterInFavs = ['UpdatedTSFrom', 'UpdatedTSFromTime', 'UpdatedTSTo', 'UpdatedTSToTime'];
+
+  selection = new SelectionModel<Inbox>(true, []);
 
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
   
@@ -255,5 +258,55 @@ export class InboxListComponent implements AfterViewInit {
   favFiltersReady(firstFavFilter: any) {
     this.defaultFiltersComponentLoaded = true;
   }
+
+  selectHandler(row: Inbox) {
+    this.selection.toggle(row);
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+        this.selection.clear() :
+        this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+
+  hideSelection() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { title: 'Confirmation', text: 'Change visibility for selected records? (' + this.selection.selected.length + ')' }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        // copy actual selection
+        let selected = this.selection.selected;
+        this.selection.clear();
+
+        // for each selected
+        let numTotal = selected.length;
+        let numFinished = 0;
+        for (let inbox of selected) {
+          // change visibility
+          this.datapipeService.ignoreInbox(inbox.Id).subscribe(
+            data => {
+              numFinished++;
+              // check if all have calls finished
+              if (numTotal==numFinished) {
+                this.search();
+              }
+            }
+          )
+        }
+      }
+    });
+
+  }
+  
 
 }
