@@ -236,14 +236,25 @@
         <div *ngIf="!selection.isEmpty()" style="font-size: 14px; margin-right:10px;">
             <span>{{ selection.selected.length }} rows selected</span>
         </div>
+
         <button mat-raised-button style="margin-right:5px;float:right;" matTooltip="Change visibility" [disabled]="selection.isEmpty() || !authService.checkPermission('DP_ADMIN', 'U')" (click)="hideSelection()">
             <mat-icon>visibility</mat-icon>Hide
         </button>
-        <!--
-        <button mat-raised-button style="margin-right:5px;float:right;" matTooltip="Repeat Ingestion, Staging or Operation" [disabled]="selection.isEmpty() || !authService.checkPermission('DP_ADMIN', 'U')">
-            <mat-icon>repeat</mat-icon>Repeat
+        
+        <button mat-raised-button style="margin-right:5px;float:right;" matTooltip="Repeat some stage" [matMenuTriggerFor]="repeatMenu" [disabled]="selection.isEmpty() || !authService.checkPermission('DP_ADMIN', 'U')">
+            <div style="margin-top:9px;">
+                <mat-icon>repeat</mat-icon>
+                <span style="position:relative;top:-7px">&nbsp;Repeat</span>
+                <mat-icon>arrow_drop_up</mat-icon>
+            </div>
         </button>
-        -->
+    
+        <mat-menu #repeatMenu="matMenu">
+            <button mat-menu-item (click)="repeatSelection('ingestion')">Ingestion</button>
+            <button mat-menu-item (click)="repeatSelection('staging')">Staging</button>
+            <button mat-menu-item (click)="repeatSelection('operation')">Operation</button>
+        </mat-menu>
+
     </mat-toolbar>
 
 </div>

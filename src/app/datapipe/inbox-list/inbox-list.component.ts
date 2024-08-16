@@ -11,6 +11,7 @@ import { Inbox } from '../datapipe.model';
 import { DatapipeService } from '../datapipe.service';
 import { ActivatedRoute } from '@angular/router';
 import { SelectionModel } from '@angular/cdk/collections';
+import { NotificationService } from 'src/app/shared/notification.service';
 
 @Component({
   selector: 'app-inbox-list',
@@ -61,7 +62,8 @@ export class InboxListComponent implements AfterViewInit {
     public preferencesService: PreferencesService,
     public authService: AuthService,
     public dialog: MatDialog,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
+    private notificationService: NotificationService
   ) {
       // retrieve query params from url
       this.params = {};
@@ -199,30 +201,12 @@ export class InboxListComponent implements AfterViewInit {
    * Returns if the user can perform a search depending on the value of the filter fields
    */
   canSearch(): boolean {
-    return (this.masterDataLoaded && this.defaultFiltersComponentLoaded);
+    return (this.masterDataLoaded);
   }
 
-  /**
-   * Click on ignore (change ignore status)
+  /** 
+   * Load a clicked fav filter 
    */
-  clickIgnore(inbox: Inbox): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: { title: 'Confirmation', text: 'Change ignored status?' }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmation => {
-      if (confirmation) {
-        this.datapipeService.ignoreInbox(inbox.Id).subscribe(
-          data => {
-            this.search();
-          }
-        )
-      }
-    });
-  }
-
-
-  /** Load a clicked fav filter */
   loadFavFilter(loadedFilters: any, isResetFilters: boolean =  false) {
     // get the current value of those filters that are not stored in the favorites and must keep their values (skippedFilters)
     let skippedFilters: { [key: string]: any } = {};
@@ -254,32 +238,45 @@ export class InboxListComponent implements AfterViewInit {
     this.search();
   }
 
-  /** Fav filters are loaded and ready to be used */
+  /** 
+   * Fav filters are loaded and ready to be used 
+   */
   favFiltersReady(firstFavFilter: any) {
     this.defaultFiltersComponentLoaded = true;
   }
 
+  /**
+   * Select a row
+   * @param row
+   */
   selectHandler(row: Inbox) {
     this.selection.toggle(row);
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
+  /** 
+   * Whether the number of selected elements matches the total number of rows. 
+   */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  /** 
+   * Selects all rows if they are not all selected; otherwise clear selection. 
+   */
   masterToggle() {
     this.isAllSelected() ?
         this.selection.clear() :
         this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
+  /**
+   * Hide selected rows
+   */
   hideSelection() {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: { title: 'Confirmation', text: 'Change visibility for selected records? (' + this.selection.selected.length + ')' }
+      data: { title: 'Confirmation', text: 'Change visibility for selected rows? (' + this.selection.selected.length + ')' }
     });
 
     dialogRef.afterClosed().subscribe(confirmation => {
@@ -289,23 +286,70 @@ export class InboxListComponent implements AfterViewInit {
         this.selection.clear();
 
         // for each selected
-        let numTotal = selected.length;
-        let numFinished = 0;
+        let ids = [];
         for (let inbox of selected) {
-          // change visibility
-          this.datapipeService.ignoreInbox(inbox.Id).subscribe(
-            data => {
-              numFinished++;
-              // check if all have calls finished
-              if (numTotal==numFinished) {
-                this.search();
-              }
-            }
-          )
+          ids.push(inbox.Id)
         }
+        
+        // change visibility
+        this.datapipeService.ignoreInbox(ids).subscribe(
+          data => {
+            let msg = "✅ " + data.ok.total + " rows affected"
+            if (data.error.total > 0) {
+              msg = msg + ". ❌ " + data.error.total + " errors found"
+            }
+            this.notificationService.openMessageBar(msg, "Dismiss")
+            this.search();
+          }
+        )
       }
     });
+  }
 
+  /**
+   * Repeat ingestion|staging|operation in selected rows
+   */
+  repeatSelection(type: string) {
+    let confirmationMsg = `Repeat ${type} for selected rows (${this.selection.selected.length})?`;
+
+    // copy actual selection
+    let selected = this.selection.selected;
+    this.selection.clear();
+
+    // for each selected
+    let ids = [];
+    let showWarning = false;
+    for (let inbox of selected) {
+      if (inbox.Status === "DONE" && inbox.StagingStatus==="VALID" && inbox.OperStatus==="PROCESSED") {
+        showWarning = true;
+      }
+      ids.push(inbox.Id)
+    }
+
+    if (showWarning) {
+      confirmationMsg = '⚠️ Warning! Some selected records were already processed successfully\n\n' + confirmationMsg
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { title: 'Confirmation', text: confirmationMsg }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        
+        // repeat
+        this.datapipeService.repeatInbox(type, ids).subscribe(
+          data => {
+            let msg = "✅ " + data.ok.total + " rows affected"
+            if (data.error.total > 0) {
+              msg = msg + ". ❌ " + data.error.total + " errors found"
+            }
+            this.notificationService.openMessageBar(msg, "Dismiss")
+            this.search();
+          }
+        )
+      }
+    });
   }
   
 

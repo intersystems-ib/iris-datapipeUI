@@ -7,6 +7,7 @@ import { tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from 'src/app/auth/auth.service';
+import { NotificationService } from 'src/app/shared/notification.service';
 
 
 @Component({
@@ -34,6 +35,7 @@ export class InboxDetailComponent implements OnInit {
     public dialog: MatDialog,
     public authService: AuthService,
     private router: Router,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -66,21 +68,29 @@ export class InboxDetailComponent implements OnInit {
     }
   }
 
+  
   /**
-   * Resend a message
-   * This method is used to repeat Ingestion, Staging or Operation layers
-   * @param msgId
+   * Repeat ingestion|staging|operation in selected rows
+   * @param type ingestion|staging|operation
+   * @param inboxId
    */
-  clickResendMessage(msgId: number, text: string) {
+  repeatInbox(type: string, inbox: Inbox) {
+
+    let confirmationMsg = `Repeat ${type}?`;
+    if (inbox.Status === "DONE" && inbox.StagingStatus==="VALID" && inbox.OperStatus==="PROCESSED") {
+      confirmationMsg = '⚠️ Warning! This record was already processed successfully\n\n' + confirmationMsg
+    }
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: { title: 'Confirmation', text: text }
+      data: { title: 'Confirmation', text: confirmationMsg }
     });
 
     dialogRef.afterClosed().subscribe(confirmation => {
       if (confirmation) {
-        this.datapipeService.resendMessage(msgId).subscribe(
+        let ids = [];
+        ids.push(inbox.Id)
+        
+        this.datapipeService.repeatInbox(type, ids).subscribe(
           data => {
             this.loading$.next(true);
             setTimeout(() => {
@@ -97,13 +107,13 @@ export class InboxDetailComponent implements OnInit {
    * Returns true if resend buttons must be disabled.
    * Resend buttons are disabled when a message has been processed with no errors
    */
-  disableResend() {
+  repeatDisabled() {
     return (
       !this.inbox ||
-      !this.authService.checkPermission("DP_ADMIN", "U") ||
+      !this.authService.checkPermission("DP_ADMIN", "U") /*||
       (this.inbox.Status==="DONE" &&
       this.inbox.StagingStatus==="VALID" &&
-      this.inbox.OperStatus==="PROCESSED")
+      this.inbox.OperStatus==="PROCESSED")*/
     );
   }
 

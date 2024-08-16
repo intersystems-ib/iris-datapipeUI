@@ -10,6 +10,7 @@ export class NotificationService {
 
   constructor(private messageBar: MatSnackBar) {
   }
+  
   public openMessageBar(message: string, action: string): void {
     this.messageBar.open(message, action, {
       duration: NotificationService.STANDARD_MESSAGE_DURATION,

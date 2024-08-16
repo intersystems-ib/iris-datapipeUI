@@ -6,12 +6,12 @@
 
     <div class="section-container" *ngIf="!(loading$ | async)">
 
-        <div class="gradient" *ngIf="(inbox$ | async) as inbox">
+        <div class="gradient">
             <span>&nbsp;</span>
         </div>
 
         <!-- Inbox -->
-        <div class="card-container">
+        <div class="card-container" *ngIf="(inbox$ | async) as inbox">
             <mat-card class="dp-card mat-card" appearance="outlined" *ngIf="(inbox$ | async) as inbox">
                 <mat-card-header class="mat-card-header">
                     <div mat-card-avatar><img mat-card-image src="assets/img/inbox.png" class="circular-avatar"></div>
@@ -86,9 +86,9 @@
                         <span>&nbsp;</span>
                     </div>
                     <div class="actions-section">
-                        <button matTooltip="Repeat Ingestion" [disabled]="disableResend()"
-                            (click)="clickResendMessage(+ingestion.HeaderId, 'Repeat Ingestion?')" type="submit"
-                            mat-mini-fab color="accent" style='margin-right: 10px;'>
+                        <button matTooltip="Repeat Ingestion" [disabled]="repeatDisabled()"
+                            (click)="repeatInbox('ingestion', inbox)" type="submit"
+                            mat-mini-fab color="link" style='margin-right: 10px;'>
                             <mat-icon>repeat</mat-icon>
                         </button>
                         <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId"
@@ -141,8 +141,8 @@
                         </mat-chip-listbox>
                     </div>
                     <div class="actions-section">
-                        <button type="submit" [disabled]="disableResend()" matTooltip="Repeat Staging"
-                            (click)="clickResendMessage(+staging.HeaderId, 'Repeat Staging?')" mat-mini-fab color="accent"
+                        <button type="submit" [disabled]="repeatDisabled()" matTooltip="Repeat Staging"
+                            (click)="repeatInbox('staging', inbox)" mat-mini-fab color="link"
                             style='margin-right: 10px;'>
                             <mat-icon>repeat</mat-icon>
                         </button>
@@ -213,9 +213,9 @@
                     </div>
                     <div class="actions-section">
                         <div>
-                            <button type="submit" [disabled]="disableResend()" mat-mini-fab color="accent"
+                            <button type="submit" [disabled]="repeatDisabled()" mat-mini-fab color="link"
                                 style='margin-right: 10px;' matTooltip="Repeat Operation"
-                                (click)="clickResendMessage(+oper.HeaderId, 'Repeat Operation?')">
+                                (click)="repeatInbox('operation', inbox)">
                                 <mat-icon>repeat</mat-icon>
                             </button>
                             <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId"

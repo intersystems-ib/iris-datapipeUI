@@ -284,29 +284,31 @@ export class DatapipeService {
   }
 
   /**
-   * Resend an Interop message
+   * Repeat an inbox stage
+   * @param type ingestion|staging|operation
+   * @param inboxIdsArray array of inbox ids
    */
-  resendMessage(msgId: number) {
-    return this.http.post(
-      this.urlBase + `/resendMessage/${msgId}`,
-      {},
+  repeatInbox(type: string, inboxIdsArray: number[]) {
+    return this.http.post<any>(
+      this.urlBase + `/repeat`,
+      { "ids": inboxIdsArray, "type": type },
       this.options
     ).pipe(
       catchError(err => {
-        this.alertService.error('[resendMessage] ' + err.message)
+        this.alertService.error('[repeatInbox] ' + err.message)
         return throwError(() => err);
       })
     );
   }
 
   /**
-   * Ignore 
-   * @param inboxId
+   * Ignore/unignore an inbox (change visibility status) 
+   * @param inboxIdsArray array of inbox ids
    */
-  ignoreInbox(inboxId: number) {
-    return this.http.put<boolean>(
-      this.urlBase + `/ignore/${inboxId}`,
-      {},
+  ignoreInbox(inboxIdsArray: number[]) {
+    return this.http.put<any>(
+      this.urlBase + `/ignore`,
+      { "ids": inboxIdsArray },
       this.options
     ).pipe(
         catchError(err => {
