@@ -80,6 +80,9 @@ setActivityByStatusOptions() {
   this.chartActivityByStatusChart = {
     type: 'bar', width: 1000, stacked: true, toolbar: { show: true },
     events: {
+      dataPointMouseEnter: function(event: any) {
+        event.target.style.cursor = "pointer";
+      },
       dataPointSelection: (event: any, chartContext: any, config: any) => {
         // series: e.g. Ok, Errors
         const type = config.w.config.series[config.seriesIndex].name;

@@ -252,7 +252,7 @@
                             </div>
                         </div>
                         <mat-list class="error-list">
-                            <mat-list-item *ngFor="let error of (oper.OperErrors)">
+                            <mat-list-item *ngFor="let error of (oper.OperErrors)" class="error-list-item">
                                 <span matListItemTitle>{{ error.Code }}</span> 
                                 <span>{{ error.Desc }}</span>
                             </mat-list-item>
