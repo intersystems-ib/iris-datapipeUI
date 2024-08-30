@@ -1,0 +1,61 @@
+<div>
+    <p class="h2">Dashboard</p>
+
+     <!-- filters form -->
+     <mat-accordion>
+        <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+            <mat-icon style='margin-right:5px;'>filter_list</mat-icon>Filters
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form #filtersForm="ngForm" (ngSubmit)="search()">
+
+            <!-- filters row -->
+            <div class="button-row">
+                <mat-form-field floatLabel="always" style="width: 200px">
+                    <input matInput placeholder="Updated Date (From)" [matDatepicker]="updatedTSFrom" [(ngModel)]="filters.UpdatedTSFrom" name="updatedTSFrom">
+                    <mat-datepicker-toggle matSuffix [for]="updatedTSFrom"></mat-datepicker-toggle>
+                    <mat-datepicker #updatedTSFrom></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field floatLabel="always" style="width: 200px">
+                    <input [disabled]="!filters.UpdatedTSFrom" matInput placeholder="Updated Time (From)" [(ngModel)]="filters.UpdatedTSFromTime" name="updatedTSFromTime">
+                </mat-form-field>
+
+                <mat-form-field floatLabel="always" style="width: 200px">
+                    <input matInput placeholder="Updated Date (To)" [matDatepicker]="updatedTSTo" [(ngModel)]="filters.UpdatedTSTo" name="updatedTSTo">
+                    <mat-datepicker-toggle matSuffix [for]="updatedTSTo"></mat-datepicker-toggle>
+                    <mat-datepicker #updatedTSTo></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field floatLabel="always" style="width: 200px">
+                    <input [disabled]="!filters.UpdatedTSTo" matInput placeholder="Updated Time (To)" [(ngModel)]="filters.UpdatedTSToTime" name="updatedTSToTime">
+                </mat-form-field>
+            </div>
+
+            <!-- filters buttons -->
+            <div class="button-row">
+                <span class="fill-space"></span>
+                <button type="submit" mat-raised-button color="primary" [disabled]="!canSearch()"  >
+                    <mat-icon>search</mat-icon>Search
+                </button>
+            </div>
+            
+        </form>
+        </mat-expansion-panel>
+    </mat-accordion>
+
+    <div class="chart-container">
+        <apx-chart #chartActivityByStatus *ngIf="chartActivityByStatusReady"
+            [series]="chartActivityByStatusOptions.series"
+            [plotOptions]="chartActivityByStatusOptions.plotOptions"
+            [xaxis]="chartActivityByStatusOptions.xaxis"
+            [chart]="chartActivityByStatusChart"
+            [dataLabels]="chartActivityByStatusOptions.dataLabels"
+            [colors]="chartActivityByStatusOptions.colors" [tooltip]="chartActivityByStatusOptions.tooltip"
+            [yaxis]="chartActivityByStatusOptions.yaxis" [title]="{ text: 'Activity By Status'}"
+            [legend]="{ position: 'top',width: 450  }">
+        </apx-chart>
+    </div>
+
+</div>
+

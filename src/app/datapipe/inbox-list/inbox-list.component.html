@@ -57,10 +57,16 @@
                 <mat-label class="highlight-field">Source</mat-label>
                 <input matInput [(ngModel)]="filters.Source" name="Source">
             </mat-form-field>
-            <mat-form-field floatLabel="always" style="width: 200px">
-                <mat-label class="highlight-field">Flow</mat-label>
-                <input matInput [(ngModel)]="filters.Flow" name="Flow">
+            
+            <mat-form-field floatLabel="always" style="width: 400px">
+                <mat-label class="highlight-field">Pipe</mat-label>
+                <mat-select [(ngModel)]="filters.Pipe" multiple name="Pipe">
+                <mat-option *ngFor="let pipe of filteredPipes" [value]="pipe.Code">
+                    <u><small>{{ pipe.Code }}</small></u> - {{ pipe.Description }}
+                </mat-option>
+                </mat-select>
             </mat-form-field>
+        
             <mat-form-field floatLabel="always" style="width: 200px">
                 <mat-label class="highlight-field">MsgId</mat-label>
                 <input matInput [(ngModel)]="filters.MsgId" name="MsgId">
@@ -107,6 +113,12 @@
             <button type="submit" mat-raised-button color="primary" [disabled]="!canSearch()"  >
                 <mat-icon>search</mat-icon>Search
             </button>
+            <app-default-filters #defaultFilterComponent 
+                [(filters)]="this.filters" 
+                (clickLoad)="loadFavFilter($event)"
+                [disabledButtons]="!this.masterDataLoaded"
+                [SettingKey]="'INBOXLIST_FILTERS'" [skippedFields]="skippedFilterInFavs"
+                (loadingDone)="this.favFiltersReady($event)" />
             </div>
             
         </form>
@@ -117,19 +129,27 @@
     <!-- results table -->
     <table mat-table [dataSource]="dataSource">
 
-        <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef width="150px"> </th>
-            <td mat-cell *matCellDef="let inbox"> 
-                <button matTooltip="Details" mat-icon-button routerLink="/datapipe/{{ inbox.Id }}">
-                    <mat-icon aria-label="info">info</mat-icon>
-                </button>
-                
-                <button matTooltip="Unignore" mat-icon-button *ngIf="(authService.isAdminUser && inbox.Ignored==1)" (click)="clickIgnore(inbox)">
-                    <mat-icon aria-label="Hide">visibility_on</mat-icon>
-                </button>
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef width="10px">&nbsp;
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()"
+                    [disabled]="(totalResults<=0)">
+                </mat-checkbox>
+            </th>
+			<td mat-cell *matCellDef="let row">
+				<mat-checkbox (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+			</td>
+		</ng-container>
 
-                <button matTooltip="Ignore" mat-icon-button *ngIf="(authService.isAdminUser && inbox.Ignored!==1)" (click)="clickIgnore(inbox)">
-                    <mat-icon aria-label="Hide">visibility_off</mat-icon>
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef width="10px"> </th>
+            <td mat-cell *matCellDef="let inbox">
+                <button matTooltip="Details" mat-icon-button routerLink="/datapipe/{{ inbox.Id }}">
+                    <mat-icon aria-label="info" style="cursor:pointer;color:#333695">info</mat-icon>
                 </button>
             </td>
         </ng-container>
@@ -144,9 +164,9 @@
             <td mat-cell *matCellDef="let inbox"> {{inbox.Source}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="Flow">
-            <th mat-header-cell *matHeaderCellDef> Flow </th>
-            <td mat-cell *matCellDef="let inbox"> {{inbox.Flow}} </td>
+        <ng-container matColumnDef="Pipe">
+            <th mat-header-cell *matHeaderCellDef> Pipe </th>
+            <td mat-cell *matCellDef="let inbox"> {{inbox.Pipe}} </td>
         </ng-container>
 
         <ng-container matColumnDef="MsgId">
@@ -211,5 +231,30 @@
 
     </table>
     <mat-paginator #paginator [length]="totalResults" [pageSize]="20" [pageSizeOptions]="[10, 20, 50]" (page)="onChangePage($event)"></mat-paginator>
+
+    <mat-toolbar class="bottom-toolbar">
+        <div *ngIf="!selection.isEmpty()" style="font-size: 14px; margin-right:10px;">
+            <span>{{ selection.selected.length }} rows selected</span>
+        </div>
+
+        <button mat-raised-button style="margin-right:5px;float:right;" matTooltip="Change visibility" [disabled]="selection.isEmpty() || !authService.checkPermission('DP_ADMIN', 'U')" (click)="hideSelection()">
+            <mat-icon>visibility</mat-icon>Hide
+        </button>
+        
+        <button mat-raised-button style="margin-right:5px;float:right;" matTooltip="Repeat some stage" [matMenuTriggerFor]="repeatMenu" [disabled]="selection.isEmpty() || !authService.checkPermission('DP_ADMIN', 'U')">
+            <div style="margin-top:9px;">
+                <mat-icon>repeat</mat-icon>
+                <span style="position:relative;top:-7px">&nbsp;Repeat</span>
+                <mat-icon>arrow_drop_up</mat-icon>
+            </div>
+        </button>
+    
+        <mat-menu #repeatMenu="matMenu">
+            <button mat-menu-item (click)="repeatSelection('ingestion')">Ingestion</button>
+            <button mat-menu-item (click)="repeatSelection('staging')">Staging</button>
+            <button mat-menu-item (click)="repeatSelection('operation')">Operation</button>
+        </mat-menu>
+
+    </mat-toolbar>
 
 </div>

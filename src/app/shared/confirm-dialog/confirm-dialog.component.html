@@ -2,10 +2,10 @@
     <mat-icon color="accent">help_outline</mat-icon> 
     {{ title }}
 </h1>
-<div mat-dialog-content>
+<div mat-dialog-content class="confirm-message">
     {{ text }}
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions style="display: flex; justify-content: flex-end;">
     <button mat-raised-button color="primary" (click)="onAccept()">Accept</button>
 	<button mat-raised-button (click)="onCancel()">Cancel</button>
 </div>

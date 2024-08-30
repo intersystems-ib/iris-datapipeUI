@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 export interface Inbox {
     Id: number;
     Source: string;
-    Flow: string;
+    Pipe: Pipe;
     MsgId: string;
     Subject: string;
     Element: string;
@@ -67,6 +67,15 @@ export interface Oper {
     Status: string;
     OperLog: string;
     OperErrors: { Code: string, Desc: string}[];
+}
+
+/**
+ * Pipe
+ */
+export interface Pipe {
+    Code: string;
+    Description: string;
+    SecurityResource: string;
 }
 
 /**

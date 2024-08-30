@@ -1,0 +1,41 @@
+<div style="position: relative; display: inline-block;">
+    <span *ngFor="let favorite of favorites; let i = index" style="margin-top: 10px;">
+            <button type="button" mat-raised-button class="fav-button" [disabled]="disabledButtons"
+                    [ngClass]="{'shake': favorite.isShaking, 'edit-mode': favorite.showActions}"
+                    (mousedown)="handleMouseDown(i)" (mouseup)="handleMouseUp(i)" (click)="handleClick(i)"
+                    matTooltip="Hold to Edit">
+                    <mat-icon>favorite</mat-icon>
+                    <span *ngIf="!favorite.showActions">{{favorite.Label.length > 0 ? favorite.Label :
+                            'FAV'}}</span>
+                    <input *ngIf="favorite.showActions" type="text" [(ngModel)]="favorite.Label" class="edit-field"
+                            (keydown.enter)="handleSave(i)">
+            </button>
+            <div *ngIf="favorite.showActions" class="icon-buttons">
+                    <button mat-icon-button color="primary" (click)="handleSave(i)" matTooltip="Save"
+                            class="small-icon-button">
+                            <mat-icon>save</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" (click)="handleDelete(i)" matTooltip="Delete"
+                            class="small-icon-button">
+                            <mat-icon>delete</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="handleMoveLeft(i)" matTooltip="Move Left"
+                            class="small-icon-button">
+                            <mat-icon>keyboard_double_arrow_left</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="handleMoveRight(i)" matTooltip="Move Right"
+                            class="small-icon-button">
+                            <mat-icon>keyboard_double_arrow_right</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="handleCancel(i)" matTooltip="Cancel"
+                            class="small-icon-button cancel-button">
+                            <mat-icon class="cancel-icon">cancel</mat-icon>
+                    </button>
+            </div>
+    </span>
+    <button type="button" mat-icon-button class="add-favorite-button" [disabled]="disabledButtons"
+            (click)="handleAddFav()" matTooltip="Add favorite">
+            <mat-icon>favorite</mat-icon>
+            <span class="plus-icon">+</span>
+    </button>
+</div>

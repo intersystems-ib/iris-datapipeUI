@@ -1,11 +1,39 @@
-<mat-icon>{{ icon }}</mat-icon>
-<span class="app-subtitle-label">{{ title }}</span>
-<mat-divider></mat-divider>
+<div class="card-container">
 
-<div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0.5%" style='margin-top: 20px;' *ngIf=(!stream2)>
-	<pre>{{ stream1 }}</pre>
-</div>
+	<mat-card class="mat-card" appearance="outlined">
+		<mat-card-header class="mat-card-header">
+			<div mat-card-avatar><mat-icon>{{ icon }}</mat-icon></div>
+			<mat-card-title>{{ title }}</mat-card-title>
+			<mat-card-subtitle>{{ subtitle }}</mat-card-subtitle>
+		</mat-card-header>
+		<mat-card-content>
+			<!-- option: viewing stream1 -->
+			<div class="stream-container" *ngIf="(!stream2) && (!editMode)">
+				<pre class="code-container">{{ stream1 }}</pre>
+			</div>
 
-<div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0.5%" style='margin-top: 20px;' *ngIf=(stream2)>	
-	<ngx-side-by-side-diff class="ngx-diff-light-theme" [before]="stream1" [after]="stream2" style="width: 100%"/>
+			<!-- option: editing stream1 -->
+			<div class="stream-container" *ngIf="editMode">
+				<textarea class="code-container" [(ngModel)]="stream1" [rows]="stream1Lines"></textarea>
+			</div>
+
+			<!-- option: viewving stream1 Vs stream2 -->
+			<div class="stream-container" *ngIf=(stream2)>	
+				<ngx-side-by-side-diff 
+					class="ngx-diff-light-theme my-custom-ngx-diff-theme" 
+					[before]="stream1" 
+					[after]="stream2" 
+				/>
+			</div>
+		</mat-card-content>
+
+		<mat-card-footer *ngIf="editMode">
+			<mat-toolbar style="display: flex; justify-content: flex-end;">
+				<button mat-raised-button color="accent" (click)="onSave()" style="margin-right:5px;float:right;">
+					<mat-icon>send</mat-icon>Overwrite
+				</button>
+			</mat-toolbar>
+		</mat-card-footer>
+	</mat-card>
+
 </div>

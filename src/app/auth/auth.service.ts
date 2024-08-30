@@ -10,12 +10,18 @@ import { environment } from '../../environments/environment';
  */
 @Injectable()
 export class AuthService {
+
+  /** username */
+  username: string = "";
+
+  /** user full name */
+  fullName: string = "";
+
+  /** user permissions */
+  permissions: any = {};
   
   /** isLoginSubject is used to know if the user is logged in or not */
   isLoginSubject = new BehaviorSubject<boolean>(this.authenticated());
-
-  /** isAdminUser. Backend has authorized user as Admin user or not */
-  isAdminUser: boolean = false;
 
   /** private user token */
   private _token: BehaviorSubject<string> = new BehaviorSubject<string>('');
@@ -24,34 +30,24 @@ export class AuthService {
    * Constructor 
    */
   constructor(private http: HttpClient, private router: Router) {
-    document.execCommand('ClearAuthenticationCache', false);
-    this._token
-      .asObservable()
-      .subscribe(
-        token => {
-          // user token changed. 
-          // you can grab user data from server (e.g. info, preferences) 
-          if (token) {
-            this.getUserInfo().subscribe();
-          }
-        } 
-      );
   }
 
   /**
    * Login into the app (implements Basic HTTP auth with IRIS backend)
    * @param username 
-   * @param password 
+   * @param password
+   * @param redirectTo url to redirect after login 
    */
-  public login(username: string, password: string): Observable<string> {
+  public login(username: string, password: string, redirectTo: string): Observable<string> {
     let basicheader = btoa(encodeURI(username+":"+password));
     let headers = new HttpHeaders();
     headers = headers.set('Authorization', 'Basic ' + basicheader);
     headers = headers.set('Cache-Control', 'no-cache');
 
     return this.http
-      .get<any>(
-        environment.urlIRISApi + '/rf2/form/info/DataPipe.Data.Inbox',
+      .post<any>(
+        environment.urlIRISApi + '/login',
+        {},
         {headers}
       ).
       pipe(
@@ -61,12 +57,17 @@ export class AuthService {
           this._token.next(token);
           setTimeout(() => {
             this.isLoginSubject.next(true);
+            this.getUserInfo().subscribe( d => {
+              this.router.navigateByUrl(redirectTo);  
+            }
+            );
           });
+          this.username = username;
           return username;
         }),
         catchError(err => {
           this.logout();
-          return throwError(err);
+          return throwError(() => err);
         })
       );
   }
@@ -76,17 +77,21 @@ export class AuthService {
    */
   public logout(): void {
     localStorage.removeItem(environment.authLocalStorageKey);
+    this.username = '';
+    this.fullName = '';
+    this.permissions = {};
+
     setTimeout(() => {
       this.isLoginSubject.next(false);
+      this._token.next('');
     });
   }
 
   /**
    * Returns true if user is authenticated
    */
-  public authenticated(): boolean {
-    const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey) || '{}');
-    const token = currentUser && currentUser.token;
+  private authenticated(): boolean {
+    const token = this.getToken();
     if (token) {
       if (this._token) {
         this._token.next(token);
@@ -99,7 +104,7 @@ export class AuthService {
   /**
    * Returns stored user token (if any)
    */
-  getToken(): string {
+  public getToken(): string {
     const currentUser = JSON.parse(localStorage.getItem(environment.authLocalStorageKey) || '{}');
     const token = currentUser && currentUser.token;
     return token;
@@ -108,10 +113,9 @@ export class AuthService {
   /**
    * Returns an Observable that can be used across the application to know if the user is logged in
    */
-  isLoggedIn(): Observable<boolean> {
+  public isLoggedIn(): Observable<boolean> {
     return this.isLoginSubject.asObservable();
   }
-
 
   /**
    * Get user information from IRIS and load attributes as needed 
@@ -124,16 +128,33 @@ export class AuthService {
       pipe(
         tap(data => {
           // load user attributes
-          // this attributes can be read from other app modules
-          this.isAdminUser = data.isAdminUser;
+          this.username = data.username;
+          this.fullName = data.fullName;
+          this.permissions = data.permissions;
           
           return data;
         }),
         catchError(err => {
           this.logout();
-          return throwError(err);
+          return throwError(() => err);
         })
       );
+  }
+
+  /**
+   * Check that user has a permission with a given level
+   * @param permission
+   * @param level 
+   * @returns 
+   */
+  public checkPermission(permission: string, level: string): boolean {
+    let permitted: boolean = false;
+
+    if (this.permissions[permission]) {
+      let permissions = this.permissions[permission].toUpperCase();
+      permitted = permissions.includes(level.toUpperCase());
+    }
+    return permitted;
   }
   
 }

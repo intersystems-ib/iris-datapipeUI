@@ -18,3 +18,20 @@
 .main-content {
   margin: 10px 10px 10px 10px;
 }
+
+/** left menu bar (options) */
+.custom-drawer-inner-container {
+  width: 250px;
+}
+.custom-navbarTitle {
+  font-weight: 500;
+  font-size: 1.5em;
+  margin: 15px;
+}
+.custom-navbarIcon {
+  height: 30px; 
+  width: 30px; 
+  margin-left: 20px;
+  margin-bottom: 20px;
+  margin-bottom: 10px;
+}

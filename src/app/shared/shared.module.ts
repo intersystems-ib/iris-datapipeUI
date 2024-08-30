@@ -2,6 +2,7 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AlertDisplayComponent } from './alert-display/alert-display.component';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { DefaultFiltersComponent } from './default-filters/default-filters.component';
 import { AlertService } from './alert.service';
 
 import {MatButtonModule} from '@angular/material/button';
@@ -25,6 +26,8 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 const mm = [ 
   MatButtonModule,
@@ -48,13 +51,16 @@ const mm = [
   MatDividerModule,
   MatTabsModule,
   MatSidenavModule,
-  MatListModule
+  MatListModule,
+  MatCardModule,
+  MatCheckboxModule
 ]
 
 @NgModule({
   declarations: [
     AlertDisplayComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    DefaultFiltersComponent
   ],
   imports: [
     CommonModule,
@@ -63,7 +69,8 @@ const mm = [
   exports: [
     ...mm,
     ConfirmDialogComponent,
-    AlertDisplayComponent
+    AlertDisplayComponent,
+    DefaultFiltersComponent
   ]
 })
 export class SharedModule { 
