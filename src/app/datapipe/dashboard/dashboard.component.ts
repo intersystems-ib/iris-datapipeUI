@@ -84,8 +84,8 @@ setActivityByStatusOptions() {
         event.target.style.cursor = "pointer";
       },
       dataPointSelection: (event: any, chartContext: any, config: any) => {
-        // series: e.g. Ok, Errors
-        const type = config.w.config.series[config.seriesIndex].name;
+        // series: e.g. Ok, InProgress, Errors
+        const type = config.w.config.series[config.seriesIndex].name.replace(/\s/g, '');
         // xaxis category: e.g. HL7-ADT
         const pipe = config.w.config.xaxis.categories[config.dataPointIndex];
         // actual value
@@ -112,23 +112,26 @@ getData() {
   this.datapipeService.getInboxActivity(this.buildQuery()).subscribe((res) => {
     let pipeNames: any = [];
     let errorValues: any = [];
+    let inProgressValues: any = [];
     let okValues: any = [];
 
     let pipes = Object.keys(res);
     
     pipes.forEach((pipe: any) => {
-      errorValues.push(res[pipe]['errors'])
-      okValues.push(res[pipe]['ok'])
+      errorValues.push(res[pipe]['errors']);
+      inProgressValues.push(res[pipe]['inprogress']);
+      okValues.push(res[pipe]['ok']);
       pipeNames.push(pipe);
     });
 
     let seriesStatus: any = [];
     seriesStatus.push({name: 'Errors', data: errorValues});
+    seriesStatus.push({name: 'In Progress', data: inProgressValues});
     seriesStatus.push({name: 'Ok', data: okValues});
 
     this.chartActivityByStatusOptions.series = seriesStatus;
     this.chartActivityByStatusOptions.xaxis = { categories: pipeNames };
-    this.chartActivityByStatusOptions.colors = ['#df1c44','#39a275'];
+    this.chartActivityByStatusOptions.colors = ['#df1c44', '#17a2b8', '#39a275'];
     this.chartActivityByStatusReady = true;
   });
 

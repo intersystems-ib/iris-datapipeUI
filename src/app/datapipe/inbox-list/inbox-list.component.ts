@@ -92,16 +92,14 @@ export class InboxListComponent implements AfterViewInit {
       setTimeout(() => {
         // load last used filters
         this.filters = this.preferencesService.inboxList.filters;
-
+        
         // handle query params
+        const paramKeys = Object.keys(this.params);
+        if (paramKeys.length>0) {
+          this.clickResetFilters('initial', false, false);
+        }
         if (this.params.pipe) {
           this.filters.Pipe = [this.params.pipe];
-        }
-        if (this.params.type === 'Errors') {
-          this.filters.Status = ['ERROR-OPERATING','ERROR-STAGING','ERROR-INGESTING', 'ERROR-GENERAL'];
-        }
-        if (this.params.type === 'Ok') {
-          this.filters.Status = ['DONE', 'OPERATING', 'STAGING','INGESTING'];
         }
         if (this.params.from) {
           this.filters.UpdatedTSFrom = this.params.from.slice(0, 10);
@@ -109,6 +107,17 @@ export class InboxListComponent implements AfterViewInit {
         if (this.params.to) {
           this.filters.UpdatedTSTo = this.params.to.slice(0, 10);
         }
+
+        if (this.params.type === 'Errors') {
+          this.filters.Status = ['ERROR-OPERATING','ERROR-STAGING','ERROR-INGESTING', 'ERROR-GENERAL'];
+        } 
+        else if (this.params.type === 'InProgress') {
+          this.filters.Status = ['OPERATING', 'STAGING','INGESTING'];
+        } 
+        else if (this.params.type === 'Ok') {
+          this.filters.Status = ['DONE'];
+        }
+        
         this.paginator.pageIndex = this.preferencesService.inboxList.pageIndex;
         this.paginator.pageSize = this.preferencesService.inboxList.pageSize;
         this.getDataPage(this.paginator.pageIndex, this.paginator.pageSize);
@@ -175,17 +184,19 @@ export class InboxListComponent implements AfterViewInit {
   /**
    * Click on reset filters button
    */
-  clickResetFilters(type: string): void {
+  clickResetFilters(type: string, useCurrentFiltersWhenNull: boolean = true, autoSearch: boolean = true): void {
     const currentFilters = this.filters;
  
     // initialize newFilters using filtersPreset
     let newFilters: any = {};
     Object.assign(newFilters, this.preferencesService.inboxList.filtersPreset[type]);
 
-    // if newFilters value is null, replace with currentFilters
-    for (const f in newFilters) {
-      if (newFilters[f] === null) {
-        newFilters[f] = currentFilters[f];
+    if (useCurrentFiltersWhenNull) {
+      // if newFilters value is null, replace with currentFilters
+      for (const f in newFilters) {
+        if (newFilters[f] === null) {
+          newFilters[f] = currentFilters[f];
+        }
       }
     }
 
@@ -194,7 +205,10 @@ export class InboxListComponent implements AfterViewInit {
 
     // save current filters in preferences so that filters are kept when going back
     this.preferencesService.inboxList.filters = this.filters;
-    this.onChangeFilter();
+
+    if (autoSearch) {
+      this.onChangeFilter();
+    }
   }
 
   /**

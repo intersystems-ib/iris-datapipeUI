@@ -106,13 +106,14 @@
 
             <!-- filters buttons -->
             <div class="button-row">
-            <button type="button" mat-raised-button (click)="clickResetFilters('all')" style='background-color: #999; color:#fff'>All Today</button>
-            <button type="button" mat-raised-button (click)="clickResetFilters('errors')" style='background-color: #999; color:#fff'>Errors</button>
-            <button type="button" mat-raised-button (click)="clickResetFilters('warnings')" style='background-color: #999; color:#fff'>Warnings</button>
-            <span class="fill-space"></span>
             <button type="submit" mat-raised-button color="primary" [disabled]="!canSearch()"  >
                 <mat-icon>search</mat-icon>Search
             </button>
+            <button type="button" mat-raised-button (click)="clickResetFilters('all')" style='background-color: #999; color:#fff'>Today</button>
+            <button type="button" mat-raised-button (click)="clickResetFilters('inprogress')" style='background-color: #999; color:#fff'>In Progress</button>
+            <button type="button" mat-raised-button (click)="clickResetFilters('errors')" style='background-color: #999; color:#fff'>Errors</button>
+            <button type="button" mat-raised-button (click)="clickResetFilters('warnings')" style='background-color: #999; color:#fff'>Warnings</button>
+            <span class="fill-space"></span>
             <app-default-filters #defaultFilterComponent 
                 [(filters)]="this.filters" 
                 (clickLoad)="loadFavFilter($event)"

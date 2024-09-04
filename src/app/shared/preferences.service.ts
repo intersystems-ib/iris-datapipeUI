@@ -41,6 +41,7 @@ export class PreferencesService {
       initial: { "Ignored": "0", "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
       all: {"Ignored": "0",  "UpdatedTSFrom":new Date(), "UpdatedTSFromTime":"00:01", "UpdatedTSTo":new Date(), "UpdatedTSToTime":"23:59" },
       errors: { "Status": ["ERROR-INGESTING", "ERROR-STAGING", "ERROR-OPERATING","ERROR-GENERAL"], "Ignored" : "0", "UpdatedTSFrom": null, "UpdatedTSFromTime": null, "UpdatedTSTo": null, "UpdatedTSToTime": null },
+      inprogress: { "Status": ['OPERATING', 'STAGING','INGESTING'], "Ignored" : "0", "UpdatedTSFrom": null, "UpdatedTSFromTime": null, "UpdatedTSTo": null, "UpdatedTSToTime": null },
       warnings: { "Ignored" : "0", "StagingStatus" : ["Warning"], "UpdatedTSFrom": null, "UpdatedTSFromTime": null, "UpdatedTSTo": null, "UpdatedTSToTime": null },
     },
 
