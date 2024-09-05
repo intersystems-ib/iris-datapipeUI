@@ -12,31 +12,31 @@ export const routes: Routes = [
   {
     path: '',
     component: InboxListComponent,
-    canActivate: [AuthGuard]
+    canActivate: []
   },
   /* dasboard */
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [AuthGuard]
+    canActivate: []
   },
   /* admin: pipe list*/
   {
     path: 'admin/pipe',
     component: PipeListComponent,
-    canActivate: [AuthGuard]
+    canActivate: []
   },
   /* admin: edit/create pipe */
   {
     path: 'admin/pipe/:pipeCode',
     component: PipeDetailComponent,
-    canActivate: [AuthGuard]
+    canActivate: []
   },
   /* search: view inbox details */
   {
     path: ':inboxId',
     component: InboxInfoComponent,
-    canActivate: [AuthGuard]
+    canActivate: []
   }
 ];
 
