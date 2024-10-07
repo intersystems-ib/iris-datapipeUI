@@ -32,10 +32,17 @@
                                 <div>{{inbox.UpdatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT'}}</div>
                             </div>
                         </div>
+                        <div class="info-row" *ngIf="inbox.Namespace">
+                            <mat-icon>tab</mat-icon>
+                            <div>
+                                <div class="info-label">Namespace</div>
+                                <div>{{inbox.Namespace}}</div>
+                            </div>
+                        </div>
                         <div class="info-row">
                             <mat-icon>swap_horiz</mat-icon>
                             <div>
-                                <div class="info-label">Flow</div>
+                                <div class="info-label">Pipe</div>
                                 <div>{{inbox.Pipe.Code}} - {{inbox.Pipe.Description}}</div>
                             </div>
                         </div>
@@ -92,7 +99,7 @@
                             <mat-icon>repeat</mat-icon>
                         </button>
                         <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!ingestion.HeaderId"
-                            matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
+                            matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId, inbox.Namespace)">
                             <mat-icon>zoom_in</mat-icon>
                         </button>
                         <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Data" (click)="datapipeService.clickViewStream({
@@ -147,7 +154,7 @@
                             <mat-icon>repeat</mat-icon>
                         </button>
                         <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId"
-                            matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
+                            matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId, inbox.Namespace)">
                             <mat-icon>zoom_in</mat-icon>
                         </button>
                         <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data"
@@ -219,7 +226,7 @@
                                 <mat-icon>repeat</mat-icon>
                             </button>
                             <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId"
-                                matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
+                                matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId, inbox.Namespace)">
                                 <mat-icon>zoom_in</mat-icon>
                             </button>
                             <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Operation Log"

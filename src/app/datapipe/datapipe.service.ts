@@ -43,6 +43,7 @@ export class DatapipeService {
     if (query.MsgId) { filter += `+MsgId+eq+${query.MsgId}`; }
     if (query.Element) { filter += `+Element+eq+${query.Element}`; }
     if (query.Subject) { filter += `+Subject+eq+${query.Subject}`; }
+    if (query.Namespace) { filter += `+Namespace+contains+${query.Namespace}`; }
     
     if (query.Status && query.Status.length>0) { 
       let serializedStatus = query.Status.reduce(function (ret: any, item: any) {
@@ -380,8 +381,14 @@ export class DatapipeService {
   /**
    * Opens an Interoperability session
    */
-  clickSession(sessionId: number): void {
-    window.open(environment.urlIRIS + '/EnsPortal.VisualTrace.zen?SESSIONID=' + sessionId);
+  clickSession(sessionId: number, namespace?: string): void {
+    let urlIRIS = environment.urlIRIS;
+    if (namespace) {
+      urlIRIS = environment.urlIRIS.replace(":namespace", namespace.toLowerCase());
+    } else {
+      urlIRIS = environment.urlIRISDefault;
+    }
+    window.open(urlIRIS + '/EnsPortal.VisualTrace.zen?SESSIONID=' + sessionId);
   }
 
   /**

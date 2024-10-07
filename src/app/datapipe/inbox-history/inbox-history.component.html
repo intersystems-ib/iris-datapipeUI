@@ -21,7 +21,7 @@
                     <span class="inline" style="width:100px">Ingestion</span>
                     <span class="inline">{{ ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
                     <span class="inline">
-                        <button class="inline" mat-mini-fab color="link" [disabled]="!ingestion.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId)">
+                        <button class="inline" mat-mini-fab color="link" [disabled]="!ingestion.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId, inbox.Namespace)">
                             <mat-icon>zoom_in</mat-icon>
                         </button>
                         <button class="inline" mat-mini-fab color="link" matTooltip="Model Data" (click)="clickIngestionStream(ingestion.Id)">
@@ -44,7 +44,7 @@
                             </mat-chip>
                         </mat-chip-listbox>
                         <span class="inline">
-                            <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId)">
+                            <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!staging.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+staging.HeaderId, inbox.Namespace)">
                                 <mat-icon>zoom_in</mat-icon>
                             </button>
                             <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Model Normalized Data" (click)="clickStagingStream(staging.Id)">
@@ -67,7 +67,7 @@
                                 </mat-chip>
                             </mat-chip-listbox>
                             <span class="inline">
-                                <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId)">
+                                <button mat-mini-fab color="link" style='margin-right: 10px;' [disabled]="!oper.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+oper.HeaderId, inbox.Namespace)">
                                     <mat-icon>zoom_in</mat-icon>
                                 </button>
                                 <button mat-mini-fab color="link" style='margin-right: 10px;' matTooltip="Operation Log" (click)="clickOperationLogStream(oper.Id)">

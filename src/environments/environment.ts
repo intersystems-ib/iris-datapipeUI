@@ -16,6 +16,10 @@ export const environment = {
   urlIRISApi: 'http://localhost:52773/dpipe/api',
 
   /** IRIS url. Access to IRIS management portal (e.g. View Trace) will use this url */
-  urlIRIS: 'http://localhost:52773/csp/dpipe'
+  urlIRIS: 'http://localhost:52773/csp/:namespace',
+  
+  /** IRIS url that will be used if no namespace in Inbox */
+  urlIRISDefault: 'http://localhost:52773/csp/dpipe',
+
 
 };

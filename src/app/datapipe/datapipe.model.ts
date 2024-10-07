@@ -22,6 +22,7 @@ export interface Inbox {
 
     StagingStatus: string;
     OperStatus: string;
+    Namespace: string;
     
     Ingestions$: Observable<Ingestion[]>;
 }
