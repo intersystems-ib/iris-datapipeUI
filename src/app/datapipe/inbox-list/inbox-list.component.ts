@@ -20,6 +20,9 @@ import { NotificationService } from 'src/app/shared/notification.service';
 })
 export class InboxListComponent implements AfterViewInit {
 
+  /** flag for loading spinner */
+  loading!: boolean;
+
   /** list of inboxes to display */
   public dataSource = new MatTableDataSource<Inbox>();
 
@@ -135,11 +138,13 @@ export class InboxListComponent implements AfterViewInit {
   getDataPage(pageIndex: number, pageSize: number) {
     this.preferencesService.inboxList.pageIndex = pageIndex;
     this.preferencesService.inboxList.pageSize = pageSize;
+    this.loading = true;
     
     this.datapipeService.findInboxes(pageIndex + 1, pageSize, this.buildQuery())
     .subscribe((res)=>{
       this.dataSource.data = res.children;
       this.totalResults = res.total;
+      this.loading = false;
     });
 
   }
