@@ -82,7 +82,7 @@ export class DatapipeService {
     escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
     
     return this.http.get<QueryResult<Inbox>>(
-      this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/custom/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&collation=UPPER&orderby=1+desc`,
+      this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/custom/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&orderby=1+desc`,
       this.options
     )
     .pipe(
