@@ -15,9 +15,10 @@ html, body
     padding: 15px;  /* Add some padding for better readability */
     border-radius: 5px;  /* Rounded corners */
     border: 1px solid #ccc;  /* Light gray border */
-    
     white-space: pre-wrap;  /* Wrap long lines */
-    line-height: 1.5;  /* Improve line spacing */    
+    line-height: 1.5;  /* Improve line spacing */
+    overflow-y: auto; /* Enable vertical scrollbar if content overflows */
+    overflow-x: auto; /* Enable horizontal scrollbar if content overflows */
 }
 
 .my-custom-ngx-diff-theme {
