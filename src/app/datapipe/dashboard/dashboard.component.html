@@ -45,17 +45,34 @@
     </mat-accordion>
 
     <div class="chart-container">
-        <apx-chart #chartActivityByStatus *ngIf="chartActivityByStatusReady"
-            [series]="chartActivityByStatusOptions.series"
-            [plotOptions]="chartActivityByStatusOptions.plotOptions"
-            [xaxis]="chartActivityByStatusOptions.xaxis"
-            [chart]="chartActivityByStatusChart"
-            [dataLabels]="chartActivityByStatusOptions.dataLabels"
-            [colors]="chartActivityByStatusOptions.colors" [tooltip]="chartActivityByStatusOptions.tooltip"
-            [yaxis]="chartActivityByStatusOptions.yaxis" [title]="{ text: 'Activity By Status'}"
-            [legend]="{ position: 'top',width: 450  }">
-        </apx-chart>
+        <table>
+            <tr>
+                <td>
+                    <apx-chart #chartActivityByStatus *ngIf="chartActivityByStatusReady"
+                        [series]="chartActivityByStatusOptions.series"
+                        [plotOptions]="chartActivityByStatusOptions.plotOptions"
+                        [xaxis]="chartActivityByStatusOptions.xaxis"
+                        [chart]="chartActivityByStatusChart"
+                        [dataLabels]="chartActivityByStatusOptions.dataLabels"
+                        [colors]="chartActivityByStatusOptions.colors" [tooltip]="chartActivityByStatusOptions.tooltip"
+                        [yaxis]="chartActivityByStatusOptions.yaxis" [title]="{ text: 'Activity By Status'}"
+                        [legend]="{ position: 'top',width: 450  }">
+                    </apx-chart>
+                </td>
+                <td>
+                    <apx-chart #chartActivityWarning *ngIf="chartActivityWarningReady"
+                        [series]="chartActivityWarningOptions.series"
+                        [plotOptions]="chartActivityWarningOptions.plotOptions"
+                        [xaxis]="chartActivityWarningOptions.xaxis"
+                        [chart]="chartActivityWarningChart"
+                        [dataLabels]="chartActivityWarningOptions.dataLabels"
+                        [colors]="chartActivityWarningOptions.colors" [tooltip]="chartActivityWarningOptions.tooltip"
+                        [yaxis]="chartActivityWarningOptions.yaxis" [title]="{ text: 'Warnings'}"
+                        [legend]="{ position: 'top',width: 450  }">
+                    </apx-chart>
+                </td>
+            </tr>
+        </table>
     </div>
-
 </div>
 

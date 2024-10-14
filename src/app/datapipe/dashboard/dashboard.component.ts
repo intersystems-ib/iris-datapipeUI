@@ -27,8 +27,17 @@ public chartActivityByStatusOptions: Partial<ChartOptions> | any;
 public chartActivityByStatusReady: boolean = false;
 public chartActivityByStatusChart: Partial<ApexChart> | any;
 
+/** chart. warnings */
+@ViewChild("chartActivityWarning", {static: false}) chartActivityWarning!: ChartComponent;
+public chartActivityWarningOptions: Partial<ChartOptions> | any;
+public chartActivityWarningReady: boolean = false;
+public chartActivityWarningChart: Partial<ApexChart> | any;
+
 /** filters that are using to query the server */
 filters: any = {};
+
+/** widget (charts) width */
+widgetWidth: string = "700";
 
 /** constructor */
 constructor(
@@ -38,6 +47,7 @@ constructor(
   private router: Router
 ) {
   this.setActivityByStatusOptions();
+  this.setActivityWarningOptions();
 }
 
 /** component init */
@@ -78,7 +88,7 @@ setActivityByStatusOptions() {
   }
 
   this.chartActivityByStatusChart = {
-    type: 'bar', width: 1000, stacked: true, toolbar: { show: true },
+    type: 'bar', width: this.widgetWidth, stacked: true, toolbar: { show: true },
     events: {
       dataPointMouseEnter: function(event: any) {
         event.target.style.cursor = "pointer";
@@ -105,15 +115,74 @@ setActivityByStatusOptions() {
   }
 }
 
+/** set chart options */
+setActivityWarningOptions() {
+  this.chartActivityWarningOptions = {
+    series: [],
+    labels: [],
+    colors: [],
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        dataLabels: {
+          total: {
+            enabled: false,
+          }
+        }
+      }
+    },
+    dataLabels: {
+      enabled: true,
+    },
+    tooltip: {
+      enabled: true,
+    },
+    yaxis: {
+      labels: {}
+    },
+    xaxis: {
+    }
+  }
+
+  this.chartActivityWarningChart = {
+    type: 'bar', width: this.widgetWidth, stacked: true, toolbar: { show: true },
+    events: {
+      dataPointMouseEnter: function(event: any) {
+        event.target.style.cursor = "pointer";
+      },
+      dataPointSelection: (event: any, chartContext: any, config: any) => {
+        // series: e.g. Warnings
+        const type = config.w.config.series[config.seriesIndex].name.replace(/\s/g, '');
+        // xaxis category: e.g. REST-API (pipe)
+        const pipe = config.w.config.xaxis.categories[config.dataPointIndex];
+        // actual value
+        const value = config.w.config.series[config.seriesIndex].data[config.dataPointIndex];
+
+        // date filter values
+        let from = this.datapipeService.dateToString(this.filters.UpdatedTSFrom) + "T" + this.filters.UpdatedTSFromTime;
+        let to = this.datapipeService.dateToString(this.filters.UpdatedTSTo) + "T" + this.filters.UpdatedTSToTime;
+
+        // open datapipe search some query parameters
+        this.router.navigate(['datapipe'
+        ], {
+          queryParams: { pipe: pipe, type: type, from: from, to: to} 
+        }).then();
+      }
+    }
+  }
+}
+
 /** get data from backend */
 getData() {
   this.chartActivityByStatusReady = false;
+  this.chartActivityWarningReady = false;
 
   this.datapipeService.getInboxActivity(this.buildQuery()).subscribe((res) => {
     let pipeNames: any = [];
     let errorValues: any = [];
     let inProgressValues: any = [];
     let okValues: any = [];
+    let warningValues: any = [];
 
     let pipes = Object.keys(res);
     
@@ -121,6 +190,7 @@ getData() {
       errorValues.push(res[pipe]['errors']);
       inProgressValues.push(res[pipe]['inprogress']);
       okValues.push(res[pipe]['ok']);
+      warningValues.push(res[pipe]['warnings']);
       pipeNames.push(pipe);
     });
 
@@ -128,11 +198,17 @@ getData() {
     seriesStatus.push({name: 'Errors', data: errorValues});
     seriesStatus.push({name: 'In Progress', data: inProgressValues});
     seriesStatus.push({name: 'Ok', data: okValues});
-
     this.chartActivityByStatusOptions.series = seriesStatus;
     this.chartActivityByStatusOptions.xaxis = { categories: pipeNames };
     this.chartActivityByStatusOptions.colors = ['#df1c44', '#17a2b8', '#39a275'];
     this.chartActivityByStatusReady = true;
+
+    let seriesWarning: any = [];
+    seriesWarning.push({name: 'Warnings', data: warningValues});
+    this.chartActivityWarningOptions.series = seriesWarning;
+    this.chartActivityWarningOptions.xaxis = { categories: pipeNames };
+    this.chartActivityWarningOptions.colors = ['#ffc107'];
+    this.chartActivityWarningReady = true;
   });
 
 }

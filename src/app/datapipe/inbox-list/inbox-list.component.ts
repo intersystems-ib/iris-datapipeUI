@@ -117,6 +117,9 @@ export class InboxListComponent implements AfterViewInit {
         else if (this.params.type === 'Ok') {
           this.filters.Status = ['DONE'];
         }
+        else if (this.params.type === 'Warnings') {
+          this.filters.StagingStatus = ['Warning'];
+        }
         
         this.paginator.pageIndex = this.preferencesService.inboxList.pageIndex;
         this.paginator.pageSize = this.preferencesService.inboxList.pageSize;
