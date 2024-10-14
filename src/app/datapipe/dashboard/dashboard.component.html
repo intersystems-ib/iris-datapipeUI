@@ -44,7 +44,11 @@
         </mat-expansion-panel>
     </mat-accordion>
 
-    <div class="chart-container">
+    <div class="spinner-container" *ngIf="loading">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <div class="chart-container" *ngIf="!loading">
         <table>
             <tr>
                 <td>

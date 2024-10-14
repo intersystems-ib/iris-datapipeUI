@@ -137,3 +137,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     height: 56px;
     padding: 0 16px; /* padding space for buttons */
   }
+
+/** loading spinner container */
+  .spinner-container {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}

@@ -21,6 +21,9 @@ export interface ChartOptions {
 })
 export class DashboardComponent implements AfterViewInit {
 
+/** flag for loading spinner */
+loading!: boolean;
+
 /** chart. activity by status */
 @ViewChild("chartActivityByStatus", {static: false}) chartActivityByStatus!: ChartComponent;
 public chartActivityByStatusOptions: Partial<ChartOptions> | any;
@@ -174,6 +177,8 @@ setActivityWarningOptions() {
 
 /** get data from backend */
 getData() {
+  this.loading = true;
+
   this.chartActivityByStatusReady = false;
   this.chartActivityWarningReady = false;
 
@@ -209,6 +214,8 @@ getData() {
     this.chartActivityWarningOptions.xaxis = { categories: pipeNames };
     this.chartActivityWarningOptions.colors = ['#ffc107'];
     this.chartActivityWarningReady = true;
+
+    this.loading = false;
   });
 
 }
