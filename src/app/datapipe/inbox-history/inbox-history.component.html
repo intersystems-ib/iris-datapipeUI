@@ -19,7 +19,7 @@
             <div *ngFor="let ingestion of (inbox.Ingestions$ | async)" class="element group-1">
                 <div class="inline">
                     <span class="inline" style="width:100px">Ingestion</span>
-                    <span class="inline">{{ ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                    <span class="inline">{{ ingestion.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT' }}</span>
                     <span class="inline">
                         <button class="inline" mat-mini-fab color="link" [disabled]="!ingestion.HeaderId" matTooltip="View Trace" (click)="datapipeService.clickSession(+ingestion.HeaderId, inbox.Namespace)">
                             <mat-icon>zoom_in</mat-icon>
@@ -34,7 +34,7 @@
                 <div *ngFor="let staging of (ingestion.Stagings$ | async)" class="element group-2">
                     <div class="inline">
                         <span class="inline" style="width:100px">Staging</span>
-                        <span class="inline">{{ staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                        <span class="inline">{{ staging.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT' }}</span>
                         <mat-chip-listbox class="inline" style="margin: 0 10px 0 10px;" *ngIf="datapipeService.getStagingStatusChipFormat(staging.Status, staging.ValidationErrorsJson); let format">
                             <mat-chip [ngClass]="format.cssClass">
                             <mat-icon [matTooltip]="format.tooltip">
@@ -57,7 +57,7 @@
                     <div *ngFor="let oper of (staging.Opers$ | async)" class="element">
                         <div class="inline">
                             <span class="inline" style="width:100px">Operation</span>
-                            <span class="inline">{{ oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                            <span class="inline">{{ oper.CreatedTS | date: 'dd/MM/yyyy HH:mm:ss':'GMT' }}</span>
                             <mat-chip-listbox class="inline" style="margin: 0 10px 0 10px;" *ngIf="datapipeService.getOperStatusChipFormat(oper.Status); let format">
                                 <mat-chip [ngClass]="format.cssClass">
                                 <mat-icon>

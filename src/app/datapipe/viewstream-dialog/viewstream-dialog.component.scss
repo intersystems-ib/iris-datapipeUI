@@ -5,6 +5,9 @@ html, body
 
 .stream-container {
     margin-top: 10px;
+    max-height: 80vh;
+    overflow-y: auto; /* Enable vertical scrollbar if content overflows */
+    overflow-x: auto; /* Enable horizontal scrollbar if content overflows */
 }
 
 .code-container {
