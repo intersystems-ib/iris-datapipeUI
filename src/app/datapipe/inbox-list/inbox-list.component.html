@@ -54,6 +54,16 @@
                 <input matInput [(ngModel)]="filters.Namespace" name="Namespace">
             </mat-form-field>
 
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Validation Error</mat-label>
+                <input matInput [(ngModel)]="filters.ValidationErrors" name="ValidationErrors">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" style="width: 200px">
+                <mat-label class="highlight-field">Operation Errors</mat-label>
+                <input matInput [(ngModel)]="filters.OperErrors" name="OperErrors">
+            </mat-form-field>
+
             </div>
 
             <!-- filters row -->

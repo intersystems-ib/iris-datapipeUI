@@ -44,6 +44,8 @@ export class DatapipeService {
     if (query.Element) { filter += `+Element+eq+${query.Element}`; }
     if (query.Subject) { filter += `+Subject+eq+${query.Subject}`; }
     if (query.Namespace) { filter += `+Namespace+contains+${query.Namespace}`; }
+    if (query.ValidationErrors) { filter += `+ValidationErrors+contains+${query.ValidationErrors}`; }
+    if (query.OperErrors) { filter += `+OperErrors+contains+${query.OperErrors}`; }
     
     if (query.Status && query.Status.length>0) { 
       let serializedStatus = query.Status.reduce(function (ret: any, item: any) {
