@@ -36,6 +36,12 @@ public chartActivityWarningOptions: Partial<ChartOptions> | any;
 public chartActivityWarningReady: boolean = false;
 public chartActivityWarningChart: Partial<ApexChart> | any;
 
+/** autocomplete fields */
+filteredPipes: any[];
+
+/** whether master data is completely loaded or not */
+masterDataLoaded: boolean = false;
+
 /** filters that are using to query the server */
 filters: any = {};
 
@@ -51,6 +57,12 @@ constructor(
 ) {
   this.setActivityByStatusOptions();
   this.setActivityWarningOptions();
+
+  this.filteredPipes = [];
+  this.datapipeService.findPipes(1, 100, {}).subscribe((res) => {
+    this.filteredPipes = res.children;
+    this.masterDataLoaded = true;
+  });
 }
 
 /** component init */

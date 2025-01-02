@@ -264,6 +264,7 @@ export class DatapipeService {
   getInboxActivity(query: any): Observable<any> {
     let UpdatedTSFrom = '';
     let UpdatedTSTo = '';
+    let serializedPipes = '';
 
     if (query.UpdatedTSFrom) {
       const updatedTSFromString = this.dateToString(query.UpdatedTSFrom);
@@ -273,9 +274,14 @@ export class DatapipeService {
       const updatedTSToString = this.dateToString(query.UpdatedTSTo);
       UpdatedTSTo += `${updatedTSToString}T${query.UpdatedTSToTime}:59Z`;
     }
+    if (query.Pipe && query.Pipe.length>0) { 
+      serializedPipes = query.Pipe.reduce(function (ret: any, item: any) {
+        return ret + '~' + item; 
+      }); 
+    }
 
     return this.http.get<any>(
-      this.urlBase + `/inboxActivity?UpdatedTSFrom=${UpdatedTSFrom}&UpdatedTSTo=${UpdatedTSTo}`,
+      this.urlBase + `/inboxActivity?UpdatedTSFrom=${UpdatedTSFrom}&UpdatedTSTo=${UpdatedTSTo}&Pipes=${serializedPipes}`,
       this.options
     ).pipe(
       //tap(data => console.log(data)),

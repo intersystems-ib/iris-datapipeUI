@@ -13,6 +13,18 @@
 
             <!-- filters row -->
             <div class="button-row">
+                <mat-form-field floatLabel="always" style="width: 400px">
+                    <mat-label class="highlight-field">Pipe</mat-label>
+                    <mat-select [(ngModel)]="filters.Pipe" multiple name="Pipe">
+                    <mat-option *ngFor="let pipe of filteredPipes" [value]="pipe.Code">
+                        <u><small>{{ pipe.Code }}</small></u> - {{ pipe.Description }}
+                    </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            
+            <!-- filters row -->
+            <div class="button-row">
                 <mat-form-field floatLabel="always" style="width: 200px">
                     <input matInput placeholder="Updated Date (From)" [matDatepicker]="updatedTSFrom" [(ngModel)]="filters.UpdatedTSFrom" name="updatedTSFrom">
                     <mat-datepicker-toggle matSuffix [for]="updatedTSFrom"></mat-datepicker-toggle>
