@@ -1,13 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { Inbox, Ingestion, Staging, Oper } from '../datapipe.model';
-import { DatapipeService } from '../datapipe.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { tap } from 'rxjs/operators';
-import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
+import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { NotificationService } from 'src/app/shared/notification.service';
+import { Inbox, Ingestion, Oper, Staging } from '../datapipe.model';
+import { DatapipeService } from '../datapipe.service';
 
 
 @Component({
@@ -129,7 +129,7 @@ export class InboxDetailComponent implements OnInit {
    * @param operHeaderId operation header id message
    * @param normData original normalized data
    */
-  clickEditNormData(operHeaderId: number, normData: string) {
+  clickEditNormData(operHeaderId: number, normData: string, namespace: string) {
 
     const confirmDialog = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
@@ -148,7 +148,7 @@ export class InboxDetailComponent implements OnInit {
     
         dialogRef.afterClosed().subscribe(editedData => {
           if (editedData) {
-            this.datapipeService.updateOperRequest(operHeaderId, editedData).subscribe(data => {
+            this.datapipeService.updateOperRequest(operHeaderId, editedData, namespace).subscribe(data => {
               this.loading$.next(true);
               setTimeout(() => {
                 this.loadData();

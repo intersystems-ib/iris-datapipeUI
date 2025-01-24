@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import moment from 'moment';
-import { catchError, map, Observable, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AlertService } from '../shared/alert.service';
-import { Inbox, QueryResult, Ingestion, Staging, Oper, Pipe } from './datapipe.model';
+import { Inbox, Ingestion, Oper, Pipe, QueryResult, Staging } from './datapipe.model';
 import { ViewstreamDialogComponent } from './viewstream-dialog/viewstream-dialog.component';
 
 @Injectable({
@@ -448,9 +448,9 @@ export class DatapipeService {
   /**
    * Update OperRequest after manually editing normalized data
    */
-  updateOperRequest(operHeaderId: number, editedNormData: string) {
+  updateOperRequest(operHeaderId: number, editedNormData: string, namespace: string) {
     return this.http.put(
-      this.urlBase + `/operRequest/${operHeaderId}`,
+      this.urlBase + `/operRequest/${namespace}/${operHeaderId}`,
       editedNormData,
       this.options
     ).pipe(
