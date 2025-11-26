@@ -163,6 +163,25 @@
 
     button {
       transition: all 0.3s ease;
+
+      &:hover:not(:disabled):not(.active) {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+
+      &:disabled {
+        color: rgba(0, 0, 0, 0.26);
+      }
+
+      // Toggle buttons (histogram and columns) styling
+      &.toggle-button {
+        color: #757575;
+
+        &.active {
+          color: #3f51b5;
+          background-color: rgba(63, 81, 181, 0.1);
+          border-radius: 50%;
+        }
+      }
     }
   }
 

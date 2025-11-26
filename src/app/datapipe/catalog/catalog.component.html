@@ -27,16 +27,16 @@
       <button mat-icon-button (click)="toggleAllHistograms()"
         [matTooltip]="showAllHistograms ? 'Hide All Histograms' : 'Show All Histograms'"
         [class.active]="showAllHistograms">
-        <mat-icon>{{ showAllHistograms ? 'bar_chart' : 'show_chart' }}</mat-icon>
+        <mat-icon>{{ showAllHistograms ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
       </button>
       <button mat-icon-button (click)="toggleDescriptions()"
-        [matTooltip]="showDescriptions ? 'Ocultar descripciones' : 'Mostrar descripciones'"
+        [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'"
         [class.active]="showDescriptions">
-        <mat-icon>notes</mat-icon>
+        <mat-icon>{{ showDescriptions ? 'notes' : 'speaker_notes_off' }}</mat-icon>
       </button>
       <button mat-icon-button (click)="toggleTableInfo()"
-        [matTooltip]="showTableInfo ? 'Ocultar tabla' : 'Mostrar tabla'" [class.active]="showTableInfo">
-        <mat-icon>table_view</mat-icon>
+        [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
+        <mat-icon>{{ showTableInfo ? 'table_view' : 'grid_off' }}</mat-icon>
       </button>
     </div>
   </div>
@@ -110,49 +110,51 @@
           </button>
         </div>
         <div class="item-actions">
-          <!-- Subir -->
-          <button mat-icon-button matTooltip="Mover arriba" (click)="moveItem(item, 'up')"
+          <!-- Move Up -->
+          <button mat-icon-button color="primary" matTooltip="Move up" (click)="moveItem(item, 'up')"
             [disabled]="!canMoveUp(item)">
             <mat-icon>arrow_upward</mat-icon>
           </button>
 
-          <!-- Bajar -->
-          <button mat-icon-button matTooltip="Mover abajo" (click)="moveItem(item, 'down')"
+          <!-- Move Down -->
+          <button mat-icon-button color="primary" matTooltip="Move down" (click)="moveItem(item, 'down')"
             [disabled]="!canMoveDown(item)">
             <mat-icon>arrow_downward</mat-icon>
           </button>
 
           <!-- Add Subtype -->
-          <button mat-icon-button (click)="addChildEntity(item, $event)"
+          <button mat-icon-button color="primary" (click)="addChildEntity(item, $event)"
             matTooltip="Add Subtype">
             <mat-icon>playlist_add</mat-icon>
           </button>
 
-          <!-- Mostrar/Ocultar histograma -->
+          <!-- Show/Hide Histogram -->
           <button mat-icon-button (click)="toggleHistogram(item)"
-            [matTooltip]="item.showHistogram ? 'Ocultar histograma' : 'Mostrar histograma'"
-            [class.active]="item.showHistogram">
-            <mat-icon>{{ item.showHistogram ? 'bar_chart' : 'bar_chart' }}</mat-icon>
+            [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
+            [class.active]="item.showHistogram"
+            class="toggle-button">
+            <mat-icon>{{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
           </button>
 
           <!-- Show/Hide Columns -->
-          <button *ngIf="hasColumns(item)" mat-icon-button (click)="toggleColumns(item)"
+          <button mat-icon-button (click)="toggleColumns(item)"
             [matTooltip]="isColumnsVisible(item) ? 'Hide Columns' : 'Show Columns'"
-            [class.active]="isColumnsVisible(item)">
-            <mat-icon>view_column</mat-icon>
+            [class.active]="isColumnsVisible(item)"
+            class="toggle-button">
+            <mat-icon>{{ isColumnsVisible(item) ? 'table_rows' : 'table_rows_narrow' }}</mat-icon>
           </button>
 
-          <!-- Editar / Cancelar / Guardar -->
+          <!-- Edit / Cancel / Save -->
           <button *ngIf="!item.isEditing" mat-icon-button color="primary" (click)="toggleEditMode(item)"
-            matTooltip="Editar">
+            matTooltip="Edit">
             <mat-icon>edit</mat-icon>
           </button>
           <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item)"
-            matTooltip="Cancelar">
+            matTooltip="Cancel">
             <mat-icon>close</mat-icon>
           </button>
           <button *ngIf="item.isEditing" mat-icon-button color="accent" (click)="saveEdit(item)"
-            matTooltip="Guardar">
+            matTooltip="Save">
             <mat-icon>save</mat-icon>
           </button>
         </div>

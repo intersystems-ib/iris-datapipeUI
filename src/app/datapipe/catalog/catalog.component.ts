@@ -297,8 +297,8 @@ buildTree(): void {
   }
 
   hasColumns(item: Catalog): boolean {
-    // Only show button if table has columns loaded or is ODS_FHIR.Encounter
-    return item.Table === 'ODS_FHIR.Encounter' || this.tableColumnsMap.has(item.Table);
+    // Show button for all items (columns will be loaded on demand)
+    return true;
   }
 
   // En CatalogComponent
