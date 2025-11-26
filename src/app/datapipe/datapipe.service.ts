@@ -5,7 +5,7 @@ import moment from 'moment';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AlertService } from '../shared/alert.service';
-import { Catalog, Inbox, Ingestion, Oper, Pipe, QueryResult, Staging } from './datapipe.model';
+import { Catalog, Inbox, Ingestion, Oper, Pipe, QueryResult, Staging, TableColumn } from './datapipe.model';
 import { ViewstreamDialogComponent } from './viewstream-dialog/viewstream-dialog.component';
 
 @Injectable({
@@ -29,6 +29,7 @@ export class DatapipeService {
     private alertService: AlertService,
     public dialog: MatDialog
   ) { }
+  
 
   /**
    * Calls RESTForms2 query based on `DataPipe.Data.Inbox:queryFIND` method.
@@ -476,6 +477,7 @@ getCatalog(): Observable<Catalog[]> {
       Entity: 'Episodios (Encounters)',
       EntityDescription: 'Conjunto de episodios de atención registrados en el sistema ODS FHIR.',
       Table: 'ODS_FHIR.Encounter',
+      Filter: '',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_ENCOUNTER]',
       MDXHistogram: 'SELECT NON EMPTY [StartDate].[StartDateYear].[StartDateYear].Members ON 1 FROM [ODS_CATALOG_ENCOUNTER]',
       MDXHistogramUpdated: '',
@@ -498,7 +500,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 1,
       Entity: 'Episodios de ingreso (Inpatients)',
       EntityDescription: 'Episodios de hospitalización (ingreso) de pacientes.',
-      Table: 'ODS_FHIR.Encounter|[class_code]=IMP',
+      Table: 'ODS_FHIR.Encounter',
+      Filter: '[class_code]=IMP',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_ENCOUNTER] %FILTER [ClassCode].[ClassCode].[ClassCode].&[IMP]',
       MDXHistogram: 'SELECT NON EMPTY [StartDate].[StartDateYear].[StartDateYear].Members ON 1 FROM [ODS_CATALOG_ENCOUNTER] %FILTER [ClassCode].[ClassCode].[ClassCode].&[IMP]',
       MDXHistogramUpdated: '',
@@ -521,7 +524,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 2,
       Entity: 'Ingresos - Maternidad',
       EntityDescription: 'Ingresos hospitalarios correspondientes a los servicios de maternidad.',
-      Table: 'ODS_FHIR.Encounter|[class_code]=IMP|[OrganizationCode]=MAT',
+      Table: 'ODS_FHIR.Encounter',
+      Filter: '[class_code]=IMP|[OrganizationCode]=MAT',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_ENCOUNTER] %FILTER [OrganizationCode].[OrganizationCode].&[MAT]',
       MDXHistogram: 'SELECT NON EMPTY [StartDate].[StartDateYear].[StartDateYear].Members ON 1 FROM [ODS_CATALOG_ENCOUNTER] %FILTER [OrganizationCode].[OrganizationCode].&[MAT]',
       MDXHistogramUpdated: '',
@@ -543,7 +547,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 1,
       Entity: 'Episodios de urgencias (Emergency)',
       EntityDescription: 'Episodios atendidos en los servicios de urgencias.',
-      Table: 'ODS_FHIR.Encounter|[class_code]=EMER',
+      Table: 'ODS_FHIR.Encounter',
+      Filter: '[class_code]=EMER',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_ENCOUNTER] %FILTER [ClassCode].[ClassCode].[ClassCode].&[EMER]',
       MDXHistogram: 'SELECT NON EMPTY [StartDate].[StartDateYear].[StartDateYear].Members ON 1 FROM [ODS_CATALOG_ENCOUNTER] %FILTER [ClassCode].[ClassCode].[ClassCode].&[EMER]',
       MDXHistogramUpdated: '',
@@ -565,7 +570,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 1,
       Entity: 'Episodios ambulatorios (Ambulatory)',
       EntityDescription: 'Atenciones en régimen ambulatorio/consulta externa.',
-      Table: 'ODS_FHIR.Encounter|[class_code]=AMB',
+      Table: 'ODS_FHIR.Encounter',
+      Filter: '[class_code]=AMB',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_ENCOUNTER] %FILTER [ClassCode].[ClassCode].[ClassCode].&[AMB]',
       MDXHistogram: 'SELECT NON EMPTY [StartDate].[StartDateYear].[StartDateYear].Members ON 1 FROM [ODS_CATALOG_ENCOUNTER] %FILTER [ClassCode].[ClassCode].[ClassCode].&[AMB]',
       MDXHistogramUpdated: '',
@@ -590,6 +596,7 @@ getCatalog(): Observable<Catalog[]> {
       Entity: 'Medicación (Medication)',
       EntityDescription: 'Prescripciones y dispensaciones registradas en el ODS FHIR.',
       Table: 'ODS_FHIR.Medication',
+      Filter: '',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_MEDICATION]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_MEDICATION]',
       MDXHistogramUpdated: '',
@@ -612,7 +619,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 10,
       Entity: 'Medicación en ingresos',
       EntityDescription: 'Órdenes y administración de medicación durante ingresos hospitalarios.',
-      Table: 'ODS_FHIR.MedicationAdministration|[setting]=INPATIENT',
+      Table: 'ODS_FHIR.MedicationAdministration',
+      Filter: '[setting]=INPATIENT',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_MEDICATION] %FILTER [Setting].[Setting].&[INPATIENT]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_MEDICATION] %FILTER [Setting].[Setting].&[INPATIENT]',
       MDXHistogramUpdated: '',
@@ -634,7 +642,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 10,
       Entity: 'Medicación SIRE',
       EntityDescription: 'Registros de SIRE (sistema regional) integrados en ODS FHIR.',
-      Table: 'ODS_FHIR.MedicationRequest|[source]=SIRE',
+      Table: 'ODS_FHIR.MedicationRequest',
+      Filter: '[source]=SIRE',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_MEDICATION] %FILTER [Source].[Source].&[SIRE]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_MEDICATION] %FILTER [Source].[Source].&[SIRE]',
       MDXHistogramUpdated: '',
@@ -659,6 +668,7 @@ getCatalog(): Observable<Catalog[]> {
       Entity: 'Vacunas (Immunization)',
       EntityDescription: 'Administración de vacunas registradas en ODS FHIR.',
       Table: 'ODS_FHIR.Immunization',
+      Filter: '',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_IMMUNIZATION]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_IMMUNIZATION]',
       MDXHistogramUpdated: '',
@@ -683,6 +693,7 @@ getCatalog(): Observable<Catalog[]> {
       Entity: 'Procedimientos (Procedures)',
       EntityDescription: 'Procedimientos clínicos codificados y registrados en ODS FHIR.',
       Table: 'ODS_FHIR.Procedure',
+      Filter: '',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_PROCEDURE]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_PROCEDURE]',
       MDXHistogramUpdated: '',
@@ -705,7 +716,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 30,
       Entity: 'Intervenciones quirúrgicas',
       EntityDescription: 'Intervenciones programadas y no programadas en bloque quirúrgico.',
-      Table: 'ODS_FHIR.Procedure|[type]=INTERVENTION',
+      Table: 'ODS_FHIR.Procedure',
+      Filter: '[type]=INTERVENTION',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_PROCEDURE] %FILTER [Type].[Type].&[INTERVENTION]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_PROCEDURE] %FILTER [Type].[Type].&[INTERVENTION]',
       MDXHistogramUpdated: '',
@@ -728,7 +740,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 31,
       Entity: 'CMA (cirugía mayor ambulatoria)',
       EntityDescription: 'Intervenciones de CMA realizadas sin ingreso.',
-      Table: 'ODS_FHIR.Procedure|[type]=INTERVENTION|[setting]=CMA',
+      Table: 'ODS_FHIR.Procedure',
+      Filter: '[type]=INTERVENTION|[setting]=CMA',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_PROCEDURE] %FILTER [Setting].[Setting].&[CMA]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_PROCEDURE] %FILTER [Setting].[Setting].&[CMA]',
       MDXHistogramUpdated: '',
@@ -750,7 +763,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 31,
       Entity: 'CME (cirugía mayor con ingreso)',
       EntityDescription: 'Intervenciones quirúrgicas con ingreso hospitalario.',
-      Table: 'ODS_FHIR.Procedure|[type]=INTERVENTION|[setting]=CME',
+      Table: 'ODS_FHIR.Procedure',
+      Filter: '[type]=INTERVENTION|[setting]=CME',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_PROCEDURE] %FILTER [Setting].[Setting].&[CME]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_PROCEDURE] %FILTER [Setting].[Setting].&[CME]',
       MDXHistogramUpdated: '',
@@ -772,7 +786,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: 30,
       Entity: 'Procedimientos médicos',
       EntityDescription: 'Procedimientos no quirúrgicos (endoscopias, pruebas funcionales, etc.).',
-      Table: 'ODS_FHIR.Procedure|[type]=MEDICAL',
+      Table: 'ODS_FHIR.Procedure',
+      Filter: '[type]=MEDICAL',
       MDXTotal: 'SELECT FROM [ODS_CATALOG_PROCEDURE] %FILTER [Type].[Type].&[MEDICAL]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [ODS_CATALOG_PROCEDURE] %FILTER [Type].[Type].&[MEDICAL]',
       MDXHistogramUpdated: '',
@@ -796,7 +811,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: null,
       Entity: 'Documentos enviados (HC3)',
       EntityDescription: 'Número de documentos remitidos a HC3 mediante la interfaz HCE.',
-      Table: 'HC3_Sent|[flow]=document',
+      Table: 'HC3_Sent',
+      Filter: '[flow]=document',
       MDXTotal: 'SELECT FROM [HC3_SENT] %FILTER [Flow].[Flow].&[document]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [HC3_SENT] %FILTER [Flow].[Flow].&[document]',
       MDXHistogramUpdated: '',
@@ -818,7 +834,8 @@ getCatalog(): Observable<Catalog[]> {
       Subtypeof: null,
       Entity: 'Resultados de laboratorio enviados (HC3)',
       EntityDescription: 'Resultados de laboratorio transmitidos a HC3.',
-      Table: 'HC3_Sent|[flow]=lab',
+      Table: 'HC3_Sent',
+      Filter: '[flow]=lab',
       MDXTotal: 'SELECT FROM [HC3_SENT] %FILTER [Flow].[Flow].&[lab]',
       MDXHistogram: 'SELECT NON EMPTY [Date].[Year].[Year].Members ON 1 FROM [HC3_SENT] %FILTER [Flow].[Flow].&[lab]',
       MDXHistogramUpdated: '',
@@ -841,4 +858,153 @@ getCatalog(): Observable<Catalog[]> {
   });
 }
 
+
+
+getTableColumns(table: string): Observable<TableColumn[]> {
+  // Por ahora solo tenemos mock para ODS_FHIR.Encounter
+  if (table !== 'ODS_FHIR.Encounter') {
+    // Si quieres, aquí puedes devolver [] o hacer throw de un error
+    return new Observable(observer => {
+      observer.next([]);
+      observer.complete();
+    });
+  }
+
+  const mockColumns: TableColumn[] = [
+    { columnName: 'ID', description: '', dataType: 'bigint', isNullable: false, isGenerated: false },
+    { columnName: 'BasedOn', description: 'The ServiceRequest that initiated this encounter', dataType: 'bigint', isNullable: true, isGenerated: false },
+    { columnName: 'Deid', description: 'De-identified elements', dataType: 'bigint', isNullable: true, isGenerated: false },
+    { columnName: 'Destination', description: 'Location/organization to which the patient is discharged', dataType: 'bigint', isNullable: true, isGenerated: false },
+    { columnName: 'DietPreference', description: 'Diet preferences reported by the patient', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'EpisodeOfCare', description: 'Episode(s) of care that this encounter should be recorded against', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'FHIRID', description: '', dataType: 'numeric', isNullable: true, isGenerated: false },
+    { columnName: 'FHIRVersion', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    {
+      columnName: 'FinalLength',
+      description: 'Quantity of time the encounter lasted (less time absent) in seconds once the encounter is finished. While the encounter is not finished, this field is NULL',
+      dataType: 'numeric',
+      isNullable: true,
+      isGenerated: true
+    },
+    {
+      columnName: 'Identifier',
+      description: 'An identifier for the episode in the origin system. ⛔️ For deidentified use, a random identifier with similar nomenclature (keeping the prefix) will be calculated',
+      dataType: 'varchar',
+      isNullable: false,
+      isGenerated: false
+    },
+    { columnName: 'LastOriginMessageDateTime', description: '', dataType: 'timestamp', isNullable: true, isGenerated: false },
+    { columnName: 'LastUpdate', description: '', dataType: 'timestamp', isNullable: true, isGenerated: false },
+    {
+      columnName: 'Length',
+      description: 'Quantity of time the encounter lasted (less time absent) in seconds. Must take into account the absence periods to calculate it. When the encounter is finished, it is equal to the field finalLength',
+      dataType: 'numeric',
+      isNullable: true,
+      isGenerated: true
+    },
+    { columnName: 'Origin', description: 'The location/organization from which the patient came before admission', dataType: 'bigint', isNullable: true, isGenerated: false },
+    { columnName: 'OriginService', description: 'The organization (service) from which the patient came before admission', dataType: 'bigint', isNullable: true, isGenerated: false },
+    {
+      columnName: 'PartOf',
+      description: 'Another Encounter this encounter is part of. Used for RIS, APAT or LAB encounters',
+      dataType: 'bigint',
+      isNullable: true,
+      isGenerated: false
+    },
+    { columnName: 'PharmacyLastRevision', description: 'Last date when the Pharmacy Treatment was reviewed', dataType: 'timestamp', isNullable: true, isGenerated: false },
+    { columnName: 'PreAdmissionIdentifier', description: 'Pre-admission identifier', dataType: 'varchar', isNullable: true, isGenerated: false },
+    {
+      columnName: 'ReAdmission',
+      description: 'The type of hospital re-admission that has occurred (if any). v2 RE-ADMISSION INDICATOR (Example): R = Readmission',
+      dataType: 'varchar',
+      isNullable: true,
+      isGenerated: false
+    },
+    {
+      columnName: 'ReasonCode',
+      description: 'Coded reason the encounter takes place. Encounter Reason Codes (Preferred)',
+      dataType: 'varchar',
+      isNullable: true,
+      isGenerated: false
+    },
+    {
+      columnName: 'ServiceType',
+      description: 'Specific type of service. Service type (Example)',
+      dataType: 'varchar',
+      isNullable: true,
+      isGenerated: false
+    },
+    {
+      columnName: 'Site',
+      description: 'Extension para indicar el SITE responsable del encounter',
+      dataType: 'varchar',
+      isNullable: true,
+      isGenerated: false
+    },
+    {
+      columnName: 'SpecialArrangement',
+      description: 'Wheelchair, translator, stretcher, etc. Special arrangements (Preferred)',
+      dataType: 'varchar',
+      isNullable: true,
+      isGenerated: false
+    },
+    {
+      columnName: 'Status',
+      description: 'planned | arrived | triaged | in-progress | onleave | discharged | finished | cancelled. EncounterStatus (Required)',
+      dataType: 'varchar',
+      isNullable: false,
+      isGenerated: false
+    },
+    {
+      columnName: 'Subject',
+      description: 'The patient or group present at the encounter',
+      dataType: 'bigint',
+      isNullable: true,
+      isGenerated: false
+    },
+    {
+      columnName: 'Type',
+      description: 'Specific type of encounter. Encounter type (Example)',
+      dataType: 'varchar',
+      isNullable: true,
+      isGenerated: false
+    },
+    { columnName: 'UID', description: '', dataType: 'varchar', isNullable: false, isGenerated: false },
+
+    { columnName: 'AdmitSource_Code', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'AdmitSource_Description', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'AdmitSource_System', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+
+    { columnName: 'Class_Code', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'Class_Description', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'Class_System', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+
+    { columnName: 'DischargeDisposition_Code', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'DischargeDisposition_Description', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'DischargeDisposition_System', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+
+    { columnName: 'Period_Active', description: '', dataType: 'bit', isNullable: true, isGenerated: true },
+    { columnName: 'Period_EndDate', description: '', dataType: 'timestamp', isNullable: true, isGenerated: false },
+    { columnName: 'Period_EndDateYYYYMMDD', description: '', dataType: 'integer', isNullable: true, isGenerated: true },
+    { columnName: 'Period_StartDate', description: '', dataType: 'timestamp', isNullable: true, isGenerated: false },
+    { columnName: 'Period_StartDateYYYYMMDD', description: '', dataType: 'integer', isNullable: true, isGenerated: true },
+
+    { columnName: 'Priority_Code', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'Priority_Description', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'Priority_System', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+
+    { columnName: 'ReasonText_Code', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'ReasonText_Description', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'ReasonText_System', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+
+    { columnName: 'SpecialCourtesy_Code', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'SpecialCourtesy_Description', description: '', dataType: 'varchar', isNullable: true, isGenerated: false },
+    { columnName: 'SpecialCourtesy_System', description: '', dataType: 'varchar', isNullable: true, isGenerated: false }
+  ];
+
+  return new Observable(observer => {
+    observer.next(mockColumns);
+    observer.complete();
+  });
+}
 }

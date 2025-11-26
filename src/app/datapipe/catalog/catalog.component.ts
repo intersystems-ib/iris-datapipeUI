@@ -19,6 +19,12 @@ export class CatalogComponent implements OnInit {
   /** Filtered and displayed catalog items */
   filteredCatalogTree: Catalog[] = [];
 
+  /** Map to store loaded columns for each table */
+  private tableColumnsMap = new Map<string, any[]>();
+
+  /** Map to track which tables have columns visible */
+  showColumnsMap = new Map<number, boolean>();
+
   /** Search term */
   private _searchTerm: string = '';
 
@@ -145,7 +151,154 @@ buildTree(): void {
   }
 
   toggleEditMode(item: Catalog): void {
-    // Placeholder for future edit mode functionality
+    if (item.isEditing) {
+      // Cancel editing - restore values if needed
+      item.isEditing = false;
+    } else {
+      // Enter edit mode
+      item.isEditing = true;
+    }
+    this.cdr.markForCheck();
+  }
+
+  saveEdit(item: Catalog): void {
+    // Save logic will be implemented later
+    item.isEditing = false;
+    this.cdr.markForCheck();
+  }
+
+  cancelEdit(item: Catalog): void {
+    // Cancel logic - restore original values if needed
+    item.isEditing = false;
+    this.cdr.markForCheck();
+  }
+
+  createNewRootEntity(event: Event): void {
+    event.stopPropagation();
+
+    // Create a new root entity with default values
+    const newEntity: Catalog = {
+      Id: this.getNextId(),
+      Category: '',
+      Subtypeof: null,
+      Entity: 'New Entity',
+      EntityDescription: '',
+      Table: '',
+      Filter: '',
+      MDXTotal: '',
+      MDXHistogram: '',
+      MDXHistogramUpdated: '',
+      Order: this.catalogTree.length,
+      children: [],
+      expanded: false,
+      isEditing: true // Start in edit mode
+    };
+
+    // Add to the tree and flat list
+    this.catalogTree.push(newEntity);
+    this.allCatalogItems.push(newEntity);
+
+    // Refresh the view
+    this.applyFilter();
+    this.cdr.markForCheck();
+
+    // Scroll to the new entity
+    this.scrollToEntity(newEntity.Id);
+  }
+
+  addChildEntity(parent: Catalog, event: Event): void {
+    event.stopPropagation();
+
+    // Create a new child entity
+    const newChild: Catalog = {
+      Id: this.getNextId(),
+      Category: parent.Category,
+      Subtypeof: parent.Id,
+      Entity: 'New Subtype',
+      EntityDescription: '',
+      Table: '',
+      Filter: '',
+      MDXTotal: '',
+      MDXHistogram: '',
+      MDXHistogramUpdated: '',
+      Order: parent.children ? parent.children.length : 0,
+      children: [],
+      expanded: false,
+      isEditing: true // Start in edit mode
+    };
+
+    // Initialize children array if needed
+    if (!parent.children) {
+      parent.children = [];
+    }
+
+    // Add to parent's children and flat list
+    parent.children.push(newChild);
+    this.allCatalogItems.push(newChild);
+
+    // Expand parent to show new child
+    parent.expanded = true;
+
+    // Refresh the view
+    this.applyFilter();
+    this.cdr.markForCheck();
+
+    // Scroll to the new entity
+    this.scrollToEntity(newChild.Id);
+  }
+
+  private getNextId(): number {
+    // Get the maximum ID from all catalog items and add 1
+    const maxId = this.allCatalogItems.reduce((max, item) => Math.max(max, item.Id), 0);
+    return maxId + 1;
+  }
+
+  private scrollToEntity(entityId: number): void {
+    // Use setTimeout to ensure the DOM has been updated
+    setTimeout(() => {
+      const element = document.getElementById(`catalog-card-${entityId}`);
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
+  }
+
+  toggleColumns(item: Catalog): void {
+    const isVisible = this.showColumnsMap.get(item.Id) || false;
+
+    if (!isVisible && !this.tableColumnsMap.has(item.Table)) {
+      // Load columns if not already loaded
+      this.datapipeService.getTableColumns(item.Table).subscribe(
+        columns => {
+          this.tableColumnsMap.set(item.Table, columns);
+          this.showColumnsMap.set(item.Id, true);
+          this.cdr.markForCheck();
+        },
+        error => {
+          console.error('Error loading table columns:', error);
+        }
+      );
+    } else {
+      // Toggle visibility
+      this.showColumnsMap.set(item.Id, !isVisible);
+      this.cdr.markForCheck();
+    }
+  }
+
+  getTableColumns(item: Catalog): any[] {
+    return this.tableColumnsMap.get(item.Table) || [];
+  }
+
+  isColumnsVisible(item: Catalog): boolean {
+    return this.showColumnsMap.get(item.Id) || false;
+  }
+
+  hasColumns(item: Catalog): boolean {
+    // Only show button if table has columns loaded or is ODS_FHIR.Encounter
+    return item.Table === 'ODS_FHIR.Encounter' || this.tableColumnsMap.has(item.Table);
   }
 
   // En CatalogComponent

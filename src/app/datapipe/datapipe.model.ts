@@ -97,6 +97,7 @@ export interface Catalog {
     Entity: string;
     EntityDescription: string;
     Table: string;
+    Filter: string;
     MDXTotal: string;
     MDXHistogram: string;
     MDXHistogramUpdated: string;
@@ -108,4 +109,13 @@ export interface Catalog {
     totalRecords?: number;
     histogramData?: any[];
     showHistogram?: boolean;
+    isEditing?: boolean;
+}
+
+export interface TableColumn {
+  columnName: string;
+  description: string;
+  dataType: string;
+  isNullable: boolean;
+  isGenerated: boolean;
 }
