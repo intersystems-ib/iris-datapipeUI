@@ -5,6 +5,7 @@ import { InboxListComponent } from './inbox-list/inbox-list.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PipeListComponent } from './pipe-list/pipe-list.component';
 import { PipeDetailComponent } from './pipe-detail/pipe-detail.component';
+import { CatalogComponent } from './catalog/catalog.component';
 import { AuthGuard } from '../auth/auth.guard';
 
 export const routes: Routes = [
@@ -30,6 +31,12 @@ export const routes: Routes = [
   {
     path: 'admin/pipe/:pipeCode',
     component: PipeDetailComponent,
+    canActivate: []
+  },
+  /* admin: catalog */
+  {
+    path: 'admin/catalog',
+    component: CatalogComponent,
     canActivate: []
   },
   /* search: view inbox details */

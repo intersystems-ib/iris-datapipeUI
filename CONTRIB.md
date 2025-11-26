@@ -6,11 +6,13 @@ Please, go through the following steps if you want to contribute to this project
 4. Create a pull request.
 
 # Development Environment
+
 You need a running **iris-datapipe** instance in order to get the iris-datapipeUI working.
 
-* Install Node
+- Install Node
 
-* Install local Angular
+- Install local Angular
+
 ```
 mkdir angular-18
 cd angular-18
@@ -18,31 +20,36 @@ npm install npm@latest
 npm install @angular/cli@18.0.4
 ```
 
-* Clone project
+- Clone project
+
 ```
 git clone https://github.com/intersystems-ib/iris-datapipeUI
 cd iris-datapipeUI
 ```
 
-* Install dependencies
+- Install dependencies
+
 ```
 npm install
 ```
 
-* Run development server
+- Run development server
+
 ```
 ng serve
 ```
 
 # Util: angular cli commands used
 
-* Create application
+- Create application
+
 ```
 ng new DataPipeUI --routing=true --style=scss
 mv DataPipeUI iris-datapipeUI
 ```
 
-* Install moment (dates), material dependencies
+- Install moment (dates), material dependencies
+
 ```
 ng add @angular/material
 npm install --save bootstrap
@@ -50,7 +57,8 @@ npm install --save moment
 npm install --save ngx-material-timepicker
 ```
 
-* Modules and components
+- Modules and components
+
 ```
 ng generate module shared
 ng generate module auth --routing
@@ -81,4 +89,7 @@ ng generate component datapipe/pipe-detail
 
 ng generate component shared/default-filters
 ng generate service shared/notification
+
+ng generate component datapipe/catalog
+
 ```

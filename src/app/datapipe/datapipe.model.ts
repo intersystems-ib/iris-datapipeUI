@@ -86,3 +86,26 @@ export interface QueryResult<T> {
     children: T[],
     total: number;
 }
+
+/**
+ * Catalog
+ */
+export interface Catalog {
+    Id: number;
+    Category: string;
+    Subtypeof: number | null;
+    Entity: string;
+    EntityDescription: string;
+    Table: string;
+    MDXTotal: string;
+    MDXHistogram: string;
+    MDXHistogramUpdated: string;
+    Order: number;
+
+    // UI properties
+    children?: Catalog[];
+    expanded?: boolean;
+    totalRecords?: number;
+    histogramData?: any[];
+    showHistogram?: boolean;
+}

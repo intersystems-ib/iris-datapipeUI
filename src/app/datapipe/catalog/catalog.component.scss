@@ -1,0 +1,424 @@
+.catalog-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// Search Section
+.search-section {
+  margin-bottom: 32px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .search-field {
+    flex: 1;
+    max-width: 600px;
+    font-size: 16px;
+    min-width: 250px;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+
+    button {
+      color: #3f51b5;
+      transition: all 0.3s ease;
+
+      &.active {
+        background-color: rgba(63, 81, 181, 0.1);
+      }
+    }
+  }
+}
+
+// Category Filters
+.category-filters {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+
+  mat-chip-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+}
+
+// Catalog List
+.catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Catalog Cards
+.catalog-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  mat-card-header {
+    padding-bottom: 0;
+  }
+
+  .card-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 16px;
+  }
+
+  .entity-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .entity-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .category-chip {
+    align-self: flex-start;
+    background-color: #3f51b5;
+    color: white !important;
+    font-size: 12px;
+    font-weight: 500;
+
+    ::ng-deep .mat-chip-label {
+      color: white !important;
+    }
+
+    &.subcategory {
+      background-color: #5c6bc0;
+    }
+  }
+
+  .entity-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+
+    ::ng-deep mark {
+      background-color: #ffeb3b;
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+  }
+
+  .expand-button {
+    flex-shrink: 0;
+  }
+
+  mat-card-content {
+    padding-top: 16px;
+  }
+
+.card-content-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+
+  &:not(.histogram-visible) .description-section {
+    flex: 1 1 100%;
+  }
+
+  &.histogram-visible .description-section {
+    flex: 1 1 50%;
+  }
+
+  &.histogram-visible .stats-section {
+    flex: 1 1 50%;
+  }
+}
+  .stats-section {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .entity-description {
+    margin: 0;
+    color: #666;
+    line-height: 1.5;
+    font-size: 13px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    ::ng-deep mark {
+      background-color: #ffeb3b;
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+  }
+
+  .table-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+
+    .table-icon {
+      color: #757575;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .table-name {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #424242;
+      word-break: break-all;
+
+      ::ng-deep mark {
+        background-color: #ffeb3b;
+        padding: 2px 4px;
+        border-radius: 2px;
+      }
+    }
+  }
+
+  .histogram-toggle-btn {
+    color: #757575;
+    transition: all 0.3s ease;
+
+    &.active {
+      color: #3f51b5;
+      background-color: rgba(63, 81, 181, 0.1);
+    }
+
+    mat-icon {
+      font-size: 24px;
+    }
+  }
+
+  .total-records {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    .records-label {
+      font-size: 12px;
+      color: #757575;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .records-count {
+      font-size: 36px;
+      font-weight: 700;
+      color: #3f51b5;
+      line-height: 1;
+    }
+  }
+
+  .histogram-chart {
+    width: 450px;
+    height: 120px;
+
+    apx-chart {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+// Parent Card Styling
+.parent-card {
+  border-left: 4px solid #3f51b5;
+
+  .entity-title {
+    font-size: 24px;
+  }
+}
+
+// Child Card Styling
+.child-card {
+  border-left: 4px solid #5c6bc0;
+
+  .entity-title {
+    font-size: 20px;
+  }
+}
+
+// Children Container
+.children-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-left: 32px;
+  padding-left: 16px;
+  border-left: 2px dashed #ccc;
+}
+
+// No Results
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 18px;
+    margin: 0;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .catalog-container {
+    padding: 16px;
+  }
+
+  .catalog-card {
+    .card-content-grid {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .stats-section {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+      gap: 16px;
+    }
+
+    .card-content-grid:not(.histogram-visible) .description-section {
+  flex: 1 1 100%;
+  max-width: none;       /* elimina el tope */
+  min-width: 0;          /* importante en flex para que pueda crecer */
+}
+
+/* Stats a la derecha solo cuando hay histograma (50/50) */
+.card-content-grid.histogram-visible .description-section { flex: 1 1 50%; min-width: 0; }
+.card-content-grid.histogram-visible .stats-section       { flex: 1 1 50%; }
+
+/* Si no hay histograma pero quieres mantener botón/contador, hazlo estrecho */
+.card-content-grid:not(.histogram-visible) .stats-section { flex: 0 0 auto; }
+
+/* Clamping solo cuando hay histograma; si no, muestra el texto completo */
+.card-content-grid:not(.histogram-visible) .entity-description {
+  display: block;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: initial;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+    .histogram-chart {
+      width: 100%;
+      max-width: 400px;
+      order: 3; // Force histogram to appear last (after button and total-records)
+    }
+
+    .histogram-toggle-btn {
+      order: 1;
+    }
+
+    .total-records {
+      order: 2;
+    }
+
+    .entity-title {
+      font-size: 20px !important;
+    }
+
+    .total-records .records-count {
+      font-size: 28px;
+    }
+  }
+
+  .children-container {
+    margin-left: 16px;
+    padding-left: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .catalog-card {
+    .entity-title {
+      font-size: 18px !important;
+    }
+
+    .stats-section {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .total-records .records-count {
+      font-size: 24px;
+    }
+
+    .histogram-chart {
+      width: 100%;
+      max-width: 200px;
+    }
+  }
+
+  .children-container {
+    margin-left: 8px;
+  }
+}
+
+/* Fuerza chips siempre azules con texto blanco (MDC chips v15+) */
+:host ::ng-deep .mat-mdc-chip.mat-primary {
+  /* color del contenedor y del texto (no solo cuando están seleccionadas) */
+  --mdc-chip-container-color: #3f51b5;          /* primary 500 */
+  --mdc-chip-elevated-container-color: #3f51b5; /* por si aplica variante elevated */
+  --mdc-chip-label-text-color: #ffffff;
+  --mdc-chip-disabled-label-text-color: #ffffff;
+
+  /* iconos/‘check’ en blanco */
+  --mdc-chip-with-leading-icon-leading-icon-color: #ffffff;
+  --mdc-chip-with-trailing-icon-trailing-icon-color: #ffffff;
+  --mdc-chip-with-trailing-icon-disabled-trailing-icon-color: #ffffff;
+}
+
+/* Quita el borde/gris que añadías tú y evita cambios al hacer hover */
+:host ::ng-deep .mat-mdc-chip.mat-primary,
+:host ::ng-deep .mat-mdc-chip.mat-primary:hover {
+  border: none;
+  box-shadow: none;
+}
+
+/* Si quieres mantener la distinción de subcategoría solo por tono (opcional) */
+.category-chip.subcategory {
+  filter: brightness(0.9);
+}
+

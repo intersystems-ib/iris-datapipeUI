@@ -1,0 +1,157 @@
+<div class="catalog-container">
+  <p class="h2">Data Catalog</p>
+  <!-- Search Bar -->
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search catalog...</mat-label>
+      <input matInput [(ngModel)]="searchTerm" placeholder="Search by entity, description or table">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <div class="action-buttons">
+      <button mat-icon-button (click)="expandAll()" matTooltip="Expand All">
+        <mat-icon>unfold_more</mat-icon>
+      </button>
+      <button mat-icon-button (click)="collapseAll()" matTooltip="Collapse All">
+        <mat-icon>unfold_less</mat-icon>
+      </button>
+      <button mat-icon-button (click)="toggleAllHistograms()"
+        [matTooltip]="showAllHistograms ? 'Hide All Histograms' : 'Show All Histograms'"
+        [class.active]="showAllHistograms">
+        <mat-icon>{{ showAllHistograms ? 'bar_chart' : 'show_chart' }}</mat-icon>
+      </button>
+      <button mat-icon-button (click)="toggleDescriptions()"
+        [matTooltip]="showDescriptions ? 'Ocultar descripciones' : 'Mostrar descripciones'"
+        [class.active]="showDescriptions">
+        <mat-icon>notes</mat-icon>
+      </button>
+      <button mat-icon-button (click)="toggleTableInfo()"
+        [matTooltip]="showTableInfo ? 'Ocultar tabla' : 'Mostrar tabla'" [class.active]="showTableInfo">
+        <mat-icon>table_view</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Category Filters -->
+  <div class="category-filters" *ngIf="categories.length > 0">
+    <mat-chip-set>
+      <mat-chip-option *ngFor="let category of categories" [selected]="isCategorySelected(category)"
+        (selectionChange)="toggleCategory(category)">
+        {{ category }}
+      </mat-chip-option>
+    </mat-chip-set>
+  </div>
+
+  <!-- Catalog Cards -->
+  <div class="catalog-list">
+    <ng-container *ngFor="let item of filteredCatalogTree; trackBy: trackById">
+      <ng-container *ngTemplateOutlet="catalogCard; context: {$implicit: item, level: 1}"></ng-container>
+    </ng-container>
+
+    <!-- No Results Message -->
+    <div class="no-results" *ngIf="filteredCatalogTree.length === 0">
+      <mat-icon>search_off</mat-icon>
+      <p>No catalog items found matching your search.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Recursive Card Template -->
+<ng-template #catalogCard let-item let-level="level">
+  <mat-card class="catalog-card" [ngClass]="level === 1 ? 'parent-card' : 'child-card'">
+    <mat-card-header>
+      <div class="card-header-content">
+        <div class="entity-info">
+          <div class="entity-header">
+            <mat-chip class="category-chip" [ngClass]="level > 1 ? 'subcategory' : ''">{{ item.Category }}</mat-chip>
+            <h2 *ngIf="level === 1" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
+              (click)="toggleExpand(item)"></h2>
+            <h3 *ngIf="level === 2" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
+              (click)="toggleExpand(item)"></h3>
+            <h4 *ngIf="level > 2" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
+              (click)="toggleExpand(item)"></h4>
+          </div>
+        </div>
+        <!-- TOTAL en cabecera SOLO en modo compacto -->
+        <div class="header-total" *ngIf="isCompact(item)">
+          <div class="total-records">
+            <div class="records-count">{{ formatNumber(item.totalRecords!) }}</div>
+          </div>
+        </div>
+
+        <div class="expand-button" *ngIf="item.children && item.children.length > 0">
+          <button mat-icon-button (click)="toggleExpand(item)">
+            <mat-icon>{{ item.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+        </div>
+        <div class="expand-button" *ngIf="item.children && item.children.length === 0">
+          <button mat-icon-button [disabled]="true">
+            <mat-icon>remove</mat-icon>
+          </button>
+        </div>
+        <div class="item-actions">
+          <!-- Subir -->
+          <button mat-icon-button matTooltip="Mover arriba" (click)="moveItem(item, 'up')"
+            [disabled]="!canMoveUp(item)">
+            <mat-icon>arrow_upward</mat-icon>
+          </button>
+
+          <!-- Bajar -->
+          <button mat-icon-button matTooltip="Mover abajo" (click)="moveItem(item, 'down')"
+            [disabled]="!canMoveDown(item)">
+            <mat-icon>arrow_downward</mat-icon>
+          </button>
+
+          <!-- Mostrar/Ocultar histograma -->
+          <button mat-icon-button (click)="toggleHistogram(item)"
+            [matTooltip]="item.showHistogram ? 'Ocultar histograma' : 'Mostrar histograma'"
+            [class.active]="item.showHistogram">
+            <mat-icon>{{ item.showHistogram ? 'bar_chart' : 'bar_chart' }}</mat-icon>
+          </button>
+
+          <!-- Editar -->
+          <button mat-icon-button color="primary" (click)="toggleEditMode(item)"
+            [matTooltip]="item.isEditing ? 'Cancelar edición' : 'Editar'">
+            <mat-icon>{{ item.isEditing ? 'close' : 'edit' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-header>
+    <mat-card-content *ngIf="!isCompact(item)">
+      <div class="card-content-grid" [ngClass]="{'histogram-visible': item.showHistogram}">
+        <!-- Stats siempre visibles -->
+        <div class="stats-section">
+          <div class="total-records">
+            <span class="records-label">Total</span>
+            <span class="records-count">{{ formatNumber(item.totalRecords!) }}</span>
+          </div>
+
+          <div class="histogram-chart" *ngIf="item.showHistogram && item.histogramData?.length">
+            <apx-chart [series]="getChartOptions(item).series" [chart]="getChartOptions(item).chart"
+              [plotOptions]="getChartOptions(item).plotOptions" [dataLabels]="getChartOptions(item).dataLabels"
+              [xaxis]="getChartOptions(item).xaxis" [yaxis]="getChartOptions(item).yaxis"
+              [tooltip]="getChartOptions(item).tooltip" [colors]="getChartOptions(item).colors">
+            </apx-chart>
+          </div>
+        </div>
+
+        <!-- Descripción (según toggle) -->
+        <div class="description-section" *ngIf="showDescriptions || showTableInfo">
+          <p class="entity-description" *ngIf="showDescriptions" [innerHTML]="highlightSearch(item.EntityDescription)">
+          </p>
+
+          <div class="table-info" *ngIf="showTableInfo">
+            <mat-icon class="table-icon">table_view</mat-icon>
+            <span class="table-name" [innerHTML]="highlightSearch(item.Table)"></span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Recursively render children -->
+  <div class="children-container" *ngIf="item.expanded && item.children && item.children.length > 0">
+    <ng-container *ngFor="let child of item.children; trackBy: trackById">
+      <ng-container *ngTemplateOutlet="catalogCard; context: {$implicit: child, level: level + 1}"></ng-container>
+    </ng-container>
+  </div>
+</ng-template>

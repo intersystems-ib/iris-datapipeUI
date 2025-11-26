@@ -14,6 +14,7 @@ import { InboxHistoryComponent } from './inbox-history/inbox-history.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PipeListComponent } from './pipe-list/pipe-list.component';
 import { PipeDetailComponent } from './pipe-detail/pipe-detail.component';
+import { CatalogComponent } from './catalog/catalog.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { PipeDetailComponent } from './pipe-detail/pipe-detail.component';
     DashboardComponent,
     PipeListComponent,
     PipeDetailComponent,
+    CatalogComponent,
   ],
   imports: [
     CommonModule,

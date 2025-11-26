@@ -1,6 +1,5 @@
-
 <mat-sidenav-container fullscreen>
-  
+
   <!-- sidenav menu -->
   <mat-sidenav #sidenav class="custom-drawer-inner-container">
     <mat-nav-list (click)="sidenav.close()">
@@ -10,24 +9,31 @@
       <span class="custom-navbarTitle">
         DataPipe
       </span>
-      
-      <a mat-list-item routerLink="/datapipe/dashboard" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_DASHBOARD', 'U')">
+
+      <a mat-list-item routerLink="/datapipe/dashboard"
+        *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_DASHBOARD', 'U')">
         <mat-icon matListItemIcon>dashboard</mat-icon>
         <span matListItemTitle>Dashboard</span>
       </a>
 
-      <a mat-list-item routerLink="/datapipe" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_SEARCH', 'U')">
+      <a mat-list-item routerLink="/datapipe"
+        *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_MENU_SEARCH', 'U')">
         <mat-icon matListItemIcon>search</mat-icon>
         <span matListItemTitle>Search</span>
       </a>
 
       <mat-divider></mat-divider>
 
-      <a mat-list-item routerLink="/datapipe/admin/pipe" *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_ADMIN', 'U')">
+      <a mat-list-item routerLink="/datapipe/admin/pipe"
+        *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_ADMIN', 'U')">
         <mat-icon matListItemIcon>account_tree</mat-icon>
         <span matListItemTitle>Pipes</span>
       </a>
-
+      <a mat-list-item routerLink="/datapipe/admin/catalog"
+        *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_ADMIN', 'U')">
+        <mat-icon matListItemIcon>auto_stories</mat-icon>
+        <span matListItemTitle>Catalog</span>
+      </a>
       <a mat-list-item routerLink="/auth/login" *ngIf="!(isLoggedIn$ | async)">
         <mat-icon matListItemIcon>login</mat-icon>
         <span matListItemTitle>Login</span>
@@ -54,13 +60,13 @@
       <button class="menu-button" mat-icon-button (click)="sidenav.open('mouse')">
         <mat-icon>menu</mat-icon>
       </button>
-    
+
       <span class="fill-space"></span>
       <span>datapipeUI</span>
-    
+
       <!-- right aligned -->
       <span class="fill-space"></span>
-    
+
       <!-- user options -->
       <button *ngIf="(isLoggedIn$ | async)" mat-icon-button [matMenuTriggerFor]="userMenu">
         <span style="font-size:medium;font-weight:300;position:absolute;right:0px;top:10px;">
@@ -77,13 +83,13 @@
       </mat-menu>
 
     </mat-toolbar>
-    
+
     <app-alert-display></app-alert-display>
-    
+
     <div class="main-content">
       <router-outlet></router-outlet>
     </div>
-    
+
     <div class="footer">
       <div>
         <p style="text-align:center;">
