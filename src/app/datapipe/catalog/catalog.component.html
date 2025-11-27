@@ -11,7 +11,11 @@
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search catalog...</mat-label>
       <input matInput [(ngModel)]="searchTerm" placeholder="Search by entity, description or table">
-      <mat-icon matSuffix>search</mat-icon>
+      <span matSuffix *ngIf="searchTerm" class="search-results-count">({{ filteredResultsCount }})</span>
+      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()" aria-label="Clear search">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-icon matSuffix *ngIf="!searchTerm">search</mat-icon>
     </mat-form-field>
     <div class="action-buttons">
       <button mat-icon-button (click)="expandAll()" matTooltip="Expand All">
@@ -48,12 +52,12 @@
 
   <!-- Catalog Cards -->
   <div class="catalog-list">
-    <ng-container *ngFor="let item of allCatalogItems; trackBy: trackById">
+    <ng-container *ngFor="let item of filteredCatalogTree; trackBy: trackById">
       <ng-container *ngTemplateOutlet="catalogCard; context: {$implicit: item, level: 1}"></ng-container>
     </ng-container>
 
     <!-- No Results Message -->
-    <div class="no-results" *ngIf="allCatalogItems.length === 0">
+    <div class="no-results" *ngIf="filteredCatalogTree.length === 0">
       <mat-icon>search_off</mat-icon>
       <p>No catalog items found matching your search.</p>
     </div>

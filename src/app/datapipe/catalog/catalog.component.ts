@@ -17,6 +17,12 @@ export class CatalogComponent implements OnInit {
   /** Catalog items organized as tree structure */
   catalogTree: Catalog[] = [];
 
+  /** Filtered catalog tree for display */
+  filteredCatalogTree: Catalog[] = [];
+
+  /** Count of filtered results */
+  filteredResultsCount: number = 0;
+
   /** Map to store loaded columns for each table */
   private tableColumnsMap = new Map<string, any[]>();
 
@@ -58,6 +64,14 @@ export class CatalogComponent implements OnInit {
     this.applyFilter();
   }
 
+  /**
+   * Clear search term
+   */
+  clearSearch(): void {
+    this._searchTerm = '';
+    this.applyFilter();
+  }
+
   constructor(
     private datapipeService: DatapipeService,
     private cdr: ChangeDetectorRef
@@ -78,8 +92,11 @@ export class CatalogComponent implements OnInit {
     this.datapipeService.getCatalog().subscribe(
       data => {
         if (data.result) {
-          this.allCatalogItems = this.calculateGraphInfo(data.result);
-          this.categories = data.categories
+          this.catalogTree = this.calculateGraphInfo(data.result);
+          this.allCatalogItems = this.catalogTree;
+          this.filteredCatalogTree = this.catalogTree;
+          // Trim categories to avoid whitespace issues
+          this.categories = data.categories.map((cat: string) => cat.trim());
           this.cdr.markForCheck();
         }
       }
@@ -321,18 +338,19 @@ export class CatalogComponent implements OnInit {
    * Check if a category is selected
    */
   isCategorySelected(category: string): boolean {
-    return this.selectedCategories.includes(category);
+    return this.selectedCategories.includes(category.trim());
   }
 
   /**
    * Toggle category selection
    */
   toggleCategory(category: string): void {
-    const index = this.selectedCategories.indexOf(category);
+    const trimmedCategory = category.trim();
+    const index = this.selectedCategories.indexOf(trimmedCategory);
     if (index >= 0) {
       this.selectedCategories.splice(index, 1);
     } else {
-      this.selectedCategories.push(category);
+      this.selectedCategories.push(trimmedCategory);
     }
     this.applyFilter();
   }
@@ -347,7 +365,6 @@ export class CatalogComponent implements OnInit {
   /**
    * Apply filter based on search term and selected categories
    */
-  //TODO reimplement
   applyFilter(): void {
     let filtered = this.catalogTree;
 
@@ -360,10 +377,42 @@ export class CatalogComponent implements OnInit {
     if (this._searchTerm.trim()) {
       const term = this._searchTerm.toLowerCase();
       filtered = this.filterTree(filtered, term);
+      // Expand all items when searching to show results
+      this.expandFiltered(filtered);
+      // Count filtered results
+      this.filteredResultsCount = this.countItems(filtered);
+    } else {
+      this.filteredResultsCount = 0;
     }
 
-    //this.filteredCatalogTree = filtered;
+    this.filteredCatalogTree = filtered;
     this.cdr.markForCheck();
+  }
+
+  /**
+   * Expand all items in the filtered tree
+   */
+  private expandFiltered(items: Catalog[]): void {
+    items.forEach(item => {
+      item.expanded = true;
+      if (item.Children && item.Children.length > 0) {
+        this.expandFiltered(item.Children);
+      }
+    });
+  }
+
+  /**
+   * Count total items in tree (including children)
+   */
+  private countItems(items: Catalog[]): number {
+    let count = 0;
+    items.forEach(item => {
+      count++; // Count this item
+      if (item.Children && item.Children.length > 0) {
+        count += this.countItems(item.Children); // Count children recursively
+      }
+    });
+    return count;
   }
 
   /**
@@ -385,6 +434,7 @@ export class CatalogComponent implements OnInit {
       // Include if item's category matches or any children match
       if (categoryMatches || childrenMatch) {
         const itemCopy = {...item};
+        // Always use filtered children (never include unfiltered children)
         itemCopy.Children = filteredChildren;
         // Keep the original expanded state, don't auto-expand
         itemCopy.expanded = item.expanded;
@@ -411,12 +461,24 @@ export class CatalogComponent implements OnInit {
 
       const childrenMatch = filteredChildren.length > 0;
 
-      // If item or its children match, include it
-      if (matches || childrenMatch) {
-        // Create a shallow copy to avoid mutating original
+      // If item matches, include it with all matching children
+      if (matches && childrenMatch) {
         const itemCopy = {...item};
         itemCopy.Children = filteredChildren;
-        // Keep the original expanded state, don't auto-expand
+        itemCopy.expanded = item.expanded;
+        result.push(itemCopy);
+      }
+      // If only item matches (no children or no matching children), include just the item
+      else if (matches && !childrenMatch) {
+        const itemCopy = {...item};
+        itemCopy.Children = [];
+        itemCopy.expanded = item.expanded;
+        result.push(itemCopy);
+      }
+      // If only children match (but not the item itself), include parent with matching children
+      else if (!matches && childrenMatch) {
+        const itemCopy = {...item};
+        itemCopy.Children = filteredChildren;
         itemCopy.expanded = item.expanded;
         result.push(itemCopy);
       }
@@ -426,12 +488,30 @@ export class CatalogComponent implements OnInit {
   }
 
   /**
-   * Check if item matches search term
+   * Check if item matches search term(s)
+   * Supports multiple terms separated by space - all terms must match
    */
   itemMatchesSearch(item: Catalog, term: string): boolean {
-    return item.Entity.toLowerCase().includes(term) ||
-      item.EntityDescription.toLowerCase().includes(term) ||
-      item.Table.toLowerCase().includes(term);
+    const searchIn = [
+      item.Entity,
+      item.EntityDescription,
+      item.Table,
+      item.Category,
+      item.Namespace,
+      item.Filter,
+      item.DataOrigins,
+      item.Usage
+    ];
+
+    // Split search term by spaces to get multiple terms
+    const terms = term.trim().split(/\s+/).filter(t => t.length > 0);
+
+    // All terms must match at least one field
+    return terms.every(searchTerm =>
+      searchIn.some(field =>
+        field && field.toLowerCase().includes(searchTerm)
+      )
+    );
   }
 
   /**
@@ -449,15 +529,33 @@ export class CatalogComponent implements OnInit {
   }
 
   /**
-   * Highlight search term in text
+   * Highlight search term(s) in text
+   * Supports multiple terms separated by space
    */
-  highlightSearch(text: string): string {
-    if (!this.searchTerm.trim()) {
+  highlightSearch(text?: string): string {
+    if (!text) {
+      return '';
+    }
+
+    const term = this.searchTerm.trim();
+    if (!term) {
       return text;
     }
 
-    const regex = new RegExp(`(${this.searchTerm})`, 'gi');
-    return text.replace(regex, '<mark>$1</mark>');
+    // Split by spaces to get multiple terms
+    const terms = term.split(/\s+/).filter(t => t.length > 0);
+
+    let highlightedText = text;
+
+    // Highlight each term
+    terms.forEach(searchTerm => {
+      // Escapar caracteres especiales de Regex
+      const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escaped})`, 'gi');
+      highlightedText = highlightedText.replace(regex, '<mark>$1</mark>');
+    });
+
+    return highlightedText;
   }
 
   /** Devuelve el array de hermanos y el índice del item dentro de su rama */
