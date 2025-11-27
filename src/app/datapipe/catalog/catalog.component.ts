@@ -29,6 +29,8 @@ export class CatalogComponent implements OnInit {
   /** Available categories */
   categories: string[] = [];
 
+  protected namespaces: string[] = [];
+
   /** Selected categories for filtering */
   selectedCategories: string[] = [];
 
@@ -63,6 +65,9 @@ export class CatalogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.datapipeService.getNamespaces().subscribe(
+      namespaces => this.namespaces = namespaces
+    )
     this.loadCatalog();
   }
 
@@ -111,6 +116,11 @@ export class CatalogComponent implements OnInit {
   saveEdit(item: Catalog): void {
     // Save logic will be implemented later
     item.isEditing = false;
+    this.datapipeService.updateEntry(item).subscribe(
+      (result) => {
+        this.categories = result.categories
+      }
+    )
     this.cdr.markForCheck();
   }
 

@@ -866,10 +866,10 @@ getCatalog(): Observable<{result:Catalog[], categories:string[]}|any> {
 }
 
 
-updateEntry(catalog:Catalog){
-  return this.http.put(
-    this.urlBase + `/catalog/update/${catalog.Id}`,
-    catalog
+updateEntry(catalog:Catalog):Observable<{result:Catalog, categories:string[]}|any>{
+  return this.http.post(
+    this.urlBase + `/catalog/update`,
+      catalog
     ).pipe(
     catchError(err => {
       this.alertService.error('[getCatalog] ' + err.message)
