@@ -868,7 +868,7 @@ getCatalog(): Observable<{result:Catalog[], categories:string[]}|any> {
 
 updateEntry(catalog:Catalog){
   return this.http.put(
-    this.urlBase + `/update/${catalog.Id}`,
+    this.urlBase + `/catalog/update/${catalog.Id}`,
     catalog
     ).pipe(
     catchError(err => {
@@ -876,6 +876,17 @@ updateEntry(catalog:Catalog){
       return throwError(() => err);
     })
   );
+}
+
+getNamespaces():Observable<string[]|any>{
+    return this.http.get(
+      this.urlBase + `/catalog/namespaces`
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[getCatalog] ' + err.message)
+        return throwError(() => err);
+      })
+    )
 }
 
 
