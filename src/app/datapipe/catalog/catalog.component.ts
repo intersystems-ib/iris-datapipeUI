@@ -630,8 +630,9 @@ export class CatalogComponent implements OnInit {
   getChartOptions(item: Catalog): Partial<ApexOptions> {
     const numCategories = item.Histogram ? Object.keys(item.Histogram).length : 0;
     const showDataLabels = numCategories <= 18;
+    const hasUpdatedData = item.HistogramUpdated && Object.keys(item.HistogramUpdated).length > 0;
 
-    return {
+    const chartOptions: Partial<ApexOptions> = {
       ...this.options,
       dataLabels: {
         enabled: showDataLabels,
@@ -645,10 +646,25 @@ export class CatalogComponent implements OnInit {
         }
       }
     };
+
+    // Add chart events only if there's updated data
+    if (hasUpdatedData && chartOptions.chart) {
+      chartOptions.chart = {
+        ...chartOptions.chart,
+        events: {
+          mounted: (chartContext: any) => {
+            // Hide the second series (Updated) by default
+            chartContext.hideSeries('Updated (Last 90 days)');
+          }
+        }
+      };
+    }
+
+    return chartOptions;
   }
 
   getSeries(histData: { [year: string]: number }, histUpdated?: { [year: string]: number }): ApexAxisChartSeries {
-    const series: ApexAxisChartSeries = [{
+    const series: any[] = [{
       name: 'Total Records',
       data: Object.values(histData)
     }];
