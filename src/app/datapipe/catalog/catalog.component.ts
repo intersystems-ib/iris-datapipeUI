@@ -130,6 +130,9 @@ export class CatalogComponent implements OnInit {
       Subtypeof: null,
       Entity: 'New Entity',
       EntityDescription: '',
+      DataOrigins: '',
+      Usage: '',
+      Namespace: '',
       Table: '',
       Filter: '',
       MDXTotal: '',
@@ -163,6 +166,9 @@ export class CatalogComponent implements OnInit {
       Subtypeof: parent.Id,
       Entity: 'New Subtype',
       EntityDescription: '',
+      DataOrigins: '',
+      Usage: '',
+      Namespace: '',
       Table: '',
       Filter: '',
       MDXTotal: '',
@@ -529,10 +535,11 @@ export class CatalogComponent implements OnInit {
     }],
     chart: {
       type: 'bar',
-      height: 120,
+      height: 200,
       toolbar: {
         show: false
-      }
+      },
+      stacked: false
     },
     plotOptions: {
       bar: {
@@ -572,7 +579,17 @@ export class CatalogComponent implements OnInit {
         }
       }
     },
-    colors: ['#3f51b5']
+    legend: {
+      show: true,
+      position: 'top',
+      horizontalAlign: 'center',
+      fontSize: '11px',
+      markers: {
+        width: 8,
+        height: 8
+      }
+    },
+    colors: ['#3f51b5', '#ff9800']
   };
 
   static formatNumberGraph(num: number) {
@@ -589,8 +606,8 @@ export class CatalogComponent implements OnInit {
     catalogs.forEach(
       catalog => {
         if (catalog.Histogram) {
-          catalog.HistogramSeries = this.getSeries(catalog.Histogram)
-          catalog.HistogramXaxis = this.getYears(catalog.Histogram)
+          catalog.HistogramSeries = this.getSeries(catalog.Histogram, catalog.HistogramUpdated)
+          catalog.HistogramXaxis = this.getYears(catalog.Histogram, catalog.HistogramUpdated)
         }
         if (catalog.Children) {
           catalog.Children = this.calculateGraphInfo(catalog.Children)
@@ -600,14 +617,49 @@ export class CatalogComponent implements OnInit {
     return catalogs
   }
 
-  getSeries(histData: { [year: string]: number }): ApexAxisChartSeries {
-    return [{
-      name: 'Records',
-      data: Object.values(histData)
-    }]
+  getChartOptions(item: Catalog): Partial<ApexOptions> {
+    const numCategories = item.Histogram ? Object.keys(item.Histogram).length : 0;
+    const showDataLabels = numCategories <= 18;
+
+    return {
+      ...this.options,
+      dataLabels: {
+        enabled: showDataLabels,
+        formatter: function (val: number) {
+          return CatalogComponent.formatNumberGraph(val);
+        },
+        offsetY: -20,
+        style: {
+          fontSize: '10px',
+          colors: ['#304758']
+        }
+      }
+    };
   }
 
-  getYears(histData: { [year: string]: number }): ApexXAxis {
+  getSeries(histData: { [year: string]: number }, histUpdated?: { [year: string]: number }): ApexAxisChartSeries {
+    const series: ApexAxisChartSeries = [{
+      name: 'Total Records',
+      data: Object.values(histData)
+    }];
+
+    // Add updated records series if available and has data
+    if (histUpdated && Object.keys(histUpdated).length > 0) {
+      // Get all years from main histogram
+      const allYears = Object.keys(histData);
+      // Map updated data to match all years (fill with 0 if not present)
+      const updatedData = allYears.map(year => histUpdated[year] || 0);
+
+      series.push({
+        name: 'Updated (Last 90 days)',
+        data: updatedData
+      });
+    }
+
+    return series;
+  }
+
+  getYears(histData: { [year: string]: number }, histUpdated?: { [year: string]: number }): ApexXAxis {
     return {
       categories: Object.keys(histData),
       labels: {

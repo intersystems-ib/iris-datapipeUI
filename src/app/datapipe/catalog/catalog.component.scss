@@ -234,6 +234,61 @@
     }
   }
 
+  .documentation-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    border-left: 3px solid #3f51b5;
+
+    .doc-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+
+      .doc-icon {
+        color: #3f51b5;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .doc-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .doc-label {
+          font-size: 12px;
+          font-weight: 600;
+          color: #3f51b5;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .doc-text {
+          font-size: 13px;
+          color: #666;
+          line-height: 1.5;
+          white-space: pre-wrap;
+          word-break: break-word;
+
+          ::ng-deep mark {
+            background-color: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 2px;
+          }
+        }
+      }
+    }
+  }
+
   .table-info {
     display: flex;
     align-items: center;
@@ -275,6 +330,11 @@
         font-family: 'Courier New', monospace;
         font-size: 13px;
       }
+
+      .field-icon {
+        color: #3f51b5;
+        margin-right: 8px;
+      }
     }
 
     .edit-field.half-width {
@@ -301,6 +361,59 @@
       @media (max-width: 768px) {
         flex-direction: column;
         gap: 0;
+      }
+    }
+
+    .namespace-table-filter-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .namespace-width {
+        flex: 0 0 20%;
+        min-width: 0;
+
+        @media (max-width: 768px) {
+          flex: 1 1 100%;
+        }
+
+        input, mat-select {
+          font-family: 'Courier New', monospace;
+          font-size: 13px;
+        }
+      }
+
+      .table-width {
+        flex: 0 0 30%;
+        min-width: 0;
+
+        @media (max-width: 768px) {
+          flex: 1 1 100%;
+        }
+
+        input {
+          font-family: 'Courier New', monospace;
+          font-size: 13px;
+        }
+      }
+
+      .filter-width {
+        flex: 0 0 calc(49% - 8px);
+        min-width: 0;
+
+        @media (max-width: 768px) {
+          flex: 1 1 100%;
+        }
+
+        input {
+          font-family: 'Courier New', monospace;
+          font-size: 13px;
+        }
       }
     }
   }
@@ -422,12 +535,18 @@
   }
 
   .histogram-chart {
-    width: 450px;
-    height: 120px;
+    width: 600px;
+    height: 200px;
 
     apx-chart {
       width: 100%;
       height: 100%;
+    }
+
+    @media (max-width: 768px) {
+      width: 100%;
+      max-width: 100%;
+      height: 220px;
     }
   }
 }
@@ -491,8 +610,9 @@
   .catalog-card {
     .card-content-grid {
       display: flex;
-      gap: 24px;
-      align-items: flex-start;
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
     }
 
     .stats-section {
@@ -501,42 +621,56 @@
       width: 100%;
       min-width: 0;
       gap: 16px;
+      order: 2; // Stats section appears after description
+    }
+
+    .description-section {
+      flex: 1 1 100%;
+      max-width: none;
+      min-width: 0;
+      order: 1; // Description appears first
     }
 
     .card-content-grid:not(.histogram-visible) .description-section {
-  flex: 1 1 100%;
-  max-width: none;       /* elimina el tope */
-  min-width: 0;          /* importante en flex para que pueda crecer */
-}
-
-/* Stats a la derecha solo cuando hay histograma (50/50) */
-.card-content-grid.histogram-visible .description-section { flex: 1 1 50%; min-width: 0; }
-.card-content-grid.histogram-visible .stats-section       { flex: 1 1 50%; }
-
-/* Si no hay histograma pero quieres mantener botón/contador, hazlo estrecho */
-.card-content-grid:not(.histogram-visible) .stats-section { flex: 0 0 auto; }
-
-/* Clamping solo cuando hay histograma; si no, muestra el texto completo */
-.card-content-grid:not(.histogram-visible) .entity-description {
-  display: block;
-  -webkit-line-clamp: unset;
-  -webkit-box-orient: initial;
-  overflow: visible;
-  text-overflow: unset;
-}
-
-    .histogram-chart {
-      width: 100%;
-      max-width: 400px;
-      order: 3; // Force histogram to appear last (after button and total-records)
+      flex: 1 1 100%;
+      max-width: none;
+      min-width: 0;
     }
 
-    .histogram-toggle-btn {
+    /* En móviles, ambas secciones ocupan 100% */
+    .card-content-grid.histogram-visible .description-section {
+      flex: 1 1 100%;
+      min-width: 0;
       order: 1;
     }
 
-    .total-records {
+    .card-content-grid.histogram-visible .stats-section {
+      flex: 1 1 100%;
       order: 2;
+    }
+
+    /* Si no hay histograma, stats section es compacta */
+    .card-content-grid:not(.histogram-visible) .stats-section {
+      flex: 0 0 auto;
+    }
+
+    /* Muestra el texto completo cuando no hay histograma */
+    .card-content-grid:not(.histogram-visible) .entity-description {
+      display: block;
+      -webkit-line-clamp: unset;
+      -webkit-box-orient: initial;
+      overflow: visible;
+      text-overflow: unset;
+    }
+
+    .histogram-chart {
+      width: 100%;
+      max-width: 100%;
+      order: 2;
+    }
+
+    .total-records {
+      order: 1;
     }
 
     .entity-title {

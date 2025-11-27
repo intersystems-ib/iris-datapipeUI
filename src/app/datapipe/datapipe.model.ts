@@ -97,6 +97,9 @@ export interface Catalog {
     Subtypeof: number | null;
     Entity: string;
     EntityDescription: string;
+    DataOrigins: string;
+    Usage: string;
+    Namespace: string;
     Table: string;
     Filter: string;
     MDXTotal: string;
@@ -105,6 +108,7 @@ export interface Catalog {
     Order: number;
     Total?: number;
     Histogram?: {[year:string]:number};
+    HistogramUpdated?: {[year:string]:number};
     MDXError?:string[]
 
     // UI properties
