@@ -12,24 +12,24 @@ import { ViewstreamDialogComponent } from './viewstream-dialog/viewstream-dialog
   providedIn: 'root'
 })
 export class DatapipeService {
-  
+
   /** Base URL */
   private urlBase = environment.urlIRISApi;
-  
+
   /** Options used in request */
   private options = { };
 
   /**
    * Constructor
-   * @param http 
-   * @param alertService 
+   * @param http
+   * @param alertService
    */
   constructor(
-    private http:HttpClient, 
+    private http:HttpClient,
     private alertService: AlertService,
     public dialog: MatDialog
   ) { }
-  
+
 
   /**
    * Calls RESTForms2 query based on `DataPipe.Data.Inbox:queryFIND` method.
@@ -47,30 +47,30 @@ export class DatapipeService {
     if (query.Namespace) { filter += `+Namespace+contains+${query.Namespace}`; }
     if (query.ValidationErrors) { filter += `+ValidationErrors+contains+${query.ValidationErrors}`; }
     if (query.OperErrors) { filter += `+OperErrors+contains+${query.OperErrors}`; }
-    
-    if (query.Status && query.Status.length>0) { 
+
+    if (query.Status && query.Status.length>0) {
       let serializedStatus = query.Status.reduce(function (ret: any, item: any) {
-        return ret + '~' + item; 
+        return ret + '~' + item;
       });
-      filter += `+Status+in+${serializedStatus}`; 
+      filter += `+Status+in+${serializedStatus}`;
     }
-    if (query.StagingStatus && query.StagingStatus.length>0 ) { 
+    if (query.StagingStatus && query.StagingStatus.length>0 ) {
       let serializedStagingStatus = query.StagingStatus.reduce(function (ret: any, item: any) {
-        return ret + '~' + item; 
+        return ret + '~' + item;
       });
-      filter += `+StagingStatus+in+${serializedStagingStatus}`; 
+      filter += `+StagingStatus+in+${serializedStagingStatus}`;
     }
-    if (query.OperStatus && query.OperStatus.length>0) { 
+    if (query.OperStatus && query.OperStatus.length>0) {
       let serializedOperStatus = query.OperStatus.reduce(function (ret: any, item: any) {
-        return ret + '~' + item; 
+        return ret + '~' + item;
       });
-      filter += `+OperStatus+in+${serializedOperStatus}`; 
+      filter += `+OperStatus+in+${serializedOperStatus}`;
     }
-    if (query.Pipe && query.Pipe.length>0) { 
+    if (query.Pipe && query.Pipe.length>0) {
       let serializedPipe = query.Pipe.reduce(function (ret: any, item: any) {
-        return ret + '~' + item; 
+        return ret + '~' + item;
       });
-      filter += `+Pipe+in+${serializedPipe}`; 
+      filter += `+Pipe+in+${serializedPipe}`;
     }
 
     if (query.UpdatedTSFrom) {
@@ -83,7 +83,7 @@ export class DatapipeService {
     }
     let escapedFilter = filter.replace(new RegExp(' ', 'g'), '%09');
     escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
-    
+
     return this.http.get<QueryResult<Inbox>>(
       this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/custom/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&orderby=1+desc`,
       this.options
@@ -99,7 +99,7 @@ export class DatapipeService {
 
   /**
    * Get Inbox data using a given id
-   * @param id 
+   * @param id
    */
   findInboxById(id: number): Observable<Inbox> {
     return this.http.get<Inbox>(
@@ -116,7 +116,7 @@ export class DatapipeService {
 
   /**
    * Get Ingestion data using a given id
-   * @param id 
+   * @param id
    */
   findIngestionById(id: number): Observable<Ingestion> {
     return this.http.get<Ingestion>(
@@ -133,7 +133,7 @@ export class DatapipeService {
 
   /**
    * Get Staging data using a given id
-   * @param id 
+   * @param id
    */
   findStagingById(id: number): Observable<Staging> {
     return this.http.get<Staging>(
@@ -150,7 +150,7 @@ export class DatapipeService {
 
   /**
    * Get Oper data using a given id
-   * @param id 
+   * @param id
    */
   findOperById(id: number): Observable<Oper> {
     return this.http.get<Oper>(
@@ -167,7 +167,7 @@ export class DatapipeService {
 
   /**
    * Returns ingestions of a given inbox
-   * @param id 
+   * @param id
    */
   findIngestionsByInbox(id: number): Observable<QueryResult<Ingestion>> {
     return this.http.get<QueryResult<Ingestion>>(
@@ -184,7 +184,7 @@ export class DatapipeService {
 
   /**
    * Returns stagings of a given ingestion
-   * @param id 
+   * @param id
    */
   findStagingsByIngestion(id: number): Observable<QueryResult<Staging>> {
     return this.http.get<QueryResult<Staging>>(
@@ -201,7 +201,7 @@ export class DatapipeService {
 
   /**
    * Returns operations of a given staging
-   * @param id 
+   * @param id
    */
   findOpersByStaging(id: number): Observable<QueryResult<Oper>> {
     return this.http.get<QueryResult<Oper>>(
@@ -218,7 +218,7 @@ export class DatapipeService {
 
   /**
    * Returns Pipes that can be listed
-   * @param id 
+   * @param id
    */
   findPipes(pageIndex: number, pageSize: number, query: any): Observable<QueryResult<Pipe>> {
     let filter = '';
@@ -242,7 +242,7 @@ export class DatapipeService {
 
   /**
    * Returns a pipe by a given code
-   * @param code 
+   * @param code
    */
   findPipeByCode(code: string): Observable<Pipe> {
     return this.http.get<QueryResult<Pipe>>(
@@ -260,7 +260,7 @@ export class DatapipeService {
 
   /**
    * Returns inbox activity (dashboard)
-   * @param id 
+   * @param id
    */
   getInboxActivity(query: any): Observable<any> {
     let UpdatedTSFrom = '';
@@ -275,10 +275,10 @@ export class DatapipeService {
       const updatedTSToString = this.dateToString(query.UpdatedTSTo);
       UpdatedTSTo += `${updatedTSToString}T${query.UpdatedTSToTime}:59Z`;
     }
-    if (query.Pipe && query.Pipe.length>0) { 
+    if (query.Pipe && query.Pipe.length>0) {
       serializedPipes = query.Pipe.reduce(function (ret: any, item: any) {
-        return ret + '~' + item; 
-      }); 
+        return ret + '~' + item;
+      });
     }
 
     return this.http.get<any>(
@@ -312,7 +312,7 @@ export class DatapipeService {
   }
 
   /**
-   * Ignore/unignore an inbox (change visibility status) 
+   * Ignore/unignore an inbox (change visibility status)
    * @param inboxIdsArray array of inbox ids
    */
   ignoreInbox(inboxIdsArray: number[]) {
@@ -329,22 +329,22 @@ export class DatapipeService {
   }
 
   /**
-   * Status chip format 
+   * Status chip format
    */
   getInboxStatusChipFormat(status: string): any {
-    return { 
+    return {
       cssClass: 'status-general status-' + status.toLowerCase().replace(' ', '-')
     }
   }
 
   /**
-   * StagingStatus format 
+   * StagingStatus format
    */
   getStagingStatusChipFormat(status: string, errorArr?: any[]): any {
     if (typeof(errorArr) == "string" && errorArr !== "") {
       errorArr = JSON.parse(errorArr);
     }
-    return { 
+    return {
       cssClass: 'staging-' + status.toLowerCase().replace('/', ''),
       icon: status === 'VALID' ? 'thumb_up':
             status === 'INVALID' ? 'thumb_down':
@@ -363,7 +363,7 @@ export class DatapipeService {
     if (typeof(errorArr) == "string" && errorArr !== "") {
       errorArr = JSON.parse(errorArr);
     }
-    return { 
+    return {
       cssClass: 'oper-general oper-' + status.toLowerCase().replace('/', ''),
       icon: status === 'PROCESSING' ? 'hourglass_empty':
             status === 'PROCESSED' ? 'done':
@@ -378,7 +378,7 @@ export class DatapipeService {
 
   /**
    * Convert data value into string to send to backend (e.g. as query parameters)
-   * @param value 
+   * @param value
    */
   dateToString(value: any) {
     const date = new Date(value);
@@ -402,7 +402,7 @@ export class DatapipeService {
 
   /**
    * Opens a dialog displaying a data stream
-   * @param data 
+   * @param data
    */
   clickViewStream(data: any): MatDialogRef<ViewstreamDialogComponent> {
     const dialogRef = this.dialog.open(ViewstreamDialogComponent, {
@@ -462,12 +462,18 @@ export class DatapipeService {
     );
   }
 
-  /**
-   * Get Catalog data (mock data for prototype)
-   * TODO: Replace with actual API call to /rf2/form/objects/DataPipe.Data.Catalog/custom/find
-   */
-getCatalog(): Observable<Catalog[]> {
-  const mockData: Catalog[] = [
+
+
+  //catalog
+
+getCatalog(): Observable<{result:Catalog[], categories:string[]}|any> {
+  return this.http.get(this.urlBase + `/catalog`).pipe(
+    catchError(err => {
+      this.alertService.error('[getCatalog] ' + err.message)
+      return throwError(() => err);
+    })
+  )
+  /*const mockData: Catalog[] = [
     // ===== RAÍZ ODS FHIR =====
     {
       Id: 1,
@@ -856,11 +862,25 @@ getCatalog(): Observable<Catalog[]> {
     observer.next(mockData);
     observer.complete();
   });
+  */
 }
 
 
+updateEntry(catalog:Catalog){
+  return this.http.put(
+    this.urlBase + `/update/${catalog.Id}`,
+    catalog
+    ).pipe(
+    catchError(err => {
+      this.alertService.error('[getCatalog] ' + err.message)
+      return throwError(() => err);
+    })
+  );
+}
 
-getTableColumns(table: string): Observable<TableColumn[]> {
+
+getTableColumns(table: string): Observable<TableColumn[]>|any {
+  /*
   // Por ahora solo tenemos mock para ODS_FHIR.Encounter
   if (table !== 'ODS_FHIR.Encounter') {
     // Si quieres, aquí puedes devolver [] o hacer throw de un error
@@ -1005,6 +1025,9 @@ getTableColumns(table: string): Observable<TableColumn[]> {
   return new Observable(observer => {
     observer.next(mockColumns);
     observer.complete();
-  });
+  });*/
 }
+
+
+
 }

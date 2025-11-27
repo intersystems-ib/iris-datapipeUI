@@ -53,12 +53,12 @@
 
   <!-- Catalog Cards -->
   <div class="catalog-list">
-    <ng-container *ngFor="let item of filteredCatalogTree; trackBy: trackById">
+    <ng-container *ngFor="let item of allCatalogItems; trackBy: trackById">
       <ng-container *ngTemplateOutlet="catalogCard; context: {$implicit: item, level: 1}"></ng-container>
     </ng-container>
 
     <!-- No Results Message -->
-    <div class="no-results" *ngIf="filteredCatalogTree.length === 0">
+    <div class="no-results" *ngIf="allCatalogItems.length === 0">
       <mat-icon>search_off</mat-icon>
       <p>No catalog items found matching your search.</p>
     </div>
@@ -95,16 +95,16 @@
         <!-- TOTAL en cabecera SOLO en modo compacto -->
         <div class="header-total" *ngIf="isCompact(item)">
           <div class="total-records">
-            <div class="records-count">{{ formatNumber(item.totalRecords!) }}</div>
+            <div class="records-count">{{ formatNumber(item.Total?.Count) }}</div>
           </div>
         </div>
 
-        <div class="expand-button" *ngIf="item.children && item.children.length > 0">
+        <div class="expand-button" *ngIf="item.Children && item.Children.length > 0">
           <button mat-icon-button (click)="toggleExpand(item)">
             <mat-icon>{{ item.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
           </button>
         </div>
-        <div class="expand-button" *ngIf="item.children && item.children.length === 0">
+        <div class="expand-button" *ngIf="item.Children && item.Children.length === 0">
           <button mat-icon-button [disabled]="true">
             <mat-icon>remove</mat-icon>
           </button>
@@ -166,14 +166,14 @@
         <div class="stats-section" *ngIf="!item.isEditing">
           <div class="total-records">
             <span class="records-label">Total</span>
-            <span class="records-count">{{ formatNumber(item.totalRecords!) }}</span>
+            <span class="records-count">{{ formatNumber(item.Total?.Count) }}</span>
           </div>
 
-          <div class="histogram-chart" *ngIf="item.showHistogram && item.histogramData?.length">
-            <apx-chart [series]="getChartOptions(item).series" [chart]="getChartOptions(item).chart"
-              [plotOptions]="getChartOptions(item).plotOptions" [dataLabels]="getChartOptions(item).dataLabels"
-              [xaxis]="getChartOptions(item).xaxis" [yaxis]="getChartOptions(item).yaxis"
-              [tooltip]="getChartOptions(item).tooltip" [colors]="getChartOptions(item).colors">
+          <div class="histogram-chart" *ngIf="item.showHistogram && item.Histogram">
+            <apx-chart [series]="item.HistogramSeries!" [chart]="options.chart!"
+              [plotOptions]="options.plotOptions!" [dataLabels]="options.dataLabels!"
+              [xaxis]="item.HistogramXaxis!" [yaxis]="options.yaxis!"
+              [tooltip]="options.tooltip!" [colors]="options.colors!">
             </apx-chart>
           </div>
         </div>
@@ -192,6 +192,11 @@
             <div class="table-info filter-info">
               <mat-icon class="table-icon">filter_alt</mat-icon>
               <span class="table-name" [innerHTML]="highlightSearch(item.Filter)"></span>
+            </div>
+          </div>
+          <div *ngIf="item.MDXError">
+            <div *ngFor="let error of item.MDXError">
+              <span style="color:red">{{ error }}</span>
             </div>
           </div>
 
@@ -268,8 +273,8 @@
   </mat-card>
 
   <!-- Recursively render children -->
-  <div class="children-container" *ngIf="item.expanded && item.children && item.children.length > 0">
-    <ng-container *ngFor="let child of item.children; trackBy: trackById">
+  <div class="children-container" *ngIf="item.expanded && item.Children && item.Children.length > 0">
+    <ng-container *ngFor="let child of item.Children; trackBy: trackById">
       <ng-container *ngTemplateOutlet="catalogCard; context: {$implicit: child, level: level + 1}"></ng-container>
     </ng-container>
   </div>

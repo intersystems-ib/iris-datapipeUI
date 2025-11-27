@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import {ApexAxisChartSeries, ApexXAxis} from "ng-apexcharts";
 
 /**
  * Inbox
@@ -23,7 +24,7 @@ export interface Inbox {
     StagingStatus: string;
     OperStatus: string;
     Namespace: string;
-    
+
     Ingestions$: Observable<Ingestion[]>;
 }
 
@@ -102,12 +103,16 @@ export interface Catalog {
     MDXHistogram: string;
     MDXHistogramUpdated: string;
     Order: number;
+    Total?: number;
+    Histogram?: {[year:string]:number};
+    MDXError?:string[]
 
     // UI properties
-    children?: Catalog[];
+    Children?: Catalog[];
     expanded?: boolean;
-    totalRecords?: number;
-    histogramData?: any[];
+    ///Both HistogramSeries and HistogramXaxis are calculated upon receiving backend result
+    HistogramSeries?:ApexAxisChartSeries;
+    HistogramXaxis?:ApexXAxis;
     showHistogram?: boolean;
     isEditing?: boolean;
 }

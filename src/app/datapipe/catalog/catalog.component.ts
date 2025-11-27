@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Catalog } from '../datapipe.model';
-import { DatapipeService } from '../datapipe.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Catalog} from '../datapipe.model';
+import {DatapipeService} from '../datapipe.service';
+import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 
 @Component({
   selector: 'app-catalog',
@@ -15,9 +16,6 @@ export class CatalogComponent implements OnInit {
 
   /** Catalog items organized as tree structure */
   catalogTree: Catalog[] = [];
-
-  /** Filtered and displayed catalog items */
-  filteredCatalogTree: Catalog[] = [];
 
   /** Map to store loaded columns for each table */
   private tableColumnsMap = new Map<string, any[]>();
@@ -37,7 +35,7 @@ export class CatalogComponent implements OnInit {
   /** Show all histograms flag */
   showAllHistograms: boolean = false;
   showDescriptions = true;
-  showTableInfo   = true;
+  showTableInfo = true;
 
   toggleDescriptions(): void {
     this.showDescriptions = !this.showDescriptions;
@@ -61,7 +59,8 @@ export class CatalogComponent implements OnInit {
   constructor(
     private datapipeService: DatapipeService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadCatalog();
@@ -73,66 +72,14 @@ export class CatalogComponent implements OnInit {
   loadCatalog(): void {
     this.datapipeService.getCatalog().subscribe(
       data => {
-        this.allCatalogItems = data;
-        this.extractCategories();
-        this.buildTree();
-        this.applyFilter();
-        this.cdr.markForCheck();
+        if (data.result) {
+          this.allCatalogItems = this.calculateGraphInfo(data.result);
+          this.categories = data.categories
+          this.cdr.markForCheck();
+        }
       }
     );
   }
-
-  /**
-   * Extract unique categories from catalog items
-   */
-  extractCategories(): void {
-    const categorySet = new Set<string>();
-    this.allCatalogItems.forEach(item => {
-      if (item.Category) {
-        categorySet.add(item.Category);
-      }
-    });
-    this.categories = Array.from(categorySet).sort();
-  }
-
-  /**
-   * Build tree structure from flat catalog items (supports unlimited depth)
-   */
-buildTree(): void {
-  // Mapa por Id y asegura array children
-  const itemMap = new Map<number, Catalog>();
-  this.allCatalogItems.forEach(item => {
-    if (!item.children) item.children = [];
-    itemMap.set(item.Id, item);
-  });
-
-  // Construye la jerarquía a partir de la lista plana
-  this.catalogTree = [];
-  this.allCatalogItems.forEach(item => {
-    if (item.Subtypeof === null) {
-      this.catalogTree.push(item);
-    } else {
-      const parent = itemMap.get(item.Subtypeof);
-      if (parent) {
-        parent.children!.push(item);
-      }
-    }
-  });
-
-  // Ordenar por Order (y nombre si empatan) en todos los niveles
-  const byOrderThenName = (a: Catalog, b: Catalog) => {
-    const ao = (a.Order ?? Number.MAX_SAFE_INTEGER);
-    const bo = (b.Order ?? Number.MAX_SAFE_INTEGER);
-    return ao - bo || a.Entity.localeCompare(b.Entity);
-  };
-
-  const sortDeep = (items: Catalog[]) => {
-    items.sort(byOrderThenName);
-    items.forEach(it => { if (it.children && it.children.length) sortDeep(it.children); });
-  };
-
-  sortDeep(this.catalogTree);
-}
 
   /**
    * Toggle expand/collapse for an item
@@ -189,7 +136,7 @@ buildTree(): void {
       MDXHistogram: '',
       MDXHistogramUpdated: '',
       Order: this.catalogTree.length,
-      children: [],
+      Children: [],
       expanded: false,
       isEditing: true // Start in edit mode
     };
@@ -221,19 +168,19 @@ buildTree(): void {
       MDXTotal: '',
       MDXHistogram: '',
       MDXHistogramUpdated: '',
-      Order: parent.children ? parent.children.length : 0,
-      children: [],
+      Order: parent.Children ? parent.Children.length : 0,
+      Children: [],
       expanded: false,
       isEditing: true // Start in edit mode
     };
 
     // Initialize children array if needed
-    if (!parent.children) {
-      parent.children = [];
+    if (!parent.Children) {
+      parent.Children = [];
     }
 
     // Add to parent's children and flat list
-    parent.children.push(newChild);
+    parent.Children.push(newChild);
     this.allCatalogItems.push(newChild);
 
     // Expand parent to show new child
@@ -272,12 +219,12 @@ buildTree(): void {
     if (!isVisible && !this.tableColumnsMap.has(item.Table)) {
       // Load columns if not already loaded
       this.datapipeService.getTableColumns(item.Table).subscribe(
-        columns => {
+        (columns: any) => {
           this.tableColumnsMap.set(item.Table, columns);
           this.showColumnsMap.set(item.Id, true);
           this.cdr.markForCheck();
         },
-        error => {
+        (error: any) => {
           console.error('Error loading table columns:', error);
         }
       );
@@ -296,11 +243,6 @@ buildTree(): void {
     return this.showColumnsMap.get(item.Id) || false;
   }
 
-  hasColumns(item: Catalog): boolean {
-    // Show button for all items (columns will be loaded on demand)
-    return true;
-  }
-
   // En CatalogComponent
   isCompact(item: Catalog): boolean {
     return !this.showDescriptions && !this.showTableInfo && !item.showHistogram;
@@ -312,51 +254,51 @@ buildTree(): void {
    */
   toggleAllHistograms(): void {
     this.showAllHistograms = !this.showAllHistograms;
+    this.toggleHistogramVisibility(this.allCatalogItems, this.showAllHistograms)
+    this.cdr.markForCheck();
+  }
 
-    // Apply to all items recursively
-    const setHistogramVisibility = (items: Catalog[]) => {
-      items.forEach(item => {
-        item.showHistogram = this.showAllHistograms;
-        if (item.children && item.children.length > 0) {
-          setHistogramVisibility(item.children);
-        }
-      });
-    };
-
-    setHistogramVisibility(this.catalogTree);
-    this.applyFilter();
+  toggleHistogramVisibility(catalogs: Catalog[], value: boolean) {
+    catalogs.forEach(
+      catalog => {
+        catalog.showHistogram = value
+        if (catalog.Children) this.toggleHistogramVisibility(catalog.Children, value)
+      }
+    )
   }
 
   /**
    * Expand all tree items
    */
   expandAll(): void {
-    const expandItems = (items: Catalog[]) => {
-      items.forEach(item => {
-        if (item.children && item.children.length > 0) {
-          item.expanded = true;
-          expandItems(item.children);
-        }
-      });
-    };
-    expandItems(this.catalogTree);
-    this.applyFilter();
+    this.expandLevel(this.allCatalogItems)
+    this.cdr.markForCheck()
+  }
+
+  expandLevel(level: Catalog[]) {
+    level.forEach(
+      entry => {
+        entry.expanded = true;
+        if (entry.Children) this.expandLevel(entry.Children)
+      }
+    )
   }
 
   /**
    * Collapse all tree items
    */
   collapseAll(): void {
-    const collapseItems = (items: Catalog[]) => {
-      items.forEach(item => {
-        item.expanded = false;
-        if (item.children && item.children.length > 0) {
-          collapseItems(item.children);
-        }
-      });
-    };
-    collapseItems(this.catalogTree);
-    this.applyFilter();
+    this.collapseLevel(this.allCatalogItems)
+    this.cdr.markForCheck()
+  }
+
+  collapseLevel(level: Catalog[]) {
+    level.forEach(
+      entry => {
+        entry.expanded = false;
+        if (entry.Children) this.collapseLevel(entry.Children)
+      }
+    )
   }
 
   /**
@@ -389,6 +331,7 @@ buildTree(): void {
   /**
    * Apply filter based on search term and selected categories
    */
+  //TODO reimplement
   applyFilter(): void {
     let filtered = this.catalogTree;
 
@@ -403,7 +346,7 @@ buildTree(): void {
       filtered = this.filterTree(filtered, term);
     }
 
-    this.filteredCatalogTree = filtered;
+    //this.filteredCatalogTree = filtered;
     this.cdr.markForCheck();
   }
 
@@ -417,16 +360,16 @@ buildTree(): void {
       const categoryMatches = this.selectedCategories.includes(item.Category);
       let filteredChildren: Catalog[] = [];
 
-      if (item.children && item.children.length > 0) {
-        filteredChildren = this.filterByCategory(item.children);
+      if (item.Children && item.Children.length > 0) {
+        filteredChildren = this.filterByCategory(item.Children);
       }
 
       const childrenMatch = filteredChildren.length > 0;
 
       // Include if item's category matches or any children match
       if (categoryMatches || childrenMatch) {
-        const itemCopy = { ...item };
-        itemCopy.children = filteredChildren;
+        const itemCopy = {...item};
+        itemCopy.Children = filteredChildren;
         // Keep the original expanded state, don't auto-expand
         itemCopy.expanded = item.expanded;
         result.push(itemCopy);
@@ -446,8 +389,8 @@ buildTree(): void {
       const matches = this.itemMatchesSearch(item, term);
       let filteredChildren: Catalog[] = [];
 
-      if (item.children && item.children.length > 0) {
-        filteredChildren = this.filterTree(item.children, term);
+      if (item.Children && item.Children.length > 0) {
+        filteredChildren = this.filterTree(item.Children, term);
       }
 
       const childrenMatch = filteredChildren.length > 0;
@@ -455,8 +398,8 @@ buildTree(): void {
       // If item or its children match, include it
       if (matches || childrenMatch) {
         // Create a shallow copy to avoid mutating original
-        const itemCopy = { ...item };
-        itemCopy.children = filteredChildren;
+        const itemCopy = {...item};
+        itemCopy.Children = filteredChildren;
         // Keep the original expanded state, don't auto-expand
         itemCopy.expanded = item.expanded;
         result.push(itemCopy);
@@ -471,14 +414,15 @@ buildTree(): void {
    */
   itemMatchesSearch(item: Catalog, term: string): boolean {
     return item.Entity.toLowerCase().includes(term) ||
-           item.EntityDescription.toLowerCase().includes(term) ||
-           item.Table.toLowerCase().includes(term);
+      item.EntityDescription.toLowerCase().includes(term) ||
+      item.Table.toLowerCase().includes(term);
   }
 
   /**
    * Format large numbers (888, 34.5k, 3.5M)
    */
   formatNumber(num: number): string {
+    if (num === null) return ''
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';
     } else if (num >= 1000) {
@@ -486,81 +430,6 @@ buildTree(): void {
     } else {
       return num.toString();
     }
-  }
-
-  /**
-   * Get chart options for histogram (memoized to avoid recreating on every change detection)
-   */
-  private chartOptionsCache = new Map<number, any>();
-
-  getChartOptions(item: Catalog): any {
-    if (!item.histogramData || item.histogramData.length === 0) {
-      return null;
-    }
-
-    // Return cached options if available
-    if (this.chartOptionsCache.has(item.Id)) {
-      return this.chartOptionsCache.get(item.Id);
-    }
-
-    const formatNumber = this.formatNumber.bind(this);
-
-    const options = {
-      series: [{
-        name: 'Records',
-        data: item.histogramData.map(d => d.count)
-      }],
-      chart: {
-        type: 'bar',
-        height: 120,
-        toolbar: {
-          show: false
-        }
-      },
-      plotOptions: {
-        bar: {
-          columnWidth: '70%',
-          dataLabels: {
-            position: 'top'
-          }
-        }
-      },
-      dataLabels: {
-        enabled: true,
-        formatter: function (val: number) {
-          return formatNumber(val);
-        },
-        offsetY: -20,
-        style: {
-          fontSize: '10px',
-          colors: ['#304758']
-        }
-      },
-      xaxis: {
-        categories: item.histogramData.map(d => d.year.toString()),
-        labels: {
-          style: {
-            fontSize: '11px'
-          }
-        }
-      },
-      yaxis: {
-        show: false
-      },
-      tooltip: {
-        enabled: true,
-        y: {
-          formatter: function (val: number) {
-            return formatNumber(val) + ' records';
-          }
-        }
-      },
-      colors: ['#3f51b5']
-    };
-
-    // Cache the options
-    this.chartOptionsCache.set(item.Id, options);
-    return options;
   }
 
   /**
@@ -576,78 +445,179 @@ buildTree(): void {
   }
 
   /** Devuelve el array de hermanos y el índice del item dentro de su rama */
-private findSiblingsAndIndex(
-  target: Catalog,
-  current: Catalog[] = this.catalogTree,
-  parent?: Catalog
-): { siblings: Catalog[]; index: number; parent?: Catalog } | null {
+  private findSiblingsAndIndex(
+    target: Catalog,
+    current: Catalog[] = this.catalogTree,
+    parent?: Catalog
+  ): { siblings: Catalog[]; index: number; parent?: Catalog } | null {
 
-  const idx = current.findIndex(x => x.Id === target.Id);
-  if (idx >= 0) {
-    return { siblings: current, index: idx, parent };
-  }
-
-  for (const it of current) {
-    if (it.children && it.children.length) {
-      const found = this.findSiblingsAndIndex(target, it.children, it);
-      if (found) return found;
+    const idx = current.findIndex(x => x.Id === target.Id);
+    if (idx >= 0) {
+      return {siblings: current, index: idx, parent};
     }
-  }
-  return null;
-}
 
-/** Reglas de deshabilitado de botones */
-canMoveUp(item: Catalog): boolean {
-  const ref = this.findSiblingsAndIndex(item);
-  return !!ref && ref.index > 0;
-}
-
-canMoveDown(item: Catalog): boolean {
-  const ref = this.findSiblingsAndIndex(item);
-  return !!ref && ref.index < ref.siblings.length - 1;
-}
-
-/** Mueve el item dentro de su rama y reindexa Order (0..n) */
-moveItem(item: Catalog, direction: 'up' | 'down'): void {
-  const ref = this.findSiblingsAndIndex(item);
-  if (!ref) return;
-  const { siblings, index } = ref;
-
-  if (direction === 'up' && index === 0) return;
-  if (direction === 'down' && index === siblings.length - 1) return;
-
-  const swapWith = direction === 'up' ? index - 1 : index + 1;
-
-  // Intercambia posiciones en la rama visible
-  [siblings[index], siblings[swapWith]] = [siblings[swapWith], siblings[index]];
-
-  // Reasigna Order secuencial en esa rama
-  siblings.forEach((s, i) => { s.Order = i; });
-
-  // También actualiza el Order en la **lista plana** para que no se pierda tras filtros/búsqueda
-  this.syncOrdersBackToFlat();
-
-  // Refresca vistas derivadas
-  this.applyFilter();
-  this.cdr.markForCheck();
-}
-
-/** Sincroniza los Order actuales del árbol (catalogTree) a la lista plana (allCatalogItems) */
-private syncOrdersBackToFlat(): void {
-  const mapById = new Map<number, Catalog>();
-  this.allCatalogItems.forEach(x => mapById.set(x.Id, x));
-
-  const walk = (items: Catalog[]) => {
-    for (const it of items) {
-      const flat = mapById.get(it.Id);
-      if (flat) {
-        flat.Order = it.Order;
-        flat.Subtypeof = it.Subtypeof;
+    for (const it of current) {
+      if (it.Children && it.Children.length) {
+        const found = this.findSiblingsAndIndex(target, it.Children, it);
+        if (found) return found;
       }
-      if (it.children && it.children.length) walk(it.children);
     }
+    return null;
+  }
+
+  /** Reglas de deshabilitado de botones */
+  canMoveUp(item: Catalog): boolean {
+    const ref = this.findSiblingsAndIndex(item);
+    return !!ref && ref.index > 0;
+  }
+
+  canMoveDown(item: Catalog): boolean {
+    const ref = this.findSiblingsAndIndex(item);
+    return !!ref && ref.index < ref.siblings.length - 1;
+  }
+
+  /** Mueve el item dentro de su rama y reindexa Order (0..n) */
+  moveItem(item: Catalog, direction: 'up' | 'down'): void {
+    const ref = this.findSiblingsAndIndex(item);
+    if (!ref) return;
+    const {siblings, index} = ref;
+
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === siblings.length - 1) return;
+
+    const swapWith = direction === 'up' ? index - 1 : index + 1;
+
+    // Intercambia posiciones en la rama visible
+    [siblings[index], siblings[swapWith]] = [siblings[swapWith], siblings[index]];
+
+    // Reasigna Order secuencial en esa rama
+    siblings.forEach((s, i) => {
+      s.Order = i;
+    });
+
+    // También actualiza el Order en la **lista plana** para que no se pierda tras filtros/búsqueda
+    this.syncOrdersBackToFlat();
+
+    // Refresca vistas derivadas
+    this.applyFilter();
+    this.cdr.markForCheck();
+  }
+
+  /** Sincroniza los Order actuales del árbol (catalogTree) a la lista plana (allCatalogItems) */
+  private syncOrdersBackToFlat(): void {
+    const mapById = new Map<number, Catalog>();
+    this.allCatalogItems.forEach(x => mapById.set(x.Id, x));
+
+    const walk = (items: Catalog[]) => {
+      for (const it of items) {
+        const flat = mapById.get(it.Id);
+        if (flat) {
+          flat.Order = it.Order;
+          flat.Subtypeof = it.Subtypeof;
+        }
+        if (it.Children && it.Children.length) walk(it.Children);
+      }
+    };
+    walk(this.catalogTree);
+  }
+
+
+  protected options: Partial<ApexOptions> = {
+    series: [{
+      name: 'Records',
+      data: []
+    }],
+    chart: {
+      type: 'bar',
+      height: 120,
+      toolbar: {
+        show: false
+      }
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: '70%',
+        dataLabels: {
+          position: 'top'
+        }
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: function (val: number) {
+        return CatalogComponent.formatNumberGraph(val);
+      },
+      offsetY: -20,
+      style: {
+        fontSize: '10px',
+        colors: ['#304758']
+      }
+    },
+    xaxis: {
+      categories: [],
+      labels: {
+        style: {
+          fontSize: '11px'
+        }
+      }
+    },
+    yaxis: {
+      show: false
+    },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: function (val: number) {
+          return CatalogComponent.formatNumberGraph(val) + ' records';
+        }
+      }
+    },
+    colors: ['#3f51b5']
   };
-  walk(this.catalogTree);
-}
+
+  static formatNumberGraph(num: number) {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    } else {
+      return num.toString();
+    }
+  }
+
+  calculateGraphInfo(catalogs: Catalog[]) {
+    catalogs.forEach(
+      catalog => {
+        if (catalog.Histogram) {
+          catalog.HistogramSeries = this.getSeries(catalog.Histogram)
+          catalog.HistogramXaxis = this.getYears(catalog.Histogram)
+        }
+        if (catalog.Children) {
+          catalog.Children = this.calculateGraphInfo(catalog.Children)
+        }
+      }
+    )
+    return catalogs
+  }
+
+  getSeries(histData: { [year: string]: number }): ApexAxisChartSeries {
+    return [{
+      name: 'Records',
+      data: Object.values(histData)
+    }]
+  }
+
+  getYears(histData: { [year: string]: number }): ApexXAxis {
+    return {
+      categories: Object.keys(histData),
+      labels: {
+        style: {
+          fontSize: '11px'
+        }
+      }
+    }
+  }
+
+  protected Object = Object
 
 }
