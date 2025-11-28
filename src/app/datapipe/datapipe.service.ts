@@ -867,6 +867,9 @@ getCatalog(): Observable<{result:Catalog[], categories:string[]}|any> {
 
 
 updateEntry(catalog:Catalog):Observable<{result:Catalog, categories:string[]}|any>{
+    if(catalog.Id===-1){
+      delete (catalog as any).Id
+    }
   return this.http.post(
     this.urlBase + `/catalog/update`,
       catalog

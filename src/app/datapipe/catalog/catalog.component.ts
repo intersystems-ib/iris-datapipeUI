@@ -136,9 +136,11 @@ export class CatalogComponent implements OnInit {
     this.datapipeService.updateEntry(item).subscribe(
       (result) => {
         this.categories = result.categories
+        item = {...result.result, Children:item.Children }
+        this.cdr.markForCheck();
       }
     )
-    this.cdr.markForCheck();
+
   }
 
   cancelEdit(item: Catalog): void {
@@ -152,7 +154,7 @@ export class CatalogComponent implements OnInit {
 
     // Create a new root entity with default values
     const newEntity: Catalog = {
-      Id: this.getNextId(),
+      Id: -1,
       Category: '',
       Subtypeof: null,
       Entity: 'New Entity',
@@ -188,7 +190,7 @@ export class CatalogComponent implements OnInit {
 
     // Create a new child entity
     const newChild: Catalog = {
-      Id: this.getNextId(),
+      Id: -1,
       Category: parent.Category,
       Subtypeof: parent.Id,
       Entity: 'New Subtype',
@@ -591,7 +593,10 @@ export class CatalogComponent implements OnInit {
   }
 
   /** Mueve el item dentro de su rama y reindexa Order (0..n) */
-  moveItem(item: Catalog, direction: 'up' | 'down'): void {
+  moveItem(item: Catalog, index:number, direction: 'up' | 'down'): void {
+    console.log(item)
+    console.log(index)
+    /*
     const ref = this.findSiblingsAndIndex(item);
     if (!ref) return;
     const {siblings, index} = ref;
@@ -614,6 +619,7 @@ export class CatalogComponent implements OnInit {
 
     // Refresca vistas derivadas
     this.applyFilter();
+     */
     this.cdr.markForCheck();
   }
 

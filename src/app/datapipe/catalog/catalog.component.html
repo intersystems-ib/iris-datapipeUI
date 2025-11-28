@@ -52,8 +52,8 @@
 
   <!-- Catalog Cards -->
   <div class="catalog-list">
-    <ng-container *ngFor="let item of filteredCatalogTree; trackBy: trackById">
-      <ng-container *ngTemplateOutlet="catalogCard; context: {$implicit: item, level: 1}"></ng-container>
+    <ng-container *ngFor="let item of filteredCatalogTree; trackBy: trackById; let index = index ">
+      <ng-container *ngTemplateOutlet="catalogCard; context: {$implicit: item, level: 1, index : index}"></ng-container>
     </ng-container>
 
     <!-- No Results Message -->
@@ -65,7 +65,7 @@
 </div>
 
 <!-- Recursive Card Template -->
-<ng-template #catalogCard let-item let-level="level">
+<ng-template #catalogCard let-item let-level="level" let-index= "index">
   <mat-card class="catalog-card" [ngClass]="level === 1 ? 'parent-card' : 'child-card'"
     [id]="'catalog-card-' + item.Id">
     <mat-card-header>
@@ -112,13 +112,13 @@
         </div>
         <div class="item-actions">
           <!-- Move Up -->
-          <button mat-icon-button color="primary" matTooltip="Move up" (click)="moveItem(item, 'up')"
+          <button mat-icon-button color="primary" matTooltip="Move up" (click)="moveItem(item, index, 'up')"
             [disabled]="!canMoveUp(item)">
             <mat-icon>arrow_upward</mat-icon>
           </button>
 
           <!-- Move Down -->
-          <button mat-icon-button color="primary" matTooltip="Move down" (click)="moveItem(item, 'down')"
+          <button mat-icon-button color="primary" matTooltip="Move down" (click)="moveItem(item, index, 'down')"
             [disabled]="!canMoveDown(item)">
             <mat-icon>arrow_downward</mat-icon>
           </button>
@@ -150,7 +150,7 @@
           <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item)" matTooltip="Cancel">
             <mat-icon>close</mat-icon>
           </button>
-          <button *ngIf="item.isEditing" mat-icon-button color="accent" (click)="saveEdit(item)" matTooltip="Save">
+          <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent" (click)="saveEdit(item)" matTooltip="Save">
             <mat-icon>save</mat-icon>
           </button>
         </div>
