@@ -11,6 +11,16 @@ import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 })
 export class CatalogComponent implements OnInit {
 
+  /** Available categories */
+  categories: string[] = [];
+
+  ///False if no categories selected
+  categoryFiltering = false;
+
+  ///Object to check if categories are selected, should be loaded with the categories whenever they load
+  selectedCategories = {};
+
+
   /** All catalog items */
   allCatalogItems: Catalog[] = [];
 
@@ -32,13 +42,7 @@ export class CatalogComponent implements OnInit {
   /** Search term */
   private _searchTerm: string = '';
 
-  /** Available categories */
-  categories: string[] = [];
-
   protected namespaces: string[] = [];
-
-  /** Selected categories for filtering */
-  selectedCategories: string[] = [];
 
   /** Show all histograms flag */
   showAllHistograms: boolean = false;
@@ -93,10 +97,11 @@ export class CatalogComponent implements OnInit {
       data => {
         if (data.result) {
           this.catalogTree = this.calculateGraphInfo(data.result);
+          ///TODO both of this ought to go
           this.allCatalogItems = this.catalogTree;
           this.filteredCatalogTree = this.catalogTree;
           // Trim categories to avoid whitespace issues
-          this.categories = data.categories.map((cat: string) => cat.trim());
+          this.loadCategories(data.categories)
           this.cdr.markForCheck();
         }
       }
@@ -135,18 +140,33 @@ export class CatalogComponent implements OnInit {
     item.isEditing = false;
     this.datapipeService.updateEntry(item).subscribe(
       (result) => {
-        this.categories = result.categories
-        item = {...result.result, Children:item.Children }
+        this.loadCategories(result.categories)
+        item = {...result.result, Children: item.Children}
         this.cdr.markForCheck();
       }
     )
 
   }
 
+  loadCategories(categories:string[]){
+    let selectedCategories = {}
+    categories.forEach(
+      cat=>{
+
+      }
+    )
+  }
+
   cancelEdit(item: Catalog): void {
     // Cancel logic - restore original values if needed
     item.isEditing = false;
-    this.cdr.markForCheck();
+    this.datapipeService.getById(item.Id).subscribe(
+      (result: { result: Catalog }) => {
+        Object.assign(item, result.result);
+        console.log(item)
+        this.cdr.markForCheck();
+      }
+    )
   }
 
   createNewRootEntity(event: Event): void {
@@ -227,12 +247,6 @@ export class CatalogComponent implements OnInit {
 
     // Scroll to the new entity
     this.scrollToEntity(newChild.Id);
-  }
-
-  private getNextId(): number {
-    // Get the maximum ID from all catalog items and add 1
-    const maxId = this.allCatalogItems.reduce((max, item) => Math.max(max, item.Id), 0);
-    return maxId + 1;
   }
 
   private scrollToEntity(entityId: number): void {
@@ -336,26 +350,6 @@ export class CatalogComponent implements OnInit {
     )
   }
 
-  /**
-   * Check if a category is selected
-   */
-  isCategorySelected(category: string): boolean {
-    return this.selectedCategories.includes(category.trim());
-  }
-
-  /**
-   * Toggle category selection
-   */
-  toggleCategory(category: string): void {
-    const trimmedCategory = category.trim();
-    const index = this.selectedCategories.indexOf(trimmedCategory);
-    if (index >= 0) {
-      this.selectedCategories.splice(index, 1);
-    } else {
-      this.selectedCategories.push(trimmedCategory);
-    }
-    this.applyFilter();
-  }
 
   /**
    * TrackBy function for ngFor to improve performance
@@ -368,153 +362,8 @@ export class CatalogComponent implements OnInit {
    * Apply filter based on search term and selected categories
    */
   applyFilter(): void {
-    let filtered = this.catalogTree;
-
-    // Apply category filter
-    if (this.selectedCategories.length > 0) {
-      filtered = this.filterByCategory(filtered);
-    }
-
-    // Apply search filter
-    if (this._searchTerm.trim()) {
-      const term = this._searchTerm.toLowerCase();
-      filtered = this.filterTree(filtered, term);
-      // Expand all items when searching to show results
-      this.expandFiltered(filtered);
-      // Count filtered results
-      this.filteredResultsCount = this.countItems(filtered);
-    } else {
-      this.filteredResultsCount = 0;
-    }
-
-    this.filteredCatalogTree = filtered;
-    this.cdr.markForCheck();
   }
 
-  /**
-   * Expand all items in the filtered tree
-   */
-  private expandFiltered(items: Catalog[]): void {
-    items.forEach(item => {
-      item.expanded = true;
-      if (item.Children && item.Children.length > 0) {
-        this.expandFiltered(item.Children);
-      }
-    });
-  }
-
-  /**
-   * Count total items in tree (including children)
-   */
-  private countItems(items: Catalog[]): number {
-    let count = 0;
-    items.forEach(item => {
-      count++; // Count this item
-      if (item.Children && item.Children.length > 0) {
-        count += this.countItems(item.Children); // Count children recursively
-      }
-    });
-    return count;
-  }
-
-  /**
-   * Filter tree by selected categories
-   */
-  private filterByCategory(items: Catalog[]): Catalog[] {
-    const result: Catalog[] = [];
-
-    for (const item of items) {
-      const categoryMatches = this.selectedCategories.includes(item.Category);
-      let filteredChildren: Catalog[] = [];
-
-      if (item.Children && item.Children.length > 0) {
-        filteredChildren = this.filterByCategory(item.Children);
-      }
-
-      const childrenMatch = filteredChildren.length > 0;
-
-      // Include if item's category matches or any children match
-      if (categoryMatches || childrenMatch) {
-        const itemCopy = {...item};
-        // Always use filtered children (never include unfiltered children)
-        itemCopy.Children = filteredChildren;
-        // Keep the original expanded state, don't auto-expand
-        itemCopy.expanded = item.expanded;
-        result.push(itemCopy);
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Recursively filter tree items (deep copy to avoid mutating originals)
-   */
-  private filterTree(items: Catalog[], term: string): Catalog[] {
-    const result: Catalog[] = [];
-
-    for (const item of items) {
-      const matches = this.itemMatchesSearch(item, term);
-      let filteredChildren: Catalog[] = [];
-
-      if (item.Children && item.Children.length > 0) {
-        filteredChildren = this.filterTree(item.Children, term);
-      }
-
-      const childrenMatch = filteredChildren.length > 0;
-
-      // If item matches, include it with all matching children
-      if (matches && childrenMatch) {
-        const itemCopy = {...item};
-        itemCopy.Children = filteredChildren;
-        itemCopy.expanded = item.expanded;
-        result.push(itemCopy);
-      }
-      // If only item matches (no children or no matching children), include just the item
-      else if (matches && !childrenMatch) {
-        const itemCopy = {...item};
-        itemCopy.Children = [];
-        itemCopy.expanded = item.expanded;
-        result.push(itemCopy);
-      }
-      // If only children match (but not the item itself), include parent with matching children
-      else if (!matches && childrenMatch) {
-        const itemCopy = {...item};
-        itemCopy.Children = filteredChildren;
-        itemCopy.expanded = item.expanded;
-        result.push(itemCopy);
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Check if item matches search term(s)
-   * Supports multiple terms separated by space - all terms must match
-   */
-  itemMatchesSearch(item: Catalog, term: string): boolean {
-    const searchIn = [
-      item.Entity,
-      item.EntityDescription,
-      item.Table,
-      item.Category,
-      item.Namespace,
-      item.Filter,
-      item.DataOrigins,
-      item.Usage
-    ];
-
-    // Split search term by spaces to get multiple terms
-    const terms = term.trim().split(/\s+/).filter(t => t.length > 0);
-
-    // All terms must match at least one field
-    return terms.every(searchTerm =>
-      searchIn.some(field =>
-        field && field.toLowerCase().includes(searchTerm)
-      )
-    );
-  }
 
   /**
    * Format large numbers (888, 34.5k, 3.5M)
@@ -560,88 +409,19 @@ export class CatalogComponent implements OnInit {
     return highlightedText;
   }
 
-  /** Devuelve el array de hermanos y el índice del item dentro de su rama */
-  private findSiblingsAndIndex(
-    target: Catalog,
-    current: Catalog[] = this.catalogTree,
-    parent?: Catalog
-  ): { siblings: Catalog[]; index: number; parent?: Catalog } | null {
-
-    const idx = current.findIndex(x => x.Id === target.Id);
-    if (idx >= 0) {
-      return {siblings: current, index: idx, parent};
-    }
-
-    for (const it of current) {
-      if (it.Children && it.Children.length) {
-        const found = this.findSiblingsAndIndex(target, it.Children, it);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-
-  /** Reglas de deshabilitado de botones */
-  canMoveUp(item: Catalog): boolean {
-    const ref = this.findSiblingsAndIndex(item);
-    return !!ref && ref.index > 0;
-  }
-
-  canMoveDown(item: Catalog): boolean {
-    const ref = this.findSiblingsAndIndex(item);
-    return !!ref && ref.index < ref.siblings.length - 1;
-  }
-
   /** Mueve el item dentro de su rama y reindexa Order (0..n) */
-  moveItem(item: Catalog, index:number, array:Catalog[], direction: 'up' | 'down'): void {
-    if(item.Id === -1) return;
+  moveItem(item: Catalog, index: number, array: Catalog[], direction: 'up' | 'down'): void {
+    if (item.Id === -1) return;
     if (direction === 'up' && index === 0) return;
     if (direction === 'down' && index === array.length - 1) return;
-    this.datapipeService.reorder(item.Id, array[index + (direction==='up'?-1:1)].Id).subscribe(
-      ()=>{
-        array[index] = array[index + (direction==='up'?-1:1)]
-        array[index + (direction==='up'?-1:1)] = item
+    this.datapipeService.reorder(item.Id, array[index + (direction === 'up' ? -1 : 1)].Id).subscribe(
+      () => {
+        array[index] = array[index + (direction === 'up' ? -1 : 1)]
+        array[index + (direction === 'up' ? -1 : 1)] = item
         this.cdr.markForCheck();
       }
     )
-    /*
 
-
-    const swapWith = direction === 'up' ? index - 1 : index + 1;
-
-    // Intercambia posiciones en la rama visible
-    [siblings[index], siblings[swapWith]] = [siblings[swapWith], siblings[index]];
-
-    // Reasigna Order secuencial en esa rama
-    siblings.forEach((s, i) => {
-      s.Order = i;
-    });
-
-    // También actualiza el Order en la **lista plana** para que no se pierda tras filtros/búsqueda
-    this.syncOrdersBackToFlat();
-
-    // Refresca vistas derivadas
-    this.applyFilter();
-     */
-
-  }
-
-  /** Sincroniza los Order actuales del árbol (catalogTree) a la lista plana (allCatalogItems) */
-  private syncOrdersBackToFlat(): void {
-    const mapById = new Map<number, Catalog>();
-    this.allCatalogItems.forEach(x => mapById.set(x.Id, x));
-
-    const walk = (items: Catalog[]) => {
-      for (const it of items) {
-        const flat = mapById.get(it.Id);
-        if (flat) {
-          flat.Order = it.Order;
-          flat.Subtypeof = it.Subtypeof;
-        }
-        if (it.Children && it.Children.length) walk(it.Children);
-      }
-    };
-    walk(this.catalogTree);
   }
 
 
@@ -792,9 +572,14 @@ export class CatalogComponent implements OnInit {
     return series;
   }
 
-  getYears(histData: { [year: string]: number }, histUpdated?: { [year: string]: number }): ApexXAxis {
+  getYears(histData: { [year: string]: number } | undefined, histUpdated: {    [year: string]: number  } | undefined): ApexXAxis {
+    let years:string[] = []
+    if(histUpdated)
+      years = [...Object.keys(histUpdated)]
+    if(histData)
+      years = [...years, ...Object.keys(histData)];
     return {
-      categories: Object.keys(histData),
+      categories: Array.from(new Set(years.map(Number))).sort((a, b) => a - b),
       labels: {
         style: {
           fontSize: '11px'

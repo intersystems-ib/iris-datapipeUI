@@ -43,10 +43,10 @@
   <!-- Category Filters -->
   <div class="category-filters" *ngIf="categories.length > 0">
     <mat-chip-set>
-      <mat-chip-option *ngFor="let category of categories" [selected]="isCategorySelected(category)"
+      <!--<mat-chip-option *ngFor="let category of categories" [selected]="isCategorySelected(category)"
         (selectionChange)="toggleCategory(category)">
         {{ category }}
-      </mat-chip-option>
+      </mat-chip-option>-->
     </mat-chip-set>
   </div>
 
@@ -166,11 +166,11 @@
           </div>
 
           <div class="histogram-chart" *ngIf="item.showHistogram && item.Histogram">
-            <apx-chart [series]="item.HistogramSeries!" [chart]="getChartOptions(item).chart!"
-              [plotOptions]="getChartOptions(item).plotOptions!" [dataLabels]="getChartOptions(item).dataLabels!"
-              [xaxis]="item.HistogramXaxis!" [yaxis]="getChartOptions(item).yaxis!"
-              [tooltip]="getChartOptions(item).tooltip!" [legend]="getChartOptions(item).legend!"
-              [colors]="getChartOptions(item).colors!">
+            <apx-chart [series]="item.HistogramSeries!" [chart]="options.chart!"
+              [plotOptions]="options.plotOptions!" [dataLabels]="options.dataLabels!"
+              [xaxis]="item.HistogramXaxis!" [yaxis]="options.yaxis!"
+              [tooltip]="options.tooltip!" [legend]="options.legend!"
+              [colors]="options.colors!">
             </apx-chart>
           </div>
         </div>
