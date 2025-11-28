@@ -1043,5 +1043,17 @@ getTableColumns(table: string): Observable<TableColumn[]>|any {
 }
 
 
+reorder(from:string|number, to:string|number){
+  return this.http.post(
+    this.urlBase + `/catalog/reorder/${from}/${to}`,
+    {}
+  ).pipe(
+    catchError(err => {
+      this.alertService.error('[reorderCatalog] ' + err.message)
+      return throwError(() => err);
+    })
+  )
+}
+
 
 }

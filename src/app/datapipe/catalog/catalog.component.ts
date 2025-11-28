@@ -593,16 +593,19 @@ export class CatalogComponent implements OnInit {
   }
 
   /** Mueve el item dentro de su rama y reindexa Order (0..n) */
-  moveItem(item: Catalog, index:number, direction: 'up' | 'down'): void {
-    console.log(item)
-    console.log(index)
-    /*
-    const ref = this.findSiblingsAndIndex(item);
-    if (!ref) return;
-    const {siblings, index} = ref;
-
+  moveItem(item: Catalog, index:number, array:Catalog[], direction: 'up' | 'down'): void {
+    if(item.Id === -1) return;
     if (direction === 'up' && index === 0) return;
-    if (direction === 'down' && index === siblings.length - 1) return;
+    if (direction === 'down' && index === array.length - 1) return;
+    this.datapipeService.reorder(item.Id, array[index + (direction==='up'?-1:1)].Id).subscribe(
+      ()=>{
+        array[index] = array[index + (direction==='up'?-1:1)]
+        array[index + (direction==='up'?-1:1)] = item
+        this.cdr.markForCheck();
+      }
+    )
+    /*
+
 
     const swapWith = direction === 'up' ? index - 1 : index + 1;
 
@@ -620,7 +623,7 @@ export class CatalogComponent implements OnInit {
     // Refresca vistas derivadas
     this.applyFilter();
      */
-    this.cdr.markForCheck();
+
   }
 
   /** Sincroniza los Order actuales del árbol (catalogTree) a la lista plana (allCatalogItems) */
