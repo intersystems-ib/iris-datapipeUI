@@ -76,7 +76,7 @@
             <!-- Expand/Collapse Button -->
             <div class="expand-button" *ngIf="item.Children && item.Children.length > 0">
               <button mat-icon-button (click)="toggleExpand(item)">
-                <mat-icon>{{ item.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                <mat-icon>{{ item.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>
               </button>
             </div>
             <div class="expand-button" *ngIf="!item.Children || item.Children.length === 0">
@@ -121,59 +121,51 @@
 
         <div class="item-actions">
           <!-- Move Up -->
-          <<<<<<< HEAD <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move up"
-            (click)="moveItem(item, index, 'up')" [disabled]="!canMoveUp(item)">
-            =======
-            <button mat-icon-button color="primary" matTooltip="'Move up'" (click)="moveItem(item, index, array, 'up')"
-              [disabled]="index<=0 || item.Id === -1">
-              >>>>>>> c17e8b3e627e31d002b48c40ab7f7f20a244b75d
-              <mat-icon>arrow_upward</mat-icon>
-            </button>
+          <button mat-icon-button color="primary" class="hide-on-mobile" matTooltip="'Move up'"
+            (click)="moveItem(item, index, array, 'up')" [disabled]="index<=0 || item.Id === -1">
 
-            <!-- Move Down -->
-            <<<<<<< HEAD <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move down"
-              (click)="moveItem(item, index, 'down')" [disabled]="!canMoveDown(item)">
-              =======
-              <button mat-icon-button color="primary" matTooltip="Move down"
-                (click)="moveItem(item, index, array, 'down')"
-                [disabled]="(index >= (array.length -1) || array.length===1) || item.Id === -1">
-                >>>>>>> c17e8b3e627e31d002b48c40ab7f7f20a244b75d
-                <mat-icon>arrow_downward</mat-icon>
-              </button>
+            <mat-icon>arrow_upward</mat-icon>
+          </button>
 
-              <!-- Add Subtype -->
-              <button mat-icon-button class="hide-on-mobile" color="primary" (click)="addChildEntity(item, $event)"
-                matTooltip="Add Subtype">
-                <mat-icon>playlist_add</mat-icon>
-              </button>
+          <!-- Move Down -->
+          <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move down"
+            (click)="moveItem(item, index, array, 'down')"
+            [disabled]="(index >= (array.length -1) || array.length===1) || item.Id === -1">
+            <mat-icon>arrow_downward</mat-icon>
+          </button>
 
-              <!-- Show/Hide Histogram -->
-              <button mat-icon-button (click)="toggleHistogram(item)"
-                [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
-                [class.active]="item.showHistogram" class="toggle-button">
-                <mat-icon>{{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
-              </button>
+          <!-- Add Subtype -->
+          <button mat-icon-button class="hide-on-mobile" color="primary" (click)="addChildEntity(item, $event)"
+            matTooltip="Add Subtype">
+            <mat-icon>playlist_add</mat-icon>
+          </button>
 
-              <!-- Show/Hide Columns -->
-              <button mat-icon-button (click)="toggleColumns(item)"
-                [matTooltip]="isColumnsVisible(item) ? 'Hide Columns' : 'Show Columns'"
-                [class.active]="isColumnsVisible(item)" class="toggle-button hide-on-mobile">
-                <mat-icon>{{ isColumnsVisible(item) ? 'table_rows' : 'table_rows_narrow' }}</mat-icon>
-              </button>
+          <!-- Show/Hide Histogram -->
+          <button mat-icon-button (click)="toggleHistogram(item)"
+            [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'" [class.active]="item.showHistogram"
+            class="toggle-button">
+            <mat-icon>{{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
+          </button>
 
-              <!-- Edit / Cancel / Save -->
-              <button *ngIf="!item.isEditing" mat-icon-button color="primary" (click)="toggleEditMode(item)"
-                matTooltip="Edit">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item)"
-                matTooltip="Cancel">
-                <mat-icon>close</mat-icon>
-              </button>
-              <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent"
-                (click)="saveEdit(item)" matTooltip="Save">
-                <mat-icon>save</mat-icon>
-              </button>
+          <!-- Show/Hide Columns -->
+          <button mat-icon-button (click)="toggleColumns(item)"
+            [matTooltip]="isColumnsVisible(item) ? 'Hide Columns' : 'Show Columns'"
+            [class.active]="isColumnsVisible(item)" class="toggle-button hide-on-mobile">
+            <mat-icon>{{ isColumnsVisible(item) ? 'table_rows' : 'table_rows_narrow' }}</mat-icon>
+          </button>
+
+          <!-- Edit / Cancel / Save -->
+          <button *ngIf="!item.isEditing" mat-icon-button color="primary" (click)="toggleEditMode(item)"
+            matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item)" matTooltip="Cancel">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent"
+            (click)="saveEdit(item)" matTooltip="Save">
+            <mat-icon>save</mat-icon>
+          </button>
         </div>
       </div>
     </mat-card-header>
