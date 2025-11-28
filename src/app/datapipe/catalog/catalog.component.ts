@@ -29,6 +29,9 @@ export class CatalogComponent implements OnInit {
   /** Map to track which tables have columns visible */
   showColumnsMap = new Map<number, boolean>();
 
+  /** Map to track which histograms are loading */
+  loadingHistogramMap = new Map<number, boolean>();
+
   /** Search term */
   private _searchTerm: string = '';
 
@@ -42,8 +45,8 @@ export class CatalogComponent implements OnInit {
 
   /** Show all histograms flag */
   showAllHistograms: boolean = false;
-  showDescriptions = true;
-  showTableInfo = true;
+  showDescriptions = false;
+  showTableInfo = false;
 
   toggleDescriptions(): void {
     this.showDescriptions = !this.showDescriptions;
@@ -104,6 +107,74 @@ export class CatalogComponent implements OnInit {
   }
 
   /**
+   * Refresh catalog data from backend
+   */
+  refreshCatalog(): void {
+    // Save current expansion state
+    const expansionState = this.saveExpansionState(this.catalogTree);
+
+    // Reload catalog
+    this.datapipeService.getCatalog().subscribe(
+      data => {
+        if (data.result) {
+          this.catalogTree = this.calculateGraphInfo(data.result);
+          this.allCatalogItems = this.catalogTree;
+
+          // Restore expansion state
+          this.restoreExpansionState(this.catalogTree, expansionState);
+
+          // Trim categories to avoid whitespace issues
+          this.categories = data.categories.map((cat: string) => cat.trim());
+
+          // Reapply filters
+          this.applyFilter();
+
+          this.cdr.markForCheck();
+        }
+      }
+    );
+  }
+
+  /**
+   * Save expansion state of all items in the tree
+   */
+  private saveExpansionState(items: Catalog[]): Map<number, boolean> {
+    const state = new Map<number, boolean>();
+
+    const traverse = (items: Catalog[]) => {
+      items.forEach(item => {
+        if (item.expanded !== undefined) {
+          state.set(item.Id, item.expanded);
+        }
+        if (item.Children && item.Children.length > 0) {
+          traverse(item.Children);
+        }
+      });
+    };
+
+    traverse(items);
+    return state;
+  }
+
+  /**
+   * Restore expansion state to items in the tree
+   */
+  private restoreExpansionState(items: Catalog[], state: Map<number, boolean>): void {
+    const traverse = (items: Catalog[]) => {
+      items.forEach(item => {
+        if (state.has(item.Id)) {
+          item.expanded = state.get(item.Id);
+        }
+        if (item.Children && item.Children.length > 0) {
+          traverse(item.Children);
+        }
+      });
+    };
+
+    traverse(items);
+  }
+
+  /**
    * Toggle expand/collapse for an item
    */
   toggleExpand(item: Catalog): void {
@@ -115,8 +186,33 @@ export class CatalogComponent implements OnInit {
    * Toggle histogram visibility for a specific item
    */
   toggleHistogram(item: Catalog): void {
-    item.showHistogram = !item.showHistogram;
-    this.cdr.markForCheck();
+    const isShowing = !item.showHistogram;
+
+    if (isShowing) {
+      // Show loading spinner
+      this.loadingHistogramMap.set(item.Id, true);
+      item.showHistogram = true;
+      this.cdr.markForCheck();
+
+      // Use setTimeout to allow the DOM to update and show the spinner
+      // before the heavy rendering of the chart begins
+      setTimeout(() => {
+        this.loadingHistogramMap.set(item.Id, false);
+        this.cdr.markForCheck();
+      }, 100);
+    } else {
+      // Hide histogram immediately
+      item.showHistogram = false;
+      this.loadingHistogramMap.delete(item.Id);
+      this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Check if histogram is loading
+   */
+  isHistogramLoading(item: Catalog): boolean {
+    return this.loadingHistogramMap.get(item.Id) || false;
   }
 
   toggleEditMode(item: Catalog): void {
@@ -528,6 +624,14 @@ export class CatalogComponent implements OnInit {
     } else {
       return num.toString();
     }
+  }
+
+  /**
+   * Format number with thousands separators (e.g., 1,234,567)
+   */
+  formatNumberWithSeparators(num: number): string {
+    if (num === null || num === undefined) return '';
+    return num.toLocaleString('en-US');
   }
 
   /**

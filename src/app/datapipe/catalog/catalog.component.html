@@ -1,11 +1,6 @@
 <div class="catalog-container">
   <p class="h2">Data Catalog</p>
 
-  <!-- FAB Button to create new root entity -->
-  <button mat-fab class="fab-create-button" color="primary" (click)="createNewRootEntity($event)"
-    matTooltip="Create new entity" aria-label="Create new entity">
-    <mat-icon>add</mat-icon>
-  </button>
   <!-- Search Bar -->
   <div class="search-section">
     <mat-form-field appearance="outline" class="search-field">
@@ -23,11 +18,6 @@
       </button>
       <button mat-icon-button (click)="collapseAll()" matTooltip="Collapse All">
         <mat-icon>unfold_less</mat-icon>
-      </button>
-      <button mat-icon-button (click)="toggleAllHistograms()"
-        [matTooltip]="showAllHistograms ? 'Hide All Histograms' : 'Show All Histograms'"
-        [class.active]="showAllHistograms">
-        <mat-icon>{{ showAllHistograms ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
       </button>
       <button mat-icon-button (click)="toggleDescriptions()"
         [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'" [class.active]="showDescriptions">
@@ -62,19 +52,45 @@
       <p>No catalog items found matching your search.</p>
     </div>
   </div>
+
+  <!-- Bottom Toolbar -->
+  <mat-toolbar class="bottom-toolbar">
+    <button mat-raised-button color="primary" (click)="createNewRootEntity($event)">
+      <mat-icon>add</mat-icon>New Entity
+    </button>
+    <button mat-raised-button color="accent" (click)="refreshCatalog()">
+      <mat-icon>refresh</mat-icon>Refresh
+    </button>
+  </mat-toolbar>
 </div>
 
 <!-- Recursive Card Template -->
-<ng-template #catalogCard let-item let-level="level" let-index= "index">
+<ng-template #catalogCard let-item let-level="level" let-index="index">
   <mat-card class="catalog-card" [ngClass]="level === 1 ? 'parent-card' : 'child-card'"
     [id]="'catalog-card-' + item.Id">
     <mat-card-header>
       <div class="card-header-content">
         <div class="entity-info">
           <div class="entity-header">
+            <!-- Expand/Collapse Button -->
+            <div class="expand-button" *ngIf="item.Children && item.Children.length > 0">
+              <button mat-icon-button (click)="toggleExpand(item)">
+                <mat-icon>{{ item.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+              </button>
+            </div>
+            <div class="expand-button" *ngIf="!item.Children || item.Children.length === 0">
+              <button mat-icon-button [disabled]="true">
+                <mat-icon>remove</mat-icon>
+              </button>
+            </div>
+
             <!-- View mode -->
             <mat-chip *ngIf="!item.isEditing" class="category-chip" [ngClass]="level > 1 ? 'subcategory' : ''">{{
               item.Category }}</mat-chip>
+            <mat-icon *ngIf="!item.isEditing && item.MDXError && item.MDXError.length > 0" class="error-icon"
+              [matTooltip]="item.MDXError.join('\n')" matTooltipClass="error-tooltip">
+              error
+            </mat-icon>
             <h2 *ngIf="!item.isEditing && level === 1" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
               (click)="toggleExpand(item)"></h2>
             <h3 *ngIf="!item.isEditing && level === 2" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
@@ -96,35 +112,28 @@
         <!-- TOTAL en cabecera SOLO en modo compacto -->
         <div class="header-total" *ngIf="isCompact(item)">
           <div class="total-records">
-            <div class="records-count">{{ formatNumber(item.Total?.Count) }}</div>
+            <div class="records-count" [matTooltip]="formatNumberWithSeparators(item.Total?.Count)">
+              {{ formatNumber(item.Total?.Count) }}
+            </div>
           </div>
         </div>
 
-        <div class="expand-button" *ngIf="item.Children && item.Children.length > 0">
-          <button mat-icon-button (click)="toggleExpand(item)">
-            <mat-icon>{{ item.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
-          </button>
-        </div>
-        <div class="expand-button" *ngIf="item.Children && item.Children.length === 0">
-          <button mat-icon-button [disabled]="true">
-            <mat-icon>remove</mat-icon>
-          </button>
-        </div>
         <div class="item-actions">
           <!-- Move Up -->
-          <button mat-icon-button color="primary" matTooltip="Move up" (click)="moveItem(item, index, 'up')"
-            [disabled]="!canMoveUp(item)">
+          <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move up"
+            (click)="moveItem(item, index, 'up')" [disabled]="!canMoveUp(item)">
             <mat-icon>arrow_upward</mat-icon>
           </button>
 
           <!-- Move Down -->
-          <button mat-icon-button color="primary" matTooltip="Move down" (click)="moveItem(item, index, 'down')"
-            [disabled]="!canMoveDown(item)">
+          <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move down"
+            (click)="moveItem(item, index, 'down')" [disabled]="!canMoveDown(item)">
             <mat-icon>arrow_downward</mat-icon>
           </button>
 
           <!-- Add Subtype -->
-          <button mat-icon-button color="primary" (click)="addChildEntity(item, $event)" matTooltip="Add Subtype">
+          <button mat-icon-button class="hide-on-mobile" color="primary" (click)="addChildEntity(item, $event)"
+            matTooltip="Add Subtype">
             <mat-icon>playlist_add</mat-icon>
           </button>
 
@@ -138,7 +147,7 @@
           <!-- Show/Hide Columns -->
           <button mat-icon-button (click)="toggleColumns(item)"
             [matTooltip]="isColumnsVisible(item) ? 'Hide Columns' : 'Show Columns'"
-            [class.active]="isColumnsVisible(item)" class="toggle-button">
+            [class.active]="isColumnsVisible(item)" class="toggle-button hide-on-mobile">
             <mat-icon>{{ isColumnsVisible(item) ? 'table_rows' : 'table_rows_narrow' }}</mat-icon>
           </button>
 
@@ -150,7 +159,8 @@
           <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item)" matTooltip="Cancel">
             <mat-icon>close</mat-icon>
           </button>
-          <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent" (click)="saveEdit(item)" matTooltip="Save">
+          <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent"
+            (click)="saveEdit(item)" matTooltip="Save">
             <mat-icon>save</mat-icon>
           </button>
         </div>
@@ -162,11 +172,24 @@
         <div class="stats-section" *ngIf="!item.isEditing">
           <div class="total-records">
             <span class="records-label">Total</span>
-            <span class="records-count">{{ formatNumber(item.Total?.Count) }}</span>
+            <span class="records-count" [matTooltip]="formatNumberWithSeparators(item.Total?.Count)">
+              {{ formatNumber(item.Total?.Count) }}
+            </span>
+            <span class="records-count-full" *ngIf="showDescriptions">
+              ({{ formatNumberWithSeparators(item.Total?.Count) }})
+            </span>
           </div>
 
           <div class="histogram-chart" *ngIf="item.showHistogram && item.Histogram">
-            <apx-chart [series]="item.HistogramSeries!" [chart]="getChartOptions(item).chart!"
+            <!-- Loading spinner -->
+            <div class="histogram-loading" *ngIf="isHistogramLoading(item)">
+              <mat-spinner diameter="50"></mat-spinner>
+              <span class="loading-text">Loading chart...</span>
+            </div>
+
+            <!-- Chart (hidden while loading) -->
+            <apx-chart *ngIf="!isHistogramLoading(item)"
+              [series]="item.HistogramSeries!" [chart]="getChartOptions(item).chart!"
               [plotOptions]="getChartOptions(item).plotOptions!" [dataLabels]="getChartOptions(item).dataLabels!"
               [xaxis]="item.HistogramXaxis!" [yaxis]="getChartOptions(item).yaxis!"
               [tooltip]="getChartOptions(item).tooltip!" [legend]="getChartOptions(item).legend!"
