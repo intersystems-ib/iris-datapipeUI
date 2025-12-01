@@ -2,21 +2,92 @@
 .catalog-modal-backdrop {
   position: fixed;
   inset: 0; /* top:0, right:0, bottom:0, left:0 */
-  background: rgba(0, 0, 0, 0.4); /* Slightly obscures background */
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10; /* Above most content */
+  z-index: 1000; /* Above most content */
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-/* Modal container “card” */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal container "card" */
 .catalog-modal{
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 8px;
   max-width: 90vw;
   max-height: 90vh;
-  width: 600px;
+  width: 1000px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f5f5f5;
+  border-radius: 8px 8px 0 0;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+
+  &.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+
+    &:hover {
+      color: #3f51b5;
+    }
+
+    &:active {
+      color: #303f9f;
+    }
+  }
+}
+
+.close-button {
+  color: #666;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #333;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Modal Content */
+.modal-content {
   padding: 24px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
   overflow: auto;
+  flex: 1;
 }

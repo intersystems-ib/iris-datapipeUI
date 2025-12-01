@@ -9,6 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { AuthModule } from './auth/auth.module';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { ToastContainerComponent } from './shared/toast/toast-container.component';
 
 @NgModule({ declarations: [
         AppComponent
@@ -18,7 +19,8 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
         BrowserAnimationsModule,
         MatNativeDateModule,
         SharedModule.forRoot(),
-        AuthModule.forRoot()], providers: [
+        AuthModule.forRoot(),
+        ToastContainerComponent], providers: [
         { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
         provideHttpClient(withInterceptorsFromDi()),
     ] })

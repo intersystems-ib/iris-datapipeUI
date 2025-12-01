@@ -127,6 +127,6 @@ export interface TableColumn {
   columnName: string;
   description: string;
   dataType: string;
-  isNullable: boolean;
-  isGenerated: boolean;
+  isNullable: string;
+  isGenerated: string;
 }

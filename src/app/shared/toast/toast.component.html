@@ -1,0 +1,15 @@
+<div [@toastAnimation] *ngIf="_config"
+     class="toast-wrapper"
+     [ngClass]="_config.type" [ngStyle]="{'top':(_height+'rem')}">
+  <mat-icon class="toast-icon">{{ getMaterialIcon(_config.type) }}</mat-icon>
+  <div class="toast-content">
+    <div class="toast-title">{{ _config.title }}</div>
+    <div *ngIf="_config.message" class="toast-message">{{ _config.message }}</div>
+  </div>
+
+  <button class="toast-close" (click)="removeFunc()">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <div class="toast-timer" [style.animationDuration.ms]="_config.duration"></div>
+</div>

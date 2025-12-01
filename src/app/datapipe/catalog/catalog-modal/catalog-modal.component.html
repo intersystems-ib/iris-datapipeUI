@@ -7,6 +7,22 @@
     class="catalog-modal"
     (click)="$event.stopPropagation()"
   >
-    <ng-content></ng-content>
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2 class="modal-title"
+          [class.clickable]="titleClickable"
+          (click)="onTitleClick()"
+          [matTooltip]="titleClickable ? 'Click to copy table name' : ''">
+        {{ title }}
+      </h2>
+      <button mat-icon-button class="close-button" (click)="close()" aria-label="Close modal">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-content">
+      <ng-content></ng-content>
+    </div>
   </div>
 </div>

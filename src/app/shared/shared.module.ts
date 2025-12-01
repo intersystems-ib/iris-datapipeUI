@@ -28,8 +28,9 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
-const mm = [ 
+const mm = [
   MatButtonModule,
   MatToolbarModule,
   MatFormFieldModule,
@@ -53,7 +54,8 @@ const mm = [
   MatSidenavModule,
   MatListModule,
   MatCardModule,
-  MatCheckboxModule
+  MatCheckboxModule,
+  ClipboardModule
 ]
 
 @NgModule({

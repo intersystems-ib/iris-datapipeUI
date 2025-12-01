@@ -2,6 +2,8 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@an
 import {Catalog, TableColumn} from '../datapipe.model';
 import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
+import {ToastService} from '../../shared/toast/toast.service';
+import {Clipboard} from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-catalog',
@@ -28,6 +30,9 @@ export class CatalogComponent implements OnInit {
 
   ///key must match {{namespace}}~{{table}}
   protected catalogTablesColumns: { [key: string]: TableColumn[] } = {}
+
+  /** Map to store search terms for each table */
+  protected columnSearchTerms: { [key: string]: string } = {}
 
   /** Map to store loaded columns for each table */
   private tableColumnsMap = new Map<string, any[]>();
@@ -101,7 +106,9 @@ export class CatalogComponent implements OnInit {
 
   constructor(
     private datapipeService: DatapipeService,
-    protected cdr: ChangeDetectorRef
+    protected cdr: ChangeDetectorRef,
+    private clipboard: Clipboard,
+    private toastService: ToastService
   ) {
   }
 
@@ -667,6 +674,94 @@ export class CatalogComponent implements OnInit {
   }
 
   protected Object = Object
+
+  /**
+   * Copy column name to clipboard and show success message
+   * @param columnName - The column name to copy
+   */
+  copyToClipboard(columnName: string): void {
+    const success = this.clipboard.copy(columnName);
+    if (success) {
+      this.toastService.success('Copied!', `Column "${columnName}" copied to clipboard`);
+    } else {
+      this.toastService.error('Copy Failed', 'Failed to copy to clipboard');
+    }
+  }
+
+  /**
+   * Copy table name to clipboard and show success message
+   * @param tableName - The table name to copy
+   */
+  copyTableName(tableName: string): void {
+    const success = this.clipboard.copy(tableName);
+    if (success) {
+      this.toastService.success('Copied!', `Table name "${tableName}" copied to clipboard`);
+    } else {
+      this.toastService.error('Copy Failed', 'Failed to copy to clipboard');
+    }
+  }
+
+  /**
+   * Get filtered columns based on search term
+   */
+  getFilteredColumns(item: Catalog): TableColumn[] {
+    const key = item.Namespace + '~' + item.Table;
+    const columns = this.catalogTablesColumns[key];
+
+    if (!columns) {
+      return [];
+    }
+
+    const searchTerm = this.columnSearchTerms[key];
+    if (!searchTerm || searchTerm.trim() === '') {
+      return columns;
+    }
+
+    const term = searchTerm.toLowerCase().trim();
+    return columns.filter(column =>
+      column.columnName.toLowerCase().includes(term) ||
+      (column.description && column.description.toLowerCase().includes(term))
+    );
+  }
+
+  /**
+   * Handle column search change
+   */
+  onColumnSearchChange(item: Catalog): void {
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Clear column search
+   */
+  clearColumnSearch(item: Catalog): void {
+    const key = item.Namespace + '~' + item.Table;
+    this.columnSearchTerms[key] = '';
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Highlight search term in text
+   */
+  highlightColumnText(text: string, item: Catalog): string {
+    if (!text) {
+      return '';
+    }
+
+    const key = item.Namespace + '~' + item.Table;
+    const searchTerm = this.columnSearchTerms[key];
+
+    if (!searchTerm || searchTerm.trim() === '') {
+      return text;
+    }
+
+    const term = searchTerm.trim();
+    // Escape special regex characters
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+
+    return text.replace(regex, '<mark class="column-highlight">$1</mark>');
+  }
 
 }
 

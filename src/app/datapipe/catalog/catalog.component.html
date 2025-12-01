@@ -6,7 +6,7 @@
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search catalog...</mat-label>
       <input matInput #searchInput (input)="callSearch(searchInput.value)"
-             placeholder="Search by entity, description or table">
+        placeholder="Search by entity, description or table">
       <span matSuffix *ngIf="searchInput.value" class="search-results-count">({{ filteredResultsCount }})</span>
       <button mat-icon-button matSuffix *ngIf="searchInput.value" (click)="clearSearch()" aria-label="Clear search">
         <mat-icon>close</mat-icon>
@@ -21,12 +21,11 @@
         <mat-icon>unfold_less</mat-icon>
       </button>
       <button mat-icon-button (click)="toggleDescriptions()"
-              [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'"
-              [class.active]="showDescriptions">
+        [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'" [class.active]="showDescriptions">
         <mat-icon>{{ showDescriptions ? 'notes' : 'speaker_notes_off' }}</mat-icon>
       </button>
       <button mat-icon-button (click)="toggleTableInfo()"
-              [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
+        [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
         <mat-icon>{{ showTableInfo ? 'table_view' : 'grid_off' }}</mat-icon>
       </button>
     </div>
@@ -35,8 +34,7 @@
   <!-- Category Filters -->
   <div class="category-filters" *ngIf="categories.length > 0">
     <mat-chip-set>
-      <mat-chip-option *ngFor="let category of categories" [selected]="selectedCategories[category]"
-                       (selectionChange)="selectedCategories[category] = !selectedCategories[category];
+      <mat-chip-option *ngFor="let category of categories" [selected]="selectedCategories[category]" (selectionChange)="selectedCategories[category] = !selectedCategories[category];
             categoryFiltering = Object.values(selectedCategories).includes(true)">
         {{ category }}
       </mat-chip-option>
@@ -59,9 +57,9 @@
     </div>
 
     <div *ngIf="isLoading">
-        <mat-spinner diameter="50"></mat-spinner>
-        <span class="loading-text">Loading catalogs...</span>
-      </div>
+      <mat-spinner diameter="50"></mat-spinner>
+      <span class="loading-text">Loading catalogs...</span>
+    </div>
   </div>
 
   <!-- Bottom Toolbar -->
@@ -80,8 +78,8 @@
 <!-- Recursive Card Template -->
 <ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array">
   <mat-card class="catalog-card" [ngClass]="level === 1 ? 'parent-card' : 'child-card'"
-            [ngClass]="categoryFiltering && selectedCategories[item.Category]==false?'catalog-card-disabled':''"
-            [id]="'catalog-card-' + item.Id" [hidden]="categoryFiltering && selectedCategories[item.Category] == false">
+    [ngClass]="categoryFiltering && selectedCategories[item.Category]==false?'catalog-card-disabled':''"
+    [id]="'catalog-card-' + item.Id" [hidden]="categoryFiltering && selectedCategories[item.Category] == false">
     <mat-card-header>
       <div class="card-header-content">
         <div class="entity-info">
@@ -100,19 +98,19 @@
 
             <!-- View mode -->
             <mat-chip *ngIf="!item.isEditing" class="category-chip" [ngClass]="level > 1 ? 'subcategory' : ''">{{
-                item.Category
+              item.Category
               }}
             </mat-chip>
             <mat-icon *ngIf="!item.isEditing && item.MDXError && item.MDXError.length > 0" class="error-icon"
-                      [matTooltip]="item.MDXError.join('\n')" matTooltipClass="error-tooltip">
+              [matTooltip]="item.MDXError.join('\n')" matTooltipClass="error-tooltip">
               error
             </mat-icon>
             <h2 *ngIf="!item.isEditing && level === 1" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
-                (click)="toggleExpand(item)"></h2>
+              (click)="toggleExpand(item)"></h2>
             <h3 *ngIf="!item.isEditing && level === 2" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
-                (click)="toggleExpand(item)"></h3>
+              (click)="toggleExpand(item)"></h3>
             <h4 *ngIf="!item.isEditing && level > 2" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
-                (click)="toggleExpand(item)"></h4>
+              (click)="toggleExpand(item)"></h4>
 
             <!-- Edit mode -->
             <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
@@ -136,56 +134,57 @@
 
         <div class="item-actions">
           <!-- Move Up -->
-          <button mat-icon-button color="primary" class="hide-on-mobile" [matTooltip]="categoryFiltering?'Can not edit order while filtering by category':'Move up'"
-                  (click)="moveItem(item, index, array, 'up')" [disabled]="index<=0 || item.Id === -1">
+          <button mat-icon-button color="primary" class="hide-on-mobile"
+            [matTooltip]="categoryFiltering?'Can not edit order while filtering by category':'Move up'"
+            (click)="moveItem(item, index, array, 'up')" [disabled]="index<=0 || item.Id === -1">
 
             <mat-icon>arrow_upward</mat-icon>
           </button>
 
           <!-- Move Down -->
           <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move down"
-                  (click)="moveItem(item, index, array, 'down')"
-                  [disabled]="(index >= (array.length -1) || array.length===1) || item.Id === -1">
+            (click)="moveItem(item, index, array, 'down')"
+            [disabled]="(index >= (array.length -1) || array.length===1) || item.Id === -1">
             <mat-icon>arrow_downward</mat-icon>
           </button>
 
           <!-- Add Subtype -->
           <button mat-icon-button class="hide-on-mobile" color="primary" (click)="addChildEntity(item, $event)"
-                  matTooltip="Add Subtype">
+            matTooltip="Add Subtype">
             <mat-icon>playlist_add</mat-icon>
           </button>
 
           <!-- Show/Hide Histogram -->
           <button mat-icon-button (click)="toggleHistogram(item)"
-                  [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
-                  [class.active]="item.showHistogram"
-                  class="toggle-button">
+            [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'" [class.active]="item.showHistogram"
+            class="toggle-button">
             <mat-icon>{{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
           </button>
 
           <!-- Show/Hide Columns -->
           <button mat-icon-button (click)="item.showColumns = true; loadColumns(item); cdr.markForCheck()"
-                  [matTooltip]="'Show Columns'" class="toggle-button hide-on-mobile">
+            [matTooltip]="'Show Columns'" class="toggle-button">
             <mat-icon>table_rows</mat-icon>
           </button>
 
           <!-- Edit / Cancel / Save -->
           <button *ngIf="!item.isEditing" mat-icon-button color="primary" (click)="toggleEditMode(item)"
-                  matTooltip="Edit">
+            matTooltip="Edit">
             <mat-icon>edit</mat-icon>
           </button>
-          <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item, array, index)" matTooltip="Cancel">
+          <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item, array, index)"
+            matTooltip="Cancel">
             <mat-icon>close</mat-icon>
           </button>
           <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent"
-                  (click)="saveEdit(item)" matTooltip="Save">
+            (click)="saveEdit(item)" matTooltip="Save">
             <mat-icon>save</mat-icon>
           </button>
         </div>
       </div>
     </mat-card-header>
     <mat-card-content *ngIf="!isCompact(item) || item.isEditing"
-                      [hidden]="categoryFiltering && selectedCategories[item.Category]">
+      [hidden]="categoryFiltering && selectedCategories[item.Category]">
       <div class="card-content-grid" [ngClass]="{'histogram-visible': item.showHistogram}">
         <!-- Stats siempre visibles -->
         <div class="stats-section" *ngIf="!item.isEditing">
@@ -207,12 +206,11 @@
             </div>
 
             <!-- Chart (hidden while loading) -->
-            <apx-chart *ngIf="!isHistogramLoading(item)" [series]="item.HistogramSeries!"
-                       [chart]="options.chart!" [plotOptions]="options.plotOptions!"
-                       [dataLabels]="item.HistogramSeries[0].data.length<=18?options.dataLabels!:{enabled: false }"
-                       [xaxis]="item.HistogramXaxis!"
-                       [yaxis]="options.yaxis!" [tooltip]="options.tooltip!"
-                       [legend]="options.legend!" [colors]="options.colors!">
+            <apx-chart *ngIf="!isHistogramLoading(item)" [series]="item.HistogramSeries!" [chart]="options.chart!"
+              [plotOptions]="options.plotOptions!"
+              [dataLabels]="item.HistogramSeries[0].data.length<=18?options.dataLabels!:{enabled: false }"
+              [xaxis]="item.HistogramXaxis!" [yaxis]="options.yaxis!" [tooltip]="options.tooltip!"
+              [legend]="options.legend!" [colors]="options.colors!">
             </apx-chart>
           </div>
         </div>
@@ -221,11 +219,11 @@
         <div class="description-section" *ngIf="showDescriptions || showTableInfo || item.isEditing">
           <!-- View mode -->
           <p *ngIf="!item.isEditing && showDescriptions" class="entity-description"
-             [innerHTML]="highlightSearch(item.EntityDescription)">
+            [innerHTML]="highlightSearch(item.EntityDescription)">
           </p>
 
           <div *ngIf="!item.isEditing && showDescriptions && (item.DataOrigins || item.Usage)"
-               class="documentation-section">
+            class="documentation-section">
             <div *ngIf="item.DataOrigins" class="doc-info">
               <mat-icon class="doc-icon">forward</mat-icon>
               <div class="doc-content">
@@ -272,14 +270,14 @@
             <mat-label>Data Origins</mat-label>
             <mat-icon matPrefix class="field-icon">forward</mat-icon>
             <textarea matInput [(ngModel)]="item.DataOrigins" rows="3"
-                      placeholder="Document the origin of the data..."></textarea>
+              placeholder="Document the origin of the data..."></textarea>
           </mat-form-field>
 
           <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field full-width">
             <mat-label>Usage</mat-label>
             <mat-icon matPrefix class="field-icon">attribution</mat-icon>
             <textarea matInput [(ngModel)]="item.Usage" rows="3"
-                      placeholder="Describe how this data is used..."></textarea>
+              placeholder="Describe how this data is used..."></textarea>
           </mat-form-field>
 
           <div *ngIf="item.isEditing" class="namespace-table-filter-row">
@@ -319,53 +317,76 @@
         </div>
       </div>
     </mat-card-content>
-    <catalog-modal [(open)]="item.showColumns">
+    <catalog-modal [(open)]="item.showColumns" [title]="'Table Columns - ' + item.Table" [titleClickable]="true"
+      (titleClick)="copyTableName(item.Table)">
       <!-- Table Columns Section -->
-      <h3 class="columns-title">Table Columns</h3>
       <div class="columns-table" *ngIf="item.showColumns">
         <div class="histogram-loading"
-             *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table] === undefined; else doneLoading">
+          *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table] === undefined; else doneLoading">
           <mat-spinner diameter="50"></mat-spinner>
           <span class="loading-text">Loading table...</span>
         </div>
         <ng-template #doneLoading>
           <div *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length===0; else columnsTable"
-               style="color:red">
+            style="color:red">
             Table not found in namespace
           </div>
         </ng-template>
         <ng-template #columnsTable>
-          <table mat-table
-                 [dataSource]="catalogTablesColumns[item.Namespace+'~'+item.Table]"
-                 class="mat-elevation-z2">
-            <!-- Column Name -->
-            <ng-container matColumnDef="columnName">
-              <th mat-header-cell *matHeaderCellDef>Column Name</th>
-              <td mat-cell *matCellDef="let column">
-                <span class="column-name">{{ column.columnName }}</span>
-                <mat-icon *ngIf="column.isGenerated === 'YES'" class="generated-icon"
-                          matTooltip="Generated column">settings
-                </mat-icon>
-              </td>
-            </ng-container>
+          <!-- Search field -->
+          <div class="columns-search-container">
+            <mat-form-field appearance="outline" class="columns-search-field">
+              <mat-label>Search columns...</mat-label>
+              <input matInput [(ngModel)]="columnSearchTerms[item.Namespace + '~' + item.Table]"
+                (ngModelChange)="onColumnSearchChange(item)" placeholder="Filter by column name or description">
+              <mat-icon matPrefix>search</mat-icon>
+              <button mat-icon-button matSuffix *ngIf="columnSearchTerms[item.Namespace + '~' + item.Table]"
+                (click)="clearColumnSearch(item)" aria-label="Clear search">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
 
-            <!-- Data Type -->
-            <ng-container matColumnDef="dataType">
-              <th mat-header-cell *matHeaderCellDef>Data Type</th>
-              <td mat-cell *matCellDef="let column">
-                <span class="data-type">{{ column.dataType }}</span>
-                <span *ngIf="column.isNullable==='NO'" class="not-null-badge">NOT NULL</span>
-              </td>
-            </ng-container>
+          <div class="columns-cards-container">
+            <mat-card *ngFor="let column of getFilteredColumns(item)" class="column-card">
+              <mat-card-content class="column-card-content">
 
-            <!-- Description -->
-            <ng-container matColumnDef="description">
-              <th mat-header-cell *matHeaderCellDef>Description</th>
-              <td mat-cell *matCellDef="let column">{{ column.description || '-' }}</td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="['columnName', 'dataType', 'description']"></tr>
-            <tr mat-row *matRowDef="let row; columns: ['columnName', 'dataType', 'description'];"></tr>
-          </table>
+                <!-- LEFT: Column Name -->
+                <div class="column-left">
+                  <span class="column-copy" (click)="copyToClipboard(column.columnName)" matTooltip="Click to copy">
+                    <mat-icon>copy_all</mat-icon>
+                  </span>
+                  <span class="column-name" [innerHTML]="highlightColumnText(column.columnName, item)"></span>
+                  <span class="column-nullability" *ngIf="column.isNullable==='NO'" matTooltip="NOT NULL Column">
+                    <mat-icon class="nullability-icon">emergency</mat-icon>
+                  </span>
+                  <span class="column-generated" *ngIf="column.isGenerated==='YES'" matTooltip="Calculated Column">
+                    <mat-icon class="generated-icon">auto_awesome</mat-icon>
+                  </span>
+                </div>
+
+                <!-- CENTER: Data type -->
+                <div class="column-center">
+                  <div class="type-chip">
+                    <span class="type-value">{{ column.dataType }}</span>
+                  </div>
+                </div>
+
+                <!-- RIGHT: Description -->
+                <div class="column-right" *ngIf="column.description; else noDescription">
+                  <div class="description-box" [innerHTML]="highlightColumnText(column.description, item)"></div>
+                </div>
+                <ng-template #noDescription>
+                  <div class="column-right">
+                    <div class="description-box empty">
+                      No description available
+                    </div>
+                  </div>
+                </ng-template>
+
+              </mat-card-content>
+            </mat-card>
+          </div>
         </ng-template>
       </div>
     </catalog-modal>
