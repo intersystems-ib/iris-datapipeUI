@@ -165,9 +165,8 @@
 
           <!-- Show/Hide Columns -->
           <button mat-icon-button (click)="item.showColumns = true; loadColumns(item); cdr.markForCheck()"
-                  [matTooltip]="isColumnsVisible(item) ? 'Hide Columns' : 'Show Columns'"
-                  [class.active]="isColumnsVisible(item)" class="toggle-button hide-on-mobile">
-            <mat-icon>{{ isColumnsVisible(item) ? 'table_rows' : 'table_rows_narrow' }}</mat-icon>
+                  [matTooltip]="'Show Columns'" class="toggle-button hide-on-mobile">
+            <mat-icon>table_rows</mat-icon>
           </button>
 
           <!-- Edit / Cancel / Save -->

@@ -238,11 +238,7 @@ export class CatalogComponent implements OnInit {
   }
 
   toggleEditMode(item: Catalog): void {
-    if (item.isEditing) {
-      item.isEditing = false;
-    } else {
-      item.isEditing = true;
-    }
+    item.isEditing = !item.isEditing;
     this.cdr.markForCheck();
   }
 
@@ -252,7 +248,7 @@ export class CatalogComponent implements OnInit {
     this.datapipeService.updateEntry(item).subscribe(
       (result) => {
         this.loadCategories(result.categories)
-        item = {...result.result, Children: item.Children}
+        item = Object.assign(item, {...result.result, Children: item.Children})
         this.cdr.markForCheck();
       }
     )
@@ -394,23 +390,6 @@ export class CatalogComponent implements OnInit {
           console.error('Error loading table columns:', error);
         }
       );
-  }
-
-  toggleColumns(item: Catalog): void {
-    const isVisible = this.showColumnsMap.get(item.Id) || false;
-
-    if (!isVisible && !this.tableColumnsMap.has(item.Table)) {
-      // Load columns if not already loaded
-
-    } else {
-      // Toggle visibility
-      this.showColumnsMap.set(item.Id, !isVisible);
-      this.cdr.markForCheck();
-    }
-  }
-
-  getTableColumns(item: Catalog): any[] {
-    return this.tableColumnsMap.get(item.Table) || [];
   }
 
   isColumnsVisible(item: Catalog): boolean {
