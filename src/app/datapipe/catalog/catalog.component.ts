@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {Catalog} from '../datapipe.model';
+import {Catalog, TableColumn} from '../datapipe.model';
 import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 
@@ -18,20 +18,16 @@ export class CatalogComponent implements OnInit {
   categoryFiltering = false;
 
   ///Object to check if categories are selected, should be loaded with the categories whenever they load
-  selectedCategories = {};
-
-
-  /** All catalog items */
-  allCatalogItems: Catalog[] = [];
+  selectedCategories: { [key: string]: boolean } = {};
 
   /** Catalog items organized as tree structure */
   catalogTree: Catalog[] = [];
 
-  /** Filtered catalog tree for display */
-  filteredCatalogTree: Catalog[] = [];
-
   /** Count of filtered results */
   filteredResultsCount: number = 0;
+
+  ///key must match {{namespace}}~{{table}}
+  protected catalogTablesColumns: { [key: string]: TableColumn[] } = {}
 
   /** Map to store loaded columns for each table */
   private tableColumnsMap = new Map<string, any[]>();
@@ -42,13 +38,10 @@ export class CatalogComponent implements OnInit {
   /** Map to track which histograms are loading */
   loadingHistogramMap = new Map<number, boolean>();
 
-  /** Search term */
-  private _searchTerm: string = '';
+  protected isLoading: boolean = true
 
   protected namespaces: string[] = [];
 
-  /** Show all histograms flag */
-  showAllHistograms: boolean = false;
   showDescriptions = false;
   showTableInfo = false;
 
@@ -62,26 +55,53 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  get searchTerm(): string {
-    return this._searchTerm;
+  callSearch = debounceAction((text: string) => {
+    const keywords = text.split(/\. ,/)
+    this.catalogTree.forEach(
+      catalog => this.search(catalog, keywords)
+    )
+    this.cdr.markForCheck();
+  }, 100);
+
+  search(catalog: Catalog, keywords: string[]): boolean {
+    let includes = false;
+    if (!includes && this.hasAnySearchWord(catalog.Category, keywords)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Entity, keywords)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.EntityDescription, keywords)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.DataOrigins, keywords)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Usage, keywords)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Namespace, keywords)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Table, keywords)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Filter, keywords)) includes = true
+    catalog.Children?.forEach(
+      child => {
+        if (this.search(child, keywords)) {
+          includes = true
+        }
+      }
+    )
+    catalog.expanded = includes
+    return includes
   }
 
-  set searchTerm(value: string) {
-    this._searchTerm = value;
-    this.applyFilter();
+  hasAnySearchWord(string: string | undefined, keywords: string[]): boolean {
+    if (!string)
+      return false
+    return keywords.some(word =>
+      string.toLowerCase().includes(word.trim().toLowerCase())
+    )
   }
 
   /**
    * Clear search term
    */
   clearSearch(): void {
-    this._searchTerm = '';
     this.applyFilter();
   }
 
   constructor(
     private datapipeService: DatapipeService,
-    private cdr: ChangeDetectorRef
+    protected cdr: ChangeDetectorRef
   ) {
   }
 
@@ -96,15 +116,14 @@ export class CatalogComponent implements OnInit {
    * Load catalog data and build tree structure
    */
   loadCatalog(): void {
+    this.isLoading = true
     this.datapipeService.getCatalog().subscribe(
       data => {
         if (data.result) {
           this.catalogTree = this.calculateGraphInfo(data.result);
-          ///TODO both of this ought to go
-          this.allCatalogItems = this.catalogTree;
-          this.filteredCatalogTree = this.catalogTree;
           // Trim categories to avoid whitespace issues
           this.loadCategories(data.categories)
+          this.isLoading = false
           this.cdr.markForCheck();
         }
       }
@@ -123,13 +142,11 @@ export class CatalogComponent implements OnInit {
       data => {
         if (data.result) {
           this.catalogTree = this.calculateGraphInfo(data.result);
-          this.allCatalogItems = this.catalogTree;
 
           // Restore expansion state
           this.restoreExpansionState(this.catalogTree, expansionState);
 
-          // Trim categories to avoid whitespace issues
-          this.categories = data.categories.map((cat: string) => cat.trim());
+          this.loadCategories(data.categories)
 
           // Reapply filters
           this.applyFilter();
@@ -222,10 +239,8 @@ export class CatalogComponent implements OnInit {
 
   toggleEditMode(item: Catalog): void {
     if (item.isEditing) {
-      // Cancel editing - restore values if needed
       item.isEditing = false;
     } else {
-      // Enter edit mode
       item.isEditing = true;
     }
     this.cdr.markForCheck();
@@ -244,25 +259,32 @@ export class CatalogComponent implements OnInit {
 
   }
 
-  loadCategories(categories:string[]){
-    let selectedCategories = {}
+  loadCategories(categories: string[]) {
+    let selectedCategories: { [key: string]: boolean } = {}
     categories.forEach(
-      cat=>{
-
+      cat => {
+        cat = cat.trim()
+        selectedCategories[cat] = this.selectedCategories[cat] !== undefined ? this.selectedCategories[cat] : false
       }
     )
+    this.selectedCategories = selectedCategories
+    this.categories = Object.keys(this.selectedCategories)
   }
 
-  cancelEdit(item: Catalog): void {
+  cancelEdit(item: Catalog, array: Catalog [], index : number): void {
     // Cancel logic - restore original values if needed
     item.isEditing = false;
-    this.datapipeService.getById(item.Id).subscribe(
-      (result: { result: Catalog }) => {
-        Object.assign(item, result.result);
-        console.log(item)
-        this.cdr.markForCheck();
-      }
-    )
+    if (item.Id !== -1) {
+      this.datapipeService.getById(item.Id).subscribe(
+        (result: { result: Catalog }) => {
+          Object.assign(item, result.result);
+          console.log(item)
+          this.cdr.markForCheck();
+        }
+      )
+    } else {
+      array.splice(index, 1)
+    }
   }
 
   createNewRootEntity(event: Event): void {
@@ -291,7 +313,6 @@ export class CatalogComponent implements OnInit {
 
     // Add to the tree and flat list
     this.catalogTree.push(newEntity);
-    this.allCatalogItems.push(newEntity);
 
     // Refresh the view
     this.applyFilter();
@@ -332,7 +353,7 @@ export class CatalogComponent implements OnInit {
 
     // Add to parent's children and flat list
     parent.Children.push(newChild);
-    this.allCatalogItems.push(newChild);
+    this.catalogTree.push(newChild);
 
     // Expand parent to show new child
     parent.expanded = true;
@@ -358,21 +379,29 @@ export class CatalogComponent implements OnInit {
     }, 100);
   }
 
-  toggleColumns(item: Catalog): void {
-    const isVisible = this.showColumnsMap.get(item.Id) || false;
-
-    if (!isVisible && !this.tableColumnsMap.has(item.Table)) {
-      // Load columns if not already loaded
-      this.datapipeService.getTableColumns(item.Table).subscribe(
+  loadColumns(item: Catalog) {
+    if (!this.catalogTablesColumns[item.Namespace + '~' + item.Table])
+      this.datapipeService.getTableColumns(item.Id).subscribe(
         (columns: any) => {
-          this.tableColumnsMap.set(item.Table, columns);
-          this.showColumnsMap.set(item.Id, true);
+          if (columns.error) {
+            this.catalogTablesColumns[item.Namespace + '~' + item.Table] = []
+          } else {
+            this.catalogTablesColumns[item.Namespace + '~' + item.Table] = columns
+          }
           this.cdr.markForCheck();
         },
         (error: any) => {
           console.error('Error loading table columns:', error);
         }
       );
+  }
+
+  toggleColumns(item: Catalog): void {
+    const isVisible = this.showColumnsMap.get(item.Id) || false;
+
+    if (!isVisible && !this.tableColumnsMap.has(item.Table)) {
+      // Load columns if not already loaded
+
     } else {
       // Toggle visibility
       this.showColumnsMap.set(item.Id, !isVisible);
@@ -393,16 +422,6 @@ export class CatalogComponent implements OnInit {
     return !this.showDescriptions && !this.showTableInfo && !item.showHistogram;
   }
 
-
-  /**
-   * Toggle all histograms visibility
-   */
-  toggleAllHistograms(): void {
-    this.showAllHistograms = !this.showAllHistograms;
-    this.toggleHistogramVisibility(this.allCatalogItems, this.showAllHistograms)
-    this.cdr.markForCheck();
-  }
-
   toggleHistogramVisibility(catalogs: Catalog[], value: boolean) {
     catalogs.forEach(
       catalog => {
@@ -416,7 +435,7 @@ export class CatalogComponent implements OnInit {
    * Expand all tree items
    */
   expandAll(): void {
-    this.expandLevel(this.allCatalogItems)
+    this.expandLevel(this.catalogTree)
     this.cdr.markForCheck()
   }
 
@@ -433,7 +452,7 @@ export class CatalogComponent implements OnInit {
    * Collapse all tree items
    */
   collapseAll(): void {
-    this.collapseLevel(this.allCatalogItems)
+    this.collapseLevel(this.catalogTree)
     this.cdr.markForCheck()
   }
 
@@ -487,8 +506,11 @@ export class CatalogComponent implements OnInit {
    * Highlight search term(s) in text
    * Supports multiple terms separated by space
    */
-  highlightSearch(text?: string): string {
-    if (!text) {
+  highlightSearch(text: string): string {
+    return text
+  }
+
+  /*  if (!text) {
       return '';
     }
 
@@ -511,7 +533,7 @@ export class CatalogComponent implements OnInit {
     });
 
     return highlightedText;
-  }
+  }*/
 
   /** Mueve el item dentro de su rama y reindexa Order (0..n) */
   moveItem(item: Catalog, index: number, array: Catalog[], direction: 'up' | 'down'): void {
@@ -540,7 +562,14 @@ export class CatalogComponent implements OnInit {
       toolbar: {
         show: false
       },
-      stacked: false
+      stacked: false,
+      events: {
+        mounted: (chartContext: any) => {
+          // Hide the second series (Updated) by default
+          if (chartContext)
+            chartContext.hideSeries('Updated (Last 90 days)');
+        }
+      }
     },
     plotOptions: {
       bar: {
@@ -618,42 +647,6 @@ export class CatalogComponent implements OnInit {
     return catalogs
   }
 
-  getChartOptions(item: Catalog): Partial<ApexOptions> {
-    const numCategories = item.Histogram ? Object.keys(item.Histogram).length : 0;
-    const showDataLabels = numCategories <= 18;
-    const hasUpdatedData = item.HistogramUpdated && Object.keys(item.HistogramUpdated).length > 0;
-
-    const chartOptions: Partial<ApexOptions> = {
-      ...this.options,
-      dataLabels: {
-        enabled: showDataLabels,
-        formatter: function (val: number) {
-          return CatalogComponent.formatNumberGraph(val);
-        },
-        offsetY: -20,
-        style: {
-          fontSize: '10px',
-          colors: ['#304758']
-        }
-      }
-    };
-
-    // Add chart events only if there's updated data
-    if (hasUpdatedData && chartOptions.chart) {
-      chartOptions.chart = {
-        ...chartOptions.chart,
-        events: {
-          mounted: (chartContext: any) => {
-            // Hide the second series (Updated) by default
-            chartContext.hideSeries('Updated (Last 90 days)');
-          }
-        }
-      };
-    }
-
-    return chartOptions;
-  }
-
   getSeries(histData: { [year: string]: number }, histUpdated?: { [year: string]: number }): ApexAxisChartSeries {
     const series: any[] = [{
       name: 'Total Records',
@@ -676,11 +669,13 @@ export class CatalogComponent implements OnInit {
     return series;
   }
 
-  getYears(histData: { [year: string]: number } | undefined, histUpdated: {    [year: string]: number  } | undefined): ApexXAxis {
-    let years:string[] = []
-    if(histUpdated)
+  getYears(histData: { [year: string]: number } | undefined, histUpdated: {
+    [year: string]: number
+  } | undefined): ApexXAxis {
+    let years: string[] = []
+    if (histUpdated)
       years = [...Object.keys(histUpdated)]
-    if(histData)
+    if (histData)
       years = [...years, ...Object.keys(histData)];
     return {
       categories: Array.from(new Set(years.map(Number))).sort((a, b) => a - b),
@@ -694,4 +689,14 @@ export class CatalogComponent implements OnInit {
 
   protected Object = Object
 
+}
+
+
+export function debounceAction<T extends (...args: any[]) => any>(fn: T, delay = 200) {
+  let timer: any;
+
+  return (...args: Parameters<T>) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
 }

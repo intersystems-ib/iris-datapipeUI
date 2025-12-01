@@ -1,0 +1,22 @@
+/* Backdrop covers entire viewport */
+.catalog-modal-backdrop {
+  position: fixed;
+  inset: 0; /* top:0, right:0, bottom:0, left:0 */
+  background: rgba(0, 0, 0, 0.4); /* Slightly obscures background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10; /* Above most content */
+}
+
+/* Modal container “card” */
+.catalog-modal{
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 600px;
+  padding: 24px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  overflow: auto;
+}

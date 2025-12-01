@@ -12,7 +12,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 5;
   background-color: #f5f5f5;
   border-top: 1px solid #e0e0e0;
   display: flex;
@@ -548,6 +548,7 @@
           padding: 2px 6px;
           border-radius: 3px;
           text-transform: uppercase;
+          white-space: nowrap;
         }
       }
     }
@@ -816,5 +817,14 @@
   font-size: 13px;
   max-width: 400px;
   white-space: pre-line;
+}
+
+.catalog-card-disabled::after{
+  content: "";
+  position: absolute;
+  inset: 0;        /* fill the div */
+  pointer-events: auto; /* allow clicks through */
+  background: rgba(0, 0, 0, 0.3); /* your foreground effect */
+  z-index: 2;      /* place above content */
 }
 

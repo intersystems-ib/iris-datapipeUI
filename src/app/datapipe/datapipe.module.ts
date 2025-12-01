@@ -15,6 +15,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { PipeListComponent } from './pipe-list/pipe-list.component';
 import { PipeDetailComponent } from './pipe-detail/pipe-detail.component';
 import { CatalogComponent } from './catalog/catalog.component';
+import {CatalogModalComponent} from "./catalog/catalog-modal/catalog-modal.component";
 
 @NgModule({
   declarations: [
@@ -28,12 +29,13 @@ import { CatalogComponent } from './catalog/catalog.component';
     PipeDetailComponent,
     CatalogComponent,
   ],
-  imports: [
-    CommonModule,
-    DatapipeRoutingModule,
-    SharedModule,
-    NgApexchartsModule,
-    SideBySideDiffComponent
-  ]
+    imports: [
+        CommonModule,
+        DatapipeRoutingModule,
+        SharedModule,
+        NgApexchartsModule,
+        SideBySideDiffComponent,
+        CatalogModalComponent
+    ]
 })
 export class DatapipeModule { }

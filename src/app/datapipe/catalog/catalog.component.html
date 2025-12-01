@@ -5,12 +5,13 @@
   <div class="search-section">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search catalog...</mat-label>
-      <input matInput [(ngModel)]="searchTerm" placeholder="Search by entity, description or table">
-      <span matSuffix *ngIf="searchTerm" class="search-results-count">({{ filteredResultsCount }})</span>
-      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()" aria-label="Clear search">
+      <input matInput #searchInput (input)="callSearch(searchInput.value)"
+             placeholder="Search by entity, description or table">
+      <span matSuffix *ngIf="searchInput.value" class="search-results-count">({{ filteredResultsCount }})</span>
+      <button mat-icon-button matSuffix *ngIf="searchInput.value" (click)="clearSearch()" aria-label="Clear search">
         <mat-icon>close</mat-icon>
       </button>
-      <mat-icon matSuffix *ngIf="!searchTerm">search</mat-icon>
+      <mat-icon matSuffix *ngIf="!searchInput.value">search</mat-icon>
     </mat-form-field>
     <div class="action-buttons">
       <button mat-icon-button (click)="expandAll()" matTooltip="Expand All">
@@ -20,11 +21,12 @@
         <mat-icon>unfold_less</mat-icon>
       </button>
       <button mat-icon-button (click)="toggleDescriptions()"
-        [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'" [class.active]="showDescriptions">
+              [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'"
+              [class.active]="showDescriptions">
         <mat-icon>{{ showDescriptions ? 'notes' : 'speaker_notes_off' }}</mat-icon>
       </button>
       <button mat-icon-button (click)="toggleTableInfo()"
-        [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
+              [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
         <mat-icon>{{ showTableInfo ? 'table_view' : 'grid_off' }}</mat-icon>
       </button>
     </div>
@@ -33,42 +35,53 @@
   <!-- Category Filters -->
   <div class="category-filters" *ngIf="categories.length > 0">
     <mat-chip-set>
-      <!--<mat-chip-option *ngFor="let category of categories" [selected]="isCategorySelected(category)"
-        (selectionChange)="toggleCategory(category)">
+      <mat-chip-option *ngFor="let category of categories" [selected]="selectedCategories[category]"
+                       (selectionChange)="selectedCategories[category] = !selectedCategories[category];
+            categoryFiltering = Object.values(selectedCategories).includes(true)">
         {{ category }}
-      </mat-chip-option>-->
+      </mat-chip-option>
     </mat-chip-set>
   </div>
 
   <!-- Catalog Cards -->
-  <div class="catalog-list">
-    <ng-container *ngFor="let item of filteredCatalogTree; trackBy: trackById; let index = index ">
+  <div class="catalog-list" *ngIf="catalogTree">
+    <ng-container *ngFor="let item of catalogTree; trackBy: trackById; let index = index ">
       <ng-container
-        *ngTemplateOutlet="catalogCard; context: {$implicit: item, level: 1, index : index, array: filteredCatalogTree}"></ng-container>
+        *ngTemplateOutlet="catalogCard; context: {$implicit: item, level: 1, index : index, array: catalogTree}"></ng-container>
     </ng-container>
 
+
+
     <!-- No Results Message -->
-    <div class="no-results" *ngIf="filteredCatalogTree.length === 0">
+    <div class="no-results" *ngIf="catalogTree.length === 0 && !isLoading">
       <mat-icon>search_off</mat-icon>
       <p>No catalog items found matching your search.</p>
     </div>
+
+    <div *ngIf="isLoading">
+        <mat-spinner diameter="50"></mat-spinner>
+        <span class="loading-text">Loading catalogs...</span>
+      </div>
   </div>
 
   <!-- Bottom Toolbar -->
   <mat-toolbar class="bottom-toolbar">
     <button mat-raised-button color="primary" (click)="createNewRootEntity($event)">
-      <mat-icon>add</mat-icon>New Entity
+      <mat-icon>add</mat-icon>
+      New Entity
     </button>
     <button mat-raised-button color="accent" (click)="refreshCatalog()">
-      <mat-icon>refresh</mat-icon>Refresh
+      <mat-icon>refresh</mat-icon>
+      Refresh
     </button>
   </mat-toolbar>
 </div>
 
 <!-- Recursive Card Template -->
-<ng-template #catalogCard let-item let-level="level" let-index="index" , let-array="array">
+<ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array">
   <mat-card class="catalog-card" [ngClass]="level === 1 ? 'parent-card' : 'child-card'"
-    [id]="'catalog-card-' + item.Id">
+            [ngClass]="categoryFiltering && selectedCategories[item.Category]==false?'catalog-card-disabled':''"
+            [id]="'catalog-card-' + item.Id">
     <mat-card-header>
       <div class="card-header-content">
         <div class="entity-info">
@@ -87,17 +100,19 @@
 
             <!-- View mode -->
             <mat-chip *ngIf="!item.isEditing" class="category-chip" [ngClass]="level > 1 ? 'subcategory' : ''">{{
-              item.Category }}</mat-chip>
+                item.Category
+              }}
+            </mat-chip>
             <mat-icon *ngIf="!item.isEditing && item.MDXError && item.MDXError.length > 0" class="error-icon"
-              [matTooltip]="item.MDXError.join('\n')" matTooltipClass="error-tooltip">
+                      [matTooltip]="item.MDXError.join('\n')" matTooltipClass="error-tooltip">
               error
             </mat-icon>
             <h2 *ngIf="!item.isEditing && level === 1" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
-              (click)="toggleExpand(item)"></h2>
+                (click)="toggleExpand(item)"></h2>
             <h3 *ngIf="!item.isEditing && level === 2" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
-              (click)="toggleExpand(item)"></h3>
+                (click)="toggleExpand(item)"></h3>
             <h4 *ngIf="!item.isEditing && level > 2" class="entity-title" [innerHTML]="highlightSearch(item.Entity)"
-              (click)="toggleExpand(item)"></h4>
+                (click)="toggleExpand(item)"></h4>
 
             <!-- Edit mode -->
             <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
@@ -122,54 +137,56 @@
         <div class="item-actions">
           <!-- Move Up -->
           <button mat-icon-button color="primary" class="hide-on-mobile" matTooltip="'Move up'"
-            (click)="moveItem(item, index, array, 'up')" [disabled]="index<=0 || item.Id === -1">
+                  (click)="moveItem(item, index, array, 'up')" [disabled]="index<=0 || item.Id === -1">
 
             <mat-icon>arrow_upward</mat-icon>
           </button>
 
           <!-- Move Down -->
           <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move down"
-            (click)="moveItem(item, index, array, 'down')"
-            [disabled]="(index >= (array.length -1) || array.length===1) || item.Id === -1">
+                  (click)="moveItem(item, index, array, 'down')"
+                  [disabled]="(index >= (array.length -1) || array.length===1) || item.Id === -1">
             <mat-icon>arrow_downward</mat-icon>
           </button>
 
           <!-- Add Subtype -->
           <button mat-icon-button class="hide-on-mobile" color="primary" (click)="addChildEntity(item, $event)"
-            matTooltip="Add Subtype">
+                  matTooltip="Add Subtype">
             <mat-icon>playlist_add</mat-icon>
           </button>
 
           <!-- Show/Hide Histogram -->
           <button mat-icon-button (click)="toggleHistogram(item)"
-            [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'" [class.active]="item.showHistogram"
-            class="toggle-button">
+                  [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
+                  [class.active]="item.showHistogram"
+                  class="toggle-button">
             <mat-icon>{{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
           </button>
 
           <!-- Show/Hide Columns -->
-          <button mat-icon-button (click)="toggleColumns(item)"
-            [matTooltip]="isColumnsVisible(item) ? 'Hide Columns' : 'Show Columns'"
-            [class.active]="isColumnsVisible(item)" class="toggle-button hide-on-mobile">
+          <button mat-icon-button (click)="item.showColumns = true; loadColumns(item); cdr.markForCheck()"
+                  [matTooltip]="isColumnsVisible(item) ? 'Hide Columns' : 'Show Columns'"
+                  [class.active]="isColumnsVisible(item)" class="toggle-button hide-on-mobile">
             <mat-icon>{{ isColumnsVisible(item) ? 'table_rows' : 'table_rows_narrow' }}</mat-icon>
           </button>
 
           <!-- Edit / Cancel / Save -->
           <button *ngIf="!item.isEditing" mat-icon-button color="primary" (click)="toggleEditMode(item)"
-            matTooltip="Edit">
+                  matTooltip="Edit">
             <mat-icon>edit</mat-icon>
           </button>
-          <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item)" matTooltip="Cancel">
+          <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item, array, index)" matTooltip="Cancel">
             <mat-icon>close</mat-icon>
           </button>
           <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent"
-            (click)="saveEdit(item)" matTooltip="Save">
+                  (click)="saveEdit(item)" matTooltip="Save">
             <mat-icon>save</mat-icon>
           </button>
         </div>
       </div>
     </mat-card-header>
-    <mat-card-content *ngIf="!isCompact(item) || item.isEditing">
+    <mat-card-content *ngIf="!isCompact(item) || item.isEditing"
+                      [hidden]="categoryFiltering && selectedCategories[item.Category]">
       <div class="card-content-grid" [ngClass]="{'histogram-visible': item.showHistogram}">
         <!-- Stats siempre visibles -->
         <div class="stats-section" *ngIf="!item.isEditing">
@@ -192,10 +209,11 @@
 
             <!-- Chart (hidden while loading) -->
             <apx-chart *ngIf="!isHistogramLoading(item)" [series]="item.HistogramSeries!"
-              [chart]="options.chart!" [plotOptions]="options.plotOptions!"
-              [dataLabels]="options.dataLabels!" [xaxis]="item.HistogramXaxis!"
-              [yaxis]="options.yaxis!" [tooltip]="options.tooltip!"
-              [legend]="options.legend!" [colors]="options.colors!">
+                       [chart]="options.chart!" [plotOptions]="options.plotOptions!"
+                       [dataLabels]="item.HistogramSeries[0].data.length<=18?options.dataLabels!:{enabled: false }"
+                       [xaxis]="item.HistogramXaxis!"
+                       [yaxis]="options.yaxis!" [tooltip]="options.tooltip!"
+                       [legend]="options.legend!" [colors]="options.colors!">
             </apx-chart>
           </div>
         </div>
@@ -204,11 +222,11 @@
         <div class="description-section" *ngIf="showDescriptions || showTableInfo || item.isEditing">
           <!-- View mode -->
           <p *ngIf="!item.isEditing && showDescriptions" class="entity-description"
-            [innerHTML]="highlightSearch(item.EntityDescription)">
+             [innerHTML]="highlightSearch(item.EntityDescription)">
           </p>
 
           <div *ngIf="!item.isEditing && showDescriptions && (item.DataOrigins || item.Usage)"
-            class="documentation-section">
+               class="documentation-section">
             <div *ngIf="item.DataOrigins" class="doc-info">
               <mat-icon class="doc-icon">forward</mat-icon>
               <div class="doc-content">
@@ -255,14 +273,14 @@
             <mat-label>Data Origins</mat-label>
             <mat-icon matPrefix class="field-icon">forward</mat-icon>
             <textarea matInput [(ngModel)]="item.DataOrigins" rows="3"
-              placeholder="Document the origin of the data..."></textarea>
+                      placeholder="Document the origin of the data..."></textarea>
           </mat-form-field>
 
           <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field full-width">
             <mat-label>Usage</mat-label>
             <mat-icon matPrefix class="field-icon">attribution</mat-icon>
             <textarea matInput [(ngModel)]="item.Usage" rows="3"
-              placeholder="Describe how this data is used..."></textarea>
+                      placeholder="Describe how this data is used..."></textarea>
           </mat-form-field>
 
           <div *ngIf="item.isEditing" class="namespace-table-filter-row">
@@ -270,11 +288,7 @@
               <mat-label>Namespace</mat-label>
               <mat-icon matPrefix class="field-icon">dns</mat-icon>
               <mat-select [(ngModel)]="item.Namespace" placeholder="Select namespace...">
-                <mat-option value="OMOP">OMOP</mat-option>
-                <mat-option value="SABI">SABI</mat-option>
-                <mat-option value="WIFIS">WIFIS</mat-option>
-                <mat-option value="FHIR">FHIR</mat-option>
-                <mat-option value="FACTURACIO">FACTURACIO</mat-option>
+                <mat-option *ngFor="let namespace of namespaces" value="{{namespace}}">{{ namespace }}</mat-option>
               </mat-select>
             </mat-form-field>
 
@@ -304,44 +318,58 @@
             <textarea matInput [(ngModel)]="item.MDXHistogramUpdated" rows="2"></textarea>
           </mat-form-field>
         </div>
-
-        <!-- Table Columns Section -->
-        <div class="columns-section" *ngIf="isColumnsVisible(item)">
-          <h3 class="columns-title">Table Columns</h3>
-          <div class="columns-table">
-            <table mat-table [dataSource]="getTableColumns(item)" class="mat-elevation-z2">
-              <!-- Column Name -->
-              <ng-container matColumnDef="columnName">
-                <th mat-header-cell *matHeaderCellDef>Column Name</th>
-                <td mat-cell *matCellDef="let column">
-                  <span class="column-name">{{ column.columnName }}</span>
-                  <mat-icon *ngIf="column.isGenerated" class="generated-icon"
-                    matTooltip="Generated column">settings</mat-icon>
-                </td>
-              </ng-container>
-
-              <!-- Data Type -->
-              <ng-container matColumnDef="dataType">
-                <th mat-header-cell *matHeaderCellDef>Data Type</th>
-                <td mat-cell *matCellDef="let column">
-                  <span class="data-type">{{ column.dataType }}</span>
-                  <span *ngIf="!column.isNullable" class="not-null-badge">NOT NULL</span>
-                </td>
-              </ng-container>
-
-              <!-- Description -->
-              <ng-container matColumnDef="description">
-                <th mat-header-cell *matHeaderCellDef>Description</th>
-                <td mat-cell *matCellDef="let column">{{ column.description || '-' }}</td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="['columnName', 'dataType', 'description']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['columnName', 'dataType', 'description'];"></tr>
-            </table>
-          </div>
-        </div>
       </div>
     </mat-card-content>
+    <catalog-modal [(open)]="item.showColumns">
+      <!-- Table Columns Section -->
+      <h3 class="columns-title">Table Columns</h3>
+      <div class="columns-table" *ngIf="item.showColumns">
+        <div class="histogram-loading"
+             *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table] === undefined; else doneLoading">
+          <mat-spinner diameter="50"></mat-spinner>
+          <span class="loading-text">Loading table...</span>
+        </div>
+        <ng-template #doneLoading>
+          <div *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length===0; else columnsTable"
+               style="color:red">
+            Table not found in namespace
+          </div>
+        </ng-template>
+        <ng-template #columnsTable>
+          <table mat-table
+                 [dataSource]="catalogTablesColumns[item.Namespace+'~'+item.Table]"
+                 class="mat-elevation-z2">
+            <!-- Column Name -->
+            <ng-container matColumnDef="columnName">
+              <th mat-header-cell *matHeaderCellDef>Column Name</th>
+              <td mat-cell *matCellDef="let column">
+                <span class="column-name">{{ column.columnName }}</span>
+                <mat-icon *ngIf="column.isGenerated === 'YES'" class="generated-icon"
+                          matTooltip="Generated column">settings
+                </mat-icon>
+              </td>
+            </ng-container>
+
+            <!-- Data Type -->
+            <ng-container matColumnDef="dataType">
+              <th mat-header-cell *matHeaderCellDef>Data Type</th>
+              <td mat-cell *matCellDef="let column">
+                <span class="data-type">{{ column.dataType }}</span>
+                <span *ngIf="column.isNullable==='NO'" class="not-null-badge">NOT NULL</span>
+              </td>
+            </ng-container>
+
+            <!-- Description -->
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <td mat-cell *matCellDef="let column">{{ column.description || '-' }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['columnName', 'dataType', 'description']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['columnName', 'dataType', 'description'];"></tr>
+          </table>
+        </ng-template>
+      </div>
+    </catalog-modal>
   </mat-card>
 
   <!-- Recursively render children -->

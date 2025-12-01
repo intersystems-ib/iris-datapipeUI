@@ -1,0 +1,12 @@
+<!-- Backdrop -->
+<div *ngIf="open"
+     class="catalog-modal-backdrop"
+     (click)="close()"
+>
+  <div
+    class="catalog-modal"
+    (click)="$event.stopPropagation()"
+  >
+    <ng-content></ng-content>
+  </div>
+</div>

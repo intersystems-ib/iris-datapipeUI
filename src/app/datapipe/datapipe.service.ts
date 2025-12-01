@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import moment from 'moment';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import {catchError, map, Observable, of, throwError} from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AlertService } from '../shared/alert.service';
 import { Catalog, Inbox, Ingestion, Oper, Pipe, QueryResult, Staging, TableColumn } from './datapipe.model';
@@ -513,8 +513,18 @@ getNamespaces():Observable<string[]|any>{
 }
 
 
-getTableColumns(table: string): Observable<TableColumn[]>|any {
-
+getTableColumns(Id: string|number): Observable<TableColumn[]>|any {
+  return this.http.get(
+    this.urlBase + `/catalog/${Id}/columns`
+  ).pipe(
+    catchError(err => {
+      if(err.status == 404){
+        return of(err.error)
+      }
+      this.alertService.error('[getColumns] ' + err.message)
+      return throwError(() => err);
+    })
+  )
 }
 
 

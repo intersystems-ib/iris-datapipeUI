@@ -118,7 +118,9 @@ export interface Catalog {
     HistogramSeries?:ApexAxisChartSeries;
     HistogramXaxis?:ApexXAxis;
     showHistogram?: boolean;
+    showColumns?:boolean;
     isEditing?: boolean;
+    columns?:TableColumn[]
 }
 
 export interface TableColumn {
