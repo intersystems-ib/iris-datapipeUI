@@ -34,12 +34,6 @@ export class CatalogComponent implements OnInit {
   /** Map to store search terms for each table */
   protected columnSearchTerms: { [key: string]: string } = {}
 
-  /** Map to store loaded columns for each table */
-  private tableColumnsMap = new Map<string, any[]>();
-
-  /** Map to track which tables have columns visible */
-  showColumnsMap = new Map<number, boolean>();
-
   /** Map to track which histograms are loading */
   loadingHistogramMap = new Map<number, boolean>();
 
@@ -274,7 +268,7 @@ export class CatalogComponent implements OnInit {
     this.categories = Object.keys(this.selectedCategories)
   }
 
-  cancelEdit(item: Catalog, array: Catalog [], index : number): void {
+  cancelEdit(item: Catalog, array: Catalog [], index: number): void {
     // Cancel logic - restore original values if needed
     item.isEditing = false;
     if (item.Id !== -1) {
@@ -397,10 +391,6 @@ export class CatalogComponent implements OnInit {
           console.error('Error loading table columns:', error);
         }
       );
-  }
-
-  isColumnsVisible(item: Catalog): boolean {
-    return this.showColumnsMap.get(item.Id) || false;
   }
 
   // En CatalogComponent
@@ -725,13 +715,6 @@ export class CatalogComponent implements OnInit {
   }
 
   /**
-   * Handle column search change
-   */
-  onColumnSearchChange(item: Catalog): void {
-    this.cdr.markForCheck();
-  }
-
-  /**
    * Clear column search
    */
   clearColumnSearch(item: Catalog): void {
@@ -763,6 +746,43 @@ export class CatalogComponent implements OnInit {
     return text.replace(regex, '<mark class="column-highlight">$1</mark>');
   }
 
+
+  //Export related
+
+  exportOptions: ExportDataOptions = GetExportOptionsDefaults()
+
+  downloadFile(catalog: Catalog) {
+    this.datapipeService.extractData(catalog.Id, this.exportOptions).subscribe((result: any) => {
+      const blob = new Blob([result.content], {type: result.type});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = catalog.Table + "." + new Date().toLocaleString() + '.' + (this.exportOptions.fileType === "CSV" ? 'csv' : 'json');
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+  }
+
+}
+
+export interface ExportDataOptions {
+  amount: number,
+  fileType: "JSON" | "CSV",
+  type: "LATEST" | "BALANCED",
+  addHeader: boolean,
+  addInfo: boolean,
+  columns: []
+}
+
+export function GetExportOptionsDefaults(): ExportDataOptions {
+  return {
+    amount: 100,
+    fileType: "CSV",
+    type: "LATEST",
+    addHeader: true,
+    addInfo: true,
+    columns: []
+  }
 }
 
 

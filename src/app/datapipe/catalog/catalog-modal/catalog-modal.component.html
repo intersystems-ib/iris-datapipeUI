@@ -1,7 +1,8 @@
 <!-- Backdrop -->
 <div *ngIf="open"
+     [ngStyle]="{'z-index':zIndex}"
      class="catalog-modal-backdrop"
-     (click)="close()"
+     (click)="closeModal()"
 >
   <div
     class="catalog-modal"
@@ -15,7 +16,7 @@
           [matTooltip]="titleClickable ? 'Click to copy table name' : ''">
         {{ title }}
       </h2>
-      <button mat-icon-button class="close-button" (click)="close()" aria-label="Close modal">
+      <button mat-icon-button class="close-button" (click)="closeModal()" aria-label="Close modal">
         <mat-icon>close</mat-icon>
       </button>
     </div>

@@ -1,5 +1,13 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {NgIf} from "@angular/common";
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output
+} from '@angular/core';
+import {NgIf, NgStyle} from "@angular/common";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {MatTooltipModule} from "@angular/material/tooltip";
@@ -11,7 +19,8 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     NgIf,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    NgStyle
   ],
   templateUrl: './catalog-modal.component.html',
   styleUrl: './catalog-modal.component.scss',
@@ -25,10 +34,22 @@ export class  CatalogModalComponent {
   @Input() title: string = 'Details';
   @Input() titleClickable: boolean = false;
 
+  @Input()zIndex: number = 10;
+  protected cdr = inject(ChangeDetectorRef);
+
+
   // Optional: expose a method if you ever want to close programmatically
-  public close(): void {
+  public closeModal(): void {
     this.open = false
     this.openChange.emit(this.open);
+    this.cdr.markForCheck()
+  }
+
+  public openModal():void
+  {
+    this.open = true
+    this.openChange.emit(this.open)
+    this.cdr.markForCheck()
   }
 
   public onTitleClick(): void {

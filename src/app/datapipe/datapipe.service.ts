@@ -1,12 +1,13 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import moment from 'moment';
-import {catchError, map, Observable, of, throwError} from 'rxjs';
-import { environment } from '../../environments/environment';
-import { AlertService } from '../shared/alert.service';
-import { Catalog, Inbox, Ingestion, Oper, Pipe, QueryResult, Staging, TableColumn } from './datapipe.model';
-import { ViewstreamDialogComponent } from './viewstream-dialog/viewstream-dialog.component';
+import {catchError, map, Observable, of, tap, throwError} from 'rxjs';
+import {environment} from '../../environments/environment';
+import {AlertService} from '../shared/alert.service';
+import {Catalog, Inbox, Ingestion, Oper, Pipe, QueryResult, Staging, TableColumn} from './datapipe.model';
+import {ViewstreamDialogComponent} from './viewstream-dialog/viewstream-dialog.component';
+import {ExportDataOptions} from "./catalog/catalog.component";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class DatapipeService {
   private urlBase = environment.urlIRISApi;
 
   /** Options used in request */
-  private options = { };
+  private options = {};
 
   /**
    * Constructor
@@ -25,10 +26,11 @@ export class DatapipeService {
    * @param alertService
    */
   constructor(
-    private http:HttpClient,
+    private http: HttpClient,
     private alertService: AlertService,
     public dialog: MatDialog
-  ) { }
+  ) {
+  }
 
 
   /**
@@ -39,34 +41,50 @@ export class DatapipeService {
    */
   findInboxes(pageIndex: number, pageSize: number, query: any): Observable<QueryResult<Inbox>> {
     let filter = '';
-    if (query.Ignored) { filter += `+Ignored+eq+${query.Ignored}`; }
-    if (query.Source) { filter += `+Source+eq+${query.Source}`; }
-    if (query.MsgId) { filter += `+MsgId+eq+${query.MsgId}`; }
-    if (query.Element) { filter += `+Element+eq+${query.Element}`; }
-    if (query.Subject) { filter += `+Subject+eq+${query.Subject}`; }
-    if (query.Namespace) { filter += `+Namespace+contains+${query.Namespace}`; }
-    if (query.ValidationErrors) { filter += `+ValidationErrors+contains+${query.ValidationErrors}`; }
-    if (query.OperErrors) { filter += `+OperErrors+contains+${query.OperErrors}`; }
+    if (query.Ignored) {
+      filter += `+Ignored+eq+${query.Ignored}`;
+    }
+    if (query.Source) {
+      filter += `+Source+eq+${query.Source}`;
+    }
+    if (query.MsgId) {
+      filter += `+MsgId+eq+${query.MsgId}`;
+    }
+    if (query.Element) {
+      filter += `+Element+eq+${query.Element}`;
+    }
+    if (query.Subject) {
+      filter += `+Subject+eq+${query.Subject}`;
+    }
+    if (query.Namespace) {
+      filter += `+Namespace+contains+${query.Namespace}`;
+    }
+    if (query.ValidationErrors) {
+      filter += `+ValidationErrors+contains+${query.ValidationErrors}`;
+    }
+    if (query.OperErrors) {
+      filter += `+OperErrors+contains+${query.OperErrors}`;
+    }
 
-    if (query.Status && query.Status.length>0) {
+    if (query.Status && query.Status.length > 0) {
       let serializedStatus = query.Status.reduce(function (ret: any, item: any) {
         return ret + '~' + item;
       });
       filter += `+Status+in+${serializedStatus}`;
     }
-    if (query.StagingStatus && query.StagingStatus.length>0 ) {
+    if (query.StagingStatus && query.StagingStatus.length > 0) {
       let serializedStagingStatus = query.StagingStatus.reduce(function (ret: any, item: any) {
         return ret + '~' + item;
       });
       filter += `+StagingStatus+in+${serializedStagingStatus}`;
     }
-    if (query.OperStatus && query.OperStatus.length>0) {
+    if (query.OperStatus && query.OperStatus.length > 0) {
       let serializedOperStatus = query.OperStatus.reduce(function (ret: any, item: any) {
         return ret + '~' + item;
       });
       filter += `+OperStatus+in+${serializedOperStatus}`;
     }
-    if (query.Pipe && query.Pipe.length>0) {
+    if (query.Pipe && query.Pipe.length > 0) {
       let serializedPipe = query.Pipe.reduce(function (ret: any, item: any) {
         return ret + '~' + item;
       });
@@ -88,13 +106,13 @@ export class DatapipeService {
       this.urlBase + `/rf2/form/objects/DataPipe.Data.Inbox/custom/find?size=${pageSize}&page=${pageIndex}&filter=${escapedFilter}&orderby=1+desc`,
       this.options
     )
-    .pipe(
-      //tap(data => console.log(data))
-      catchError(err => {
-        this.alertService.error('[findInboxes] ' + err.message)
-        return throwError(() => err);
-      })
-    );
+      .pipe(
+        //tap(data => console.log(data))
+        catchError(err => {
+          this.alertService.error('[findInboxes] ' + err.message)
+          return throwError(() => err);
+        })
+      );
   }
 
   /**
@@ -222,8 +240,12 @@ export class DatapipeService {
    */
   findPipes(pageIndex: number, pageSize: number, query: any): Observable<QueryResult<Pipe>> {
     let filter = '';
-    if (query.Code) { filter += `+Code+contains+${query.Code}`; }
-    if (query.Description) { filter += `+Description+contains+${query.Description}`; }
+    if (query.Code) {
+      filter += `+Code+contains+${query.Code}`;
+    }
+    if (query.Description) {
+      filter += `+Description+contains+${query.Description}`;
+    }
 
     let escapedFilter = filter.replace(new RegExp(' ', 'g'), '%09');
     escapedFilter = escapedFilter.replace(new RegExp('\\+'), '');
@@ -275,7 +297,7 @@ export class DatapipeService {
       const updatedTSToString = this.dateToString(query.UpdatedTSTo);
       UpdatedTSTo += `${updatedTSToString}T${query.UpdatedTSToTime}:59Z`;
     }
-    if (query.Pipe && query.Pipe.length>0) {
+    if (query.Pipe && query.Pipe.length > 0) {
       serializedPipes = query.Pipe.reduce(function (ret: any, item: any) {
         return ret + '~' + item;
       });
@@ -301,7 +323,7 @@ export class DatapipeService {
   repeatInbox(type: string, inboxIdsArray: number[]) {
     return this.http.post<any>(
       this.urlBase + `/repeat`,
-      { "ids": inboxIdsArray, "type": type },
+      {"ids": inboxIdsArray, "type": type},
       this.options
     ).pipe(
       catchError(err => {
@@ -318,14 +340,14 @@ export class DatapipeService {
   ignoreInbox(inboxIdsArray: number[]) {
     return this.http.put<any>(
       this.urlBase + `/ignore`,
-      { "ids": inboxIdsArray },
+      {"ids": inboxIdsArray},
       this.options
     ).pipe(
-        catchError(err => {
-          this.alertService.error('[ignoreInbox] ' + err.message)
-          return throwError(() => err);
-        })
-      );
+      catchError(err => {
+        this.alertService.error('[ignoreInbox] ' + err.message)
+        return throwError(() => err);
+      })
+    );
   }
 
   /**
@@ -341,18 +363,20 @@ export class DatapipeService {
    * StagingStatus format
    */
   getStagingStatusChipFormat(status: string, errorArr?: any[]): any {
-    if (typeof(errorArr) == "string" && errorArr !== "") {
+    if (typeof (errorArr) == "string" && errorArr !== "") {
       errorArr = JSON.parse(errorArr);
     }
     return {
       cssClass: 'staging-' + status.toLowerCase().replace('/', ''),
-      icon: status === 'VALID' ? 'thumb_up':
-            status === 'INVALID' ? 'thumb_down':
-            status === 'WARNING' ? 'priority_high':
+      icon: status === 'VALID' ? 'thumb_up' :
+        status === 'INVALID' ? 'thumb_down' :
+          status === 'WARNING' ? 'priority_high' :
             'not_interested',
       desc: '',
-      tooltip: (errorArr) ? errorArr.reduce(function(res, item){ return res + item + '\n'; }, ''):
-                ''
+      tooltip: (errorArr) ? errorArr.reduce(function (res, item) {
+          return res + item + '\n';
+        }, '') :
+        ''
     };
   }
 
@@ -360,19 +384,21 @@ export class DatapipeService {
    * OperStatus format
    */
   getOperStatusChipFormat(status: string, retries?: number, errorArr?: string[]): any {
-    if (typeof(errorArr) == "string" && errorArr !== "") {
+    if (typeof (errorArr) == "string" && errorArr !== "") {
       errorArr = JSON.parse(errorArr);
     }
     return {
       cssClass: 'oper-general oper-' + status.toLowerCase().replace('/', ''),
-      icon: status === 'PROCESSING' ? 'hourglass_empty':
-            status === 'PROCESSED' ? 'done':
-            status === 'ERROR' ? 'sync_problem':
+      icon: status === 'PROCESSING' ? 'hourglass_empty' :
+        status === 'PROCESSED' ? 'done' :
+          status === 'ERROR' ? 'sync_problem' :
             'not_interested',
-      desc: (+(retries||0) > 1) ? '('+retries+')':
-            '',
-      tooltip: (errorArr) ? errorArr.reduce(function(res, item){ return res + item + '\n'; }, ''):
-                ''
+      desc: (+(retries || 0) > 1) ? '(' + retries + ')' :
+        '',
+      tooltip: (errorArr) ? errorArr.reduce(function (res, item) {
+          return res + item + '\n';
+        }, '') :
+        ''
     };
   }
 
@@ -432,7 +458,7 @@ export class DatapipeService {
   /**
    * Update a Pipe
    */
-  updatePipe(pipeCode:string, pipe: Pipe) {
+  updatePipe(pipeCode: string, pipe: Pipe) {
     return this.http.put(
       this.urlBase + `/objects/DataPipe.Data.Pipe/${pipeCode}`,
       pipe,
@@ -463,45 +489,44 @@ export class DatapipeService {
   }
 
 
-
   //catalog
 
-getCatalog(): Observable<{result:Catalog[], categories:string[]}|any> {
-  return this.http.get(this.urlBase + `/catalog`).pipe(
-    catchError(err => {
-      this.alertService.error('[getCatalog] ' + err.message)
-      return throwError(() => err);
-    })
-  )
-}
+  getCatalog(): Observable<{ result: Catalog[], categories: string[] } | any> {
+    return this.http.get(this.urlBase + `/catalog`).pipe(
+      catchError(err => {
+        this.alertService.error('[getCatalog] ' + err.message)
+        return throwError(() => err);
+      })
+    )
+  }
 
 //Used to refresh a single element
-getById(id:string|number): Observable<{result:Catalog[]}|any>{
+  getById(id: string | number): Observable<{ result: Catalog[] } | any> {
     return this.http.get(this.urlBase + `/catalog/${id}`).pipe(
       catchError(err => {
         this.alertService.error('[getCatalog] ' + err.message)
         return throwError(() => err);
       })
     )
-}
+  }
 
 
-updateEntry(catalog:Catalog):Observable<{result:Catalog, categories:string[]}|any>{
-    if(catalog.Id===-1){
+  updateEntry(catalog: Catalog): Observable<{ result: Catalog, categories: string[] } | any> {
+    if (catalog.Id === -1) {
       delete (catalog as any).Id
     }
-  return this.http.post(
-    this.urlBase + `/catalog/update`,
+    return this.http.post(
+      this.urlBase + `/catalog/update`,
       catalog
     ).pipe(
-    catchError(err => {
-      this.alertService.error('[getCatalog] ' + err.message)
-      return throwError(() => err);
-    })
-  );
-}
+      catchError(err => {
+        this.alertService.error('[getCatalog] ' + err.message)
+        return throwError(() => err);
+      })
+    );
+  }
 
-getNamespaces():Observable<string[]|any>{
+  getNamespaces(): Observable<string[] | any> {
     return this.http.get(
       this.urlBase + `/catalog/namespaces`
     ).pipe(
@@ -510,35 +535,63 @@ getNamespaces():Observable<string[]|any>{
         return throwError(() => err);
       })
     )
-}
+  }
 
 
-getTableColumns(Id: string|number): Observable<TableColumn[]>|any {
-  return this.http.get(
-    this.urlBase + `/catalog/${Id}/columns`
-  ).pipe(
-    catchError(err => {
-      if(err.status == 404){
-        return of(err.error)
+  getTableColumns(Id: string | number): Observable<TableColumn[]> | any {
+    return this.http.get(
+      this.urlBase + `/catalog/${Id}/columns`
+    ).pipe(
+      catchError(err => {
+        if (err.status == 404) {
+          return of(err.error)
+        }
+        this.alertService.error('[getColumns] ' + err.message)
+        return throwError(() => err);
+      })
+    )
+  }
+
+
+  reorder(from: string | number, to: string | number) {
+    return this.http.post(
+      this.urlBase + `/catalog/reorder/${from}/${to}`,
+      {}
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[reorderCatalog] ' + err.message)
+        return throwError(() => err);
+      })
+    )
+  }
+
+  extractData(catalogId: string | number, options: ExportDataOptions) {
+    const fileType = options.fileType === "JSON" ? 'application/json' : "text/csv"
+    return this.http.get(
+      this.urlBase + `/catalog/extract/${catalogId}?columnList=${options.columns.join(', ')}&` +
+      `type=${options.type}&amount=${options.amount}&addHeader=${options.addHeader ? 1 : 0}&addInfo=${options.addInfo ? 1 : 0}`,
+      {
+        headers: {
+          'Accept': fileType
+        },
+        responseType: 'text'
       }
-      this.alertService.error('[getColumns] ' + err.message)
-      return throwError(() => err);
-    })
-  )
-}
+    ).pipe(
+      map(
+        data => {
+          return {
+            content: data, type:
+            fileType
+          }
+        }
+      ),
+      catchError(err => {
+        this.alertService.error('[extractData] ' + err.message)
+        return throwError(() => err);
+      })
+    )
 
-
-reorder(from:string|number, to:string|number){
-  return this.http.post(
-    this.urlBase + `/catalog/reorder/${from}/${to}`,
-    {}
-  ).pipe(
-    catchError(err => {
-      this.alertService.error('[reorderCatalog] ' + err.message)
-      return throwError(() => err);
-    })
-  )
-}
+  }
 
 
 }

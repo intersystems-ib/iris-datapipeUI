@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Above most content */
+  z-index: 10; /* Above most content */
   animation: fadeIn 0.2s ease-in-out;
 }
 
