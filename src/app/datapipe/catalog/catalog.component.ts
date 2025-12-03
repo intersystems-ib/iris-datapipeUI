@@ -4,6 +4,7 @@ import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 import {ToastService} from '../../shared/toast/toast.service';
 import {Clipboard} from '@angular/cdk/clipboard';
+import {getSearchRegex} from "./pipes/highlight-text.pipe";
 
 @Component({
   selector: 'app-catalog',
@@ -43,7 +44,7 @@ export class CatalogComponent implements OnInit {
   protected columnSearchTerms: { [key: string]: string } = {}
 
   /** Map para guardar los índices por tabla: Namespace~Table */
-protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
+  protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
 
   /** Map to track which histograms are loading */
   loadingHistogramMap = new Map<number, boolean>();
@@ -66,23 +67,23 @@ protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
   }
 
   callSearch = debounceAction((text: string) => {
-    const keywords = text.split(/\. ,/)
     this.catalogTree.forEach(
-      catalog => this.search(catalog, keywords)
+      catalog => this.search(catalog, text)
     )
     this.cdr.markForCheck();
   }, 100);
 
-  search(catalog: Catalog, keywords: string[]): boolean {
+  search(catalog: Catalog, keywords: string): boolean {
+    const regex = getSearchRegex(keywords)
     let includes = false;
-    if (!includes && this.hasAnySearchWord(catalog.Category, keywords)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Entity, keywords)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.EntityDescription, keywords)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.DataOrigins, keywords)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Usage, keywords)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Namespace, keywords)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Table, keywords)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Filter, keywords)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Category, regex)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Entity, regex)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.EntityDescription, regex)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.DataOrigins, regex)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Usage, regex)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Namespace, regex)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Table, regex)) includes = true
+    if (!includes && this.hasAnySearchWord(catalog.Filter, regex)) includes = true
     catalog.Children?.forEach(
       child => {
         if (this.search(child, keywords)) {
@@ -94,19 +95,10 @@ protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
     return includes
   }
 
-  hasAnySearchWord(string: string | undefined, keywords: string[]): boolean {
+  hasAnySearchWord(string: string | undefined, regexp: RegExp): boolean {
     if (!string)
       return false
-    return keywords.some(word =>
-      string.toLowerCase().includes(word.trim().toLowerCase())
-    )
-  }
-
-  /**
-   * Clear search term
-   */
-  clearSearch(): void {
-    this.applyFilter();
+    return string.match(regexp) !== null
   }
 
   constructor(
@@ -159,9 +151,6 @@ protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
           this.restoreExpansionState(this.catalogTree, expansionState);
 
           this.loadCategories(data.categories)
-
-          // Reapply filters
-          this.applyFilter();
 
           this.cdr.markForCheck();
         }
@@ -322,8 +311,6 @@ protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
     // Add to the tree and flat list
     this.catalogTree.push(newEntity);
 
-    // Refresh the view
-    this.applyFilter();
     this.cdr.markForCheck();
 
     // Scroll to the new entity
@@ -366,8 +353,6 @@ protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
     // Expand parent to show new child
     parent.expanded = true;
 
-    // Refresh the view
-    this.applyFilter();
     this.cdr.markForCheck();
 
     // Scroll to the new entity
@@ -387,32 +372,32 @@ protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
     }, 100);
   }
 
-loadColumns(item: Catalog) {
-  const key = item.Namespace + '~' + item.Table;
+  loadColumns(item: Catalog) {
+    const key = item.Namespace + '~' + item.Table;
 
-  if (!this.catalogTablesColumns[key]) {
-    this.datapipeService.getTableColumns(item.Id).subscribe(
-      (tableInfo: any) => {
-        if (tableInfo.error) {
+    if (!this.catalogTablesColumns[key]) {
+      this.datapipeService.getTableColumns(item.Id).subscribe(
+        (tableInfo: any) => {
+          if (tableInfo.error) {
+            this.catalogTablesColumns[key] = [];
+            this.catalogTableIndexes[key] = [];
+          } else {
+            this.catalogTablesColumns[key] = tableInfo.columns || [];
+            this.catalogTableIndexes[key] = tableInfo.indexes || [];
+          }
+          this.cdr.markForCheck();
+          //console.log(tableInfo);
+        },
+        (error: any) => {
+          console.error('Error loading table columns:', error);
+          const key = item.Namespace + '~' + item.Table;
           this.catalogTablesColumns[key] = [];
           this.catalogTableIndexes[key] = [];
-        } else {
-          this.catalogTablesColumns[key] = tableInfo.columns || [];
-          this.catalogTableIndexes[key] = tableInfo.indexes || [];
+          this.cdr.markForCheck();
         }
-        this.cdr.markForCheck();
-        //console.log(tableInfo);
-      },
-      (error: any) => {
-        console.error('Error loading table columns:', error);
-        const key = item.Namespace + '~' + item.Table;
-        this.catalogTablesColumns[key] = [];
-        this.catalogTableIndexes[key] = [];
-        this.cdr.markForCheck();
-      }
-    );
+      );
+    }
   }
-}
 
   // En CatalogComponent
   isCompact(item: Catalog): boolean {
@@ -470,67 +455,6 @@ loadColumns(item: Catalog) {
     return item.Id;
   }
 
-  /**
-   * Apply filter based on search term and selected categories
-   */
-  applyFilter(): void {
-  }
-
-
-  /**
-   * Format large numbers (888, 34.5k, 3.5M)
-   */
-  formatNumber(num: number): string {
-    if (num == null) return ''
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
-    } else {
-      return num.toString();
-    }
-  }
-
-  /**
-   * Format number with thousands separators (e.g., 1,234,567)
-   */
-  formatNumberWithSeparators(num: number): string {
-    if (num === null || num === undefined) return '';
-    return num.toLocaleString('en-US');
-  }
-
-  /**
-   * Highlight search term(s) in text
-   * Supports multiple terms separated by space
-   */
-  highlightSearch(text: string): string {
-    return text
-  }
-
-  /*  if (!text) {
-      return '';
-    }
-
-    const term = this.searchTerm.trim();
-    if (!term) {
-      return text;
-    }
-
-    // Split by spaces to get multiple terms
-    const terms = term.split(/\s+/).filter(t => t.length > 0);
-
-    let highlightedText = text;
-
-    // Highlight each term
-    terms.forEach(searchTerm => {
-      // Escapar caracteres especiales de Regex
-      const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(${escaped})`, 'gi');
-      highlightedText = highlightedText.replace(regex, '<mark>$1</mark>');
-    });
-
-    return highlightedText;
-  }*/
 
   /** Mueve el item dentro de su rama y reindexa Order (0..n) */
   moveItem(item: Catalog, index: number, array: Catalog[], direction: 'up' | 'down'): void {
@@ -712,29 +636,6 @@ loadColumns(item: Catalog) {
     }
   }
 
-  /**
-   * Get filtered columns based on search term
-   */
-  getFilteredColumns(item: Catalog): TableColumn[] {
-    const key = item.Namespace + '~' + item.Table;
-    const columns = this.catalogTablesColumns[key];
-
-    if (!columns) {
-      return [];
-    }
-
-    const searchTerm = this.columnSearchTerms[key];
-    if (!searchTerm || searchTerm.trim() === '') {
-      return columns;
-    }
-
-    const term = searchTerm.toLowerCase().trim();
-    return columns.filter(column =>
-      column.columnName.toLowerCase().includes(term) ||
-      (column.description && column.description.toLowerCase().includes(term))
-    );
-  }
-
   getFilteredIndexes(item: Catalog): TableIndex[] {
     const key = item.Namespace + '~' + item.Table;
     const indexes = this.catalogTableIndexes[key] || [];
@@ -761,31 +662,6 @@ loadColumns(item: Catalog) {
     this.cdr.markForCheck();
   }
 
-
-  /**
-   * Highlight search term in text
-   */
-  highlightColumnText(text: string, item: Catalog): string {
-    if (!text) {
-      return '';
-    }
-
-
-    const key = item.Namespace + '~' + item.Table;
-    const searchTerm = this.columnSearchTerms[key];
-
-    if (!searchTerm || searchTerm.trim() === '') {
-      return text;
-    }
-
-    const term = searchTerm.trim();
-    // Escape special regex characters
-    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(${escaped})`, 'gi');
-
-    return text.replace(regex, '<mark class="column-highlight">$1</mark>');
-  }
-
   //Export related
 
   exportOptions: ExportDataOptions = GetExportOptionsDefaults()
@@ -801,6 +677,7 @@ loadColumns(item: Catalog) {
       URL.revokeObjectURL(url);
     })
   }
+
   validateAmount() {
     if (this.exportOptions.amount < 5) {
       this.exportOptions.amount = 5;
@@ -809,7 +686,7 @@ loadColumns(item: Catalog) {
       this.exportOptions.amount = 1000;
     }
     this.cdr.markForCheck();
-  } 
+  }
 
 }
 

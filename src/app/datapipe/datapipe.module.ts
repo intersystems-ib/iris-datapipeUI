@@ -18,6 +18,10 @@ import { CatalogComponent } from './catalog/catalog.component';
 import {CatalogModalComponent} from "./catalog/catalog-modal/catalog-modal.component";
 import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
+import {NumberWithSeparatorsPipe} from "./catalog/pipes/number-with-separators.pipe";
+import {LargeNumbersPipe} from "./catalog/pipes/large-numbers.pipe";
+import {HighlightTextPipe} from "./catalog/pipes/highlight-text.pipe";
+import {SearchTextPipe} from "./catalog/pipes/search-text.pipe";
 
 @NgModule({
   declarations: [
@@ -40,7 +44,11 @@ import {MatSlideToggle} from "@angular/material/slide-toggle";
     CatalogModalComponent,
     MatButtonToggleGroup,
     MatButtonToggle,
-    MatSlideToggle
+    MatSlideToggle,
+    NumberWithSeparatorsPipe,
+    LargeNumbersPipe,
+    HighlightTextPipe,
+    SearchTextPipe
   ]
 })
 export class DatapipeModule { }

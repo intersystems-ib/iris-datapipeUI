@@ -229,23 +229,24 @@
     padding-top: 16px;
   }
 
-.card-content-grid {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
+  .card-content-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
 
-  &:not(.histogram-visible) .description-section {
-    flex: 1 1 100%;
+    &:not(.histogram-visible) .description-section {
+      flex: 1 1 100%;
+    }
+
+    &.histogram-visible .description-section {
+      flex: 1 1 50%;
+    }
+
+    &.histogram-visible .stats-section {
+      flex: 1 1 50%;
+    }
   }
 
-  &.histogram-visible .description-section {
-    flex: 1 1 50%;
-  }
-
-  &.histogram-visible .stats-section {
-    flex: 1 1 50%;
-  }
-}
   .stats-section {
     order: 1;
     display: flex;
@@ -857,7 +858,7 @@
 /* Fuerza chips siempre azules con texto blanco (MDC chips v15+) */
 :host ::ng-deep .mat-mdc-chip.mat-primary {
   /* color del contenedor y del texto (no solo cuando están seleccionadas) */
-  --mdc-chip-container-color: #3f51b5;          /* primary 500 */
+  --mdc-chip-container-color: #3f51b5; /* primary 500 */
   --mdc-chip-elevated-container-color: #3f51b5; /* por si aplica variante elevated */
   --mdc-chip-label-text-color: #ffffff;
   --mdc-chip-disabled-label-text-color: #ffffff;
@@ -889,15 +890,14 @@
   white-space: pre-line;
 }
 
-.catalog-card-disabled::after{
+.catalog-card-disabled::after {
   content: "";
   position: absolute;
-  inset: 0;        /* fill the div */
+  inset: 0; /* fill the div */
   pointer-events: auto; /* allow clicks through */
   background: rgba(0, 0, 0, 0.3); /* your foreground effect */
-  z-index: 2;      /* place above content */
+  z-index: 2; /* place above content */
 }
-
 
 
 /* Search field container */
@@ -1086,12 +1086,12 @@
 }
 
 .type-nullability.nullable {
-  background-color: #ecfdf3;   // verde claro
+  background-color: #ecfdf3; // verde claro
   color: #166534;
 }
 
 .type-nullability.not-null {
-  background-color: #fee2e2;   // rojo claro
+  background-color: #fee2e2; // rojo claro
   color: #991b1b;
 }
 
@@ -1137,6 +1137,6 @@
 }
 
 .accordion-columns {
-        color: #3f51b5;
-        font-size: large;
-      }
+  color: #3f51b5;
+  font-size: large;
+}
