@@ -801,6 +801,15 @@ loadColumns(item: Catalog) {
       URL.revokeObjectURL(url);
     })
   }
+  validateAmount() {
+    if (this.exportOptions.amount < 5) {
+      this.exportOptions.amount = 5;
+    }
+    if (this.exportOptions.amount > 1000) {
+      this.exportOptions.amount = 1000;
+    }
+    this.cdr.markForCheck();
+  } 
 
 }
 
@@ -819,7 +828,7 @@ export function GetExportOptionsDefaults(): ExportDataOptions {
     fileType: "CSV",
     type: "LATEST",
     addHeader: true,
-    addInfo: true,
+    addInfo: false,
     columns: []
   }
 }
@@ -833,3 +842,4 @@ export function debounceAction<T extends (...args: any[]) => any>(fn: T, delay =
     timer = setTimeout(() => fn(...args), delay);
   };
 }
+

@@ -33,6 +33,7 @@ export class  CatalogModalComponent {
   @Input() open: boolean | undefined = false;
   @Input() title: string = 'Details';
   @Input() titleClickable: boolean = false;
+  @Input() modalStyle: {[key: string]: string} = {};
 
   @Input()zIndex: number = 10;
   protected cdr = inject(ChangeDetectorRef);

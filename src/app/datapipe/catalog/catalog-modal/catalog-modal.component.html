@@ -1,19 +1,10 @@
 <!-- Backdrop -->
-<div *ngIf="open"
-     [ngStyle]="{'z-index':zIndex}"
-     class="catalog-modal-backdrop"
-     (click)="closeModal()"
->
-  <div
-    class="catalog-modal"
-    (click)="$event.stopPropagation()"
-  >
+<div *ngIf="open" [ngStyle]="{'z-index':zIndex}" class="catalog-modal-backdrop" (click)="closeModal()">
+  <div class="catalog-modal" [ngStyle]="modalStyle" (click)="$event.stopPropagation()">
     <!-- Modal Header -->
     <div class="modal-header">
-      <h2 class="modal-title"
-          [class.clickable]="titleClickable"
-          (click)="onTitleClick()"
-          [matTooltip]="titleClickable ? 'Click to copy table name' : ''">
+      <h2 class="modal-title" [class.clickable]="titleClickable" (click)="onTitleClick()"
+        [matTooltip]="titleClickable ? 'Click to copy table name' : ''">
         {{ title }}
       </h2>
       <button mat-icon-button class="close-button" (click)="closeModal()" aria-label="Close modal">

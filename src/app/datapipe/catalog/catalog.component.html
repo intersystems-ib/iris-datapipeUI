@@ -114,7 +114,7 @@
             <!-- Edit mode -->
             <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
               <mat-label>Category</mat-label>
-              <input matInput [(ngModel)]="item.Category">
+              <input matInput [(ngModel)]="item.Category" [disabled]="item.Subtypeof!=undefined">
             </mat-form-field>
             <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
               <mat-label>Entity</mat-label>
@@ -338,8 +338,8 @@
             </button>
           </mat-form-field>
 
-          <button mat-icon-button matSuffix (click)="ExportModal.openModal()"
-            *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0" aria-label="Export columns">
+          <button mat-icon-button matSuffix (click)="ExportModal.openModal()" matTooltip="Download Sample Data"
+            *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0" aria-label="Download Sample data">
             <mat-icon>download</mat-icon>
           </button>
         </div>
@@ -421,41 +421,7 @@
               </ng-template>
             </div>
 
-            <!-- MODAL EXPORT -->
-            <catalog-modal #ExportModal [zIndex]="20" title="Export">
-              <div style="width: 100%; display: flex;justify-content: space-evenly;align-items: center;">
-                <div>
-                  <mat-label>File type</mat-label>
-                  <br />
-                  <mat-button-toggle-group [(ngModel)]="exportOptions.fileType" [hideSingleSelectionIndicator]="true">
-                    <mat-button-toggle [value]="'CSV'">CSV</mat-button-toggle>
-                    <mat-button-toggle [value]="'JSON'">JSON</mat-button-toggle>
-                  </mat-button-toggle-group>
-                </div>
-                <br />
-                <div *ngIf="exportOptions.fileType == 'CSV'" style="height: 100px; display: inline-flex;">
-                  <div style="margin-right: 16px;">
-                    <mat-label>AddHeader</mat-label>
-                    <br />
-                    <mat-slide-toggle [(ngModel)]="exportOptions.addHeader"></mat-slide-toggle>
-                  </div>
-                  <div>
-                    <mat-label>AddInfo</mat-label>
-                    <br />
-                    <mat-slide-toggle [(ngModel)]="exportOptions.addInfo"></mat-slide-toggle>
-                  </div>
-                </div>
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Amount</mat-label>
-                  <input matInput type="number" [(ngModel)]="exportOptions.amount" min="5" max="1000" step="1"
-                    inputmode="numeric" pattern="^[0-9]{3-5}$" />
-                </mat-form-field>
-              </div>
-              <button mat-icon-button (click)="downloadFile(item)" aria-label="Export">
-                <mat-icon>download</mat-icon>
-              </button>
-            </catalog-modal>
           </mat-expansion-panel>
 
           <!-- PANEL: INDEXES -->
@@ -537,6 +503,48 @@
           </mat-expansion-panel>
 
         </mat-accordion>
+        <!-- MODAL EXPORT -->
+        <catalog-modal #ExportModal [zIndex]="20" title="Download Sample Data" [modalStyle]="{width:'50%'}">
+          <div style="display: flex;justify-content: space-evenly;align-items: center;">
+            <div>
+              <mat-label>File type</mat-label>
+              <br />
+              <mat-button-toggle-group [(ngModel)]="exportOptions.fileType" [hideSingleSelectionIndicator]="true">
+                <mat-button-toggle [value]="'CSV'">CSV</mat-button-toggle>
+                <mat-button-toggle [value]="'JSON'">JSON</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+            <br />
+            <div *ngIf="exportOptions.fileType == 'CSV'" style="height: 100px; display: inline-flex;">
+              <div style="margin-right: 16px;">
+                <mat-label>AddHeader</mat-label>
+                <br />
+                <mat-slide-toggle [(ngModel)]="exportOptions.addHeader"></mat-slide-toggle>
+              </div>
+              <div>
+                <mat-label>AddInfo</mat-label>
+                <br />
+                <mat-slide-toggle [(ngModel)]="exportOptions.addInfo"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Rows</mat-label>
+              <input matInput type="number" [(ngModel)]="exportOptions.amount" min="5" max="1000" step="1"
+                (ngModelChange)="validateAmount()" inputmode="numeric" pattern="^[0-9]{3-5}$" />
+              <mat-hint>Rows to download (5-1000)</mat-hint>
+            </mat-form-field>
+          </div>
+          <div style="display:inline-flex">
+            <button mat-icon-button (click)="downloadFile(item)" aria-label="Export">
+              <mat-icon>download</mat-icon>
+            </button>
+            <div style="color:red">
+              <mat-icon>error</mat-icon>
+              <span>Error VIEW NOT FOUND</span>
+            </div>
+          </div>
+        </catalog-modal>
       </div>
     </catalog-modal>
   </mat-card>
