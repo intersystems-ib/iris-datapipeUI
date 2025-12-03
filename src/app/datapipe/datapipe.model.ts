@@ -133,11 +133,10 @@ export interface TableColumn {
 }
 
 export interface TableIndex {
-
-  description: string;
-  isPrimaryKey: string;
-  isUnique: string;
   name: string;
-  properties: string;
-  type: string;
+  description: string;
+  properties: string;   // "FHIRID,FHIRVersion" o "Period.EndDate"
+  type: string;         // "bitmap" | "key" | "index"...
+  isUnique: "YES" | "NO";
+  isPrimaryKey: "YES" | "NO";
 }

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {Catalog, TableColumn} from '../datapipe.model';
+import {Catalog, TableColumn, TableIndex} from '../datapipe.model';
 import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 import {ToastService} from '../../shared/toast/toast.service';
@@ -41,6 +41,9 @@ export class CatalogComponent implements OnInit {
 
   /** Map to store search terms for each table */
   protected columnSearchTerms: { [key: string]: string } = {}
+
+  /** Map para guardar los índices por tabla: Namespace~Table */
+protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
 
   /** Map to track which histograms are loading */
   loadingHistogramMap = new Map<number, boolean>();
@@ -283,7 +286,7 @@ export class CatalogComponent implements OnInit {
       this.datapipeService.getById(item.Id).subscribe(
         (result: { result: Catalog }) => {
           Object.assign(item, result.result);
-          console.log(item)
+          //console.log(item)
           this.cdr.markForCheck();
         }
       )
@@ -384,23 +387,32 @@ export class CatalogComponent implements OnInit {
     }, 100);
   }
 
-  loadColumns(item: Catalog) {
-    if (!this.catalogTablesColumns[item.Namespace + '~' + item.Table])
-      this.datapipeService.getTableColumns(item.Id).subscribe(
-        (tableInfo: any) => {
-          if (tableInfo.error) {
-            this.catalogTablesColumns[item.Namespace + '~' + item.Table] = []
-          } else {
-            this.catalogTablesColumns[item.Namespace + '~' + item.Table] = tableInfo.columns
-          }
-          this.cdr.markForCheck();
-          console.log(tableInfo)
-        },
-        (error: any) => {
-          console.error('Error loading table columns:', error);
+loadColumns(item: Catalog) {
+  const key = item.Namespace + '~' + item.Table;
+
+  if (!this.catalogTablesColumns[key]) {
+    this.datapipeService.getTableColumns(item.Id).subscribe(
+      (tableInfo: any) => {
+        if (tableInfo.error) {
+          this.catalogTablesColumns[key] = [];
+          this.catalogTableIndexes[key] = [];
+        } else {
+          this.catalogTablesColumns[key] = tableInfo.columns || [];
+          this.catalogTableIndexes[key] = tableInfo.indexes || [];
         }
-      );
+        this.cdr.markForCheck();
+        //console.log(tableInfo);
+      },
+      (error: any) => {
+        console.error('Error loading table columns:', error);
+        const key = item.Namespace + '~' + item.Table;
+        this.catalogTablesColumns[key] = [];
+        this.catalogTableIndexes[key] = [];
+        this.cdr.markForCheck();
+      }
+    );
   }
+}
 
   // En CatalogComponent
   isCompact(item: Catalog): boolean {
@@ -469,7 +481,7 @@ export class CatalogComponent implements OnInit {
    * Format large numbers (888, 34.5k, 3.5M)
    */
   formatNumber(num: number): string {
-    if (num === null) return ''
+    if (num == null) return ''
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';
     } else if (num >= 1000) {
@@ -723,6 +735,23 @@ export class CatalogComponent implements OnInit {
     );
   }
 
+  getFilteredIndexes(item: Catalog): TableIndex[] {
+    const key = item.Namespace + '~' + item.Table;
+    const indexes = this.catalogTableIndexes[key] || [];
+
+    const searchTerm = (this.columnSearchTerms[key] || '').trim().toLowerCase();
+    if (!searchTerm) {
+      return indexes;
+    }
+
+    return indexes.filter(idx => {
+      const nameMatch = idx.name?.toLowerCase().includes(searchTerm);
+      const descMatch = idx.description?.toLowerCase().includes(searchTerm);
+      const propsMatch = idx.properties?.toLowerCase().includes(searchTerm);
+      return nameMatch || descMatch || propsMatch;
+    });
+  }
+
   /**
    * Clear column search
    */
@@ -732,6 +761,7 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+
   /**
    * Highlight search term in text
    */
@@ -739,6 +769,7 @@ export class CatalogComponent implements OnInit {
     if (!text) {
       return '';
     }
+
 
     const key = item.Namespace + '~' + item.Table;
     const searchTerm = this.columnSearchTerms[key];
@@ -754,7 +785,6 @@ export class CatalogComponent implements OnInit {
 
     return text.replace(regex, '<mark class="column-highlight">$1</mark>');
   }
-
 
   //Export related
 
