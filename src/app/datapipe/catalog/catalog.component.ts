@@ -636,23 +636,6 @@ export class CatalogComponent implements OnInit {
     }
   }
 
-  getFilteredIndexes(item: Catalog): TableIndex[] {
-    const key = item.Namespace + '~' + item.Table;
-    const indexes = this.catalogTableIndexes[key] || [];
-
-    const searchTerm = (this.columnSearchTerms[key] || '').trim().toLowerCase();
-    if (!searchTerm) {
-      return indexes;
-    }
-
-    return indexes.filter(idx => {
-      const nameMatch = idx.name?.toLowerCase().includes(searchTerm);
-      const descMatch = idx.description?.toLowerCase().includes(searchTerm);
-      const propsMatch = idx.properties?.toLowerCase().includes(searchTerm);
-      return nameMatch || descMatch || propsMatch;
-    });
-  }
-
   /**
    * Clear column search
    */
