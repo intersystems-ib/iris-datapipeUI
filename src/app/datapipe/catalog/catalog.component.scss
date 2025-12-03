@@ -429,7 +429,7 @@
       }
 
       .table-width {
-        flex: 0 0 30%;
+        flex: 0 0 24%;
         min-width: 0;
 
         @media (max-width: 768px) {
@@ -443,7 +443,7 @@
       }
 
       .filter-width {
-        flex: 0 0 calc(49% - 8px);
+        flex: 0 0 calc(29% - 8px);
         min-width: 0;
 
         @media (max-width: 768px) {

@@ -297,6 +297,11 @@
               <mat-label>Filter</mat-label>
               <input matInput [(ngModel)]="item.Filter">
             </mat-form-field>
+
+            <mat-form-field appearance="outline" class="edit-field table-width">
+              <mat-label>Deidentified View</mat-label>
+              <input matInput [(ngModel)]="item.DeidentifiedView">
+            </mat-form-field>
           </div>
 
           <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field full-width">
