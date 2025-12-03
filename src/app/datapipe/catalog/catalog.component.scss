@@ -263,6 +263,7 @@
     font-size: 13px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -796,6 +797,7 @@
     .card-content-grid:not(.histogram-visible) .entity-description {
       display: block;
       -webkit-line-clamp: unset;
+      line-clamp: unset;
       -webkit-box-orient: initial;
       overflow: visible;
       text-overflow: unset;
