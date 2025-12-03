@@ -369,6 +369,9 @@
                   <span class="column-generated" *ngIf="column.isGenerated==='YES'" matTooltip="Calculated Column">
                     <mat-icon class="generated-icon">auto_awesome</mat-icon>
                   </span>
+                  <span class="column-generated" *ngIf="column.isIdentity==='YES'" matTooltip="Primary key">
+                    <mat-icon class="generated-icon">key</mat-icon>
+                  </span>
                 </div>
 
                 <!-- CENTER: Data type -->
@@ -383,7 +386,7 @@
                   <div class="description-box" [innerHTML]="highlightColumnText(column.description, item)"></div>
                 </div>
                 <ng-template #noDescription>
-                  <div class="column-right">
+                  <div *ngIf="column.isIdentity=='NO'" class="column-right">
                     <div class="description-box empty">
                       No description available
                     </div>
@@ -425,8 +428,8 @@
               matInput
               type="number"
               [(ngModel)]="exportOptions.amount"
-              min="100"
-              max="10000"
+              min="5"
+              max="1000"
               step="1"
               inputmode="numeric"
               pattern="^[0-9]{3-5}$"

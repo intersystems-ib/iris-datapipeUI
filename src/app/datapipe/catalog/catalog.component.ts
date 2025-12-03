@@ -13,6 +13,10 @@ import {Clipboard} from '@angular/cdk/clipboard';
 })
 export class CatalogComponent implements OnInit {
 
+  //////////////////////////////
+  //CATEGORY////////////////////
+  //////////////////////////////
+
   /** Available categories */
   categories: string[] = [];
 
@@ -21,6 +25,10 @@ export class CatalogComponent implements OnInit {
 
   ///Object to check if categories are selected, should be loaded with the categories whenever they load
   selectedCategories: { [key: string]: boolean } = {};
+
+  //////////////////////////////
+  //////////////////////////////
+
 
   /** Catalog items organized as tree structure */
   catalogTree: Catalog[] = [];
@@ -379,13 +387,14 @@ export class CatalogComponent implements OnInit {
   loadColumns(item: Catalog) {
     if (!this.catalogTablesColumns[item.Namespace + '~' + item.Table])
       this.datapipeService.getTableColumns(item.Id).subscribe(
-        (columns: any) => {
-          if (columns.error) {
+        (tableInfo: any) => {
+          if (tableInfo.error) {
             this.catalogTablesColumns[item.Namespace + '~' + item.Table] = []
           } else {
-            this.catalogTablesColumns[item.Namespace + '~' + item.Table] = columns
+            this.catalogTablesColumns[item.Namespace + '~' + item.Table] = tableInfo.columns
           }
           this.cdr.markForCheck();
+          console.log(tableInfo)
         },
         (error: any) => {
           console.error('Error loading table columns:', error);

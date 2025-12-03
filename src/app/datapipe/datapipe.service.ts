@@ -5,7 +5,7 @@ import moment from 'moment';
 import {catchError, map, Observable, of, tap, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {AlertService} from '../shared/alert.service';
-import {Catalog, Inbox, Ingestion, Oper, Pipe, QueryResult, Staging, TableColumn} from './datapipe.model';
+import {Catalog, Inbox, Ingestion, Oper, Pipe, QueryResult, Staging, TableColumn, TableIndex} from './datapipe.model';
 import {ViewstreamDialogComponent} from './viewstream-dialog/viewstream-dialog.component';
 import {ExportDataOptions} from "./catalog/catalog.component";
 
@@ -538,15 +538,15 @@ export class DatapipeService {
   }
 
 
-  getTableColumns(Id: string | number): Observable<TableColumn[]> | any {
+  getTableColumns(Id: string | number): Observable<{ columns:TableColumn[], indexes:TableIndex[] }> | any {
     return this.http.get(
-      this.urlBase + `/catalog/${Id}/columns`
+      this.urlBase + `/catalog/${Id}/tableInfo`
     ).pipe(
       catchError(err => {
         if (err.status == 404) {
           return of(err.error)
         }
-        this.alertService.error('[getColumns] ' + err.message)
+        this.alertService.error('[tableInfo] ' + err.message)
         return throwError(() => err);
       })
     )
