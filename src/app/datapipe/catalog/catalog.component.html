@@ -344,7 +344,7 @@
             </button>
           </mat-form-field>
 
-          <button mat-icon-button matSuffix (click)="ExportModal.openModal()" matTooltip="Download Sample Data"
+          <button mat-icon-button matSuffix (click)="ExportModal.openModal();extractError=''; this.cdr.markForCheck();" matTooltip="Download Sample Data"
                   *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0"
                   aria-label="Download Sample data">
             <mat-icon>download</mat-icon>
@@ -556,9 +556,9 @@
             <button mat-icon-button (click)="downloadFile(item)" aria-label="Export">
               <mat-icon>download</mat-icon>
             </button>
-            <div style="color:red">
+            <div style="color:red"  *ngIf="extractError!==''">
               <mat-icon>error</mat-icon>
-              <span>Error VIEW NOT FOUND</span>
+              <span>{{extractError}}</span>
             </div>
           </div>
         </catalog-modal>

@@ -651,15 +651,22 @@ export class CatalogComponent implements OnInit {
 
   downloadFile(catalog: Catalog) {
     this.datapipeService.extractData(catalog.Id, this.exportOptions).subscribe((result: any) => {
-      const blob = new Blob([result.content], {type: result.type});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = catalog.Table + "." + new Date().toLocaleString() + '.' + (this.exportOptions.fileType === "CSV" ? 'csv' : 'json');
-      a.click();
-      URL.revokeObjectURL(url);
+      if (result.error !== undefined) {
+        this.extractError = result.error
+        this.cdr.markForCheck();
+      } else {
+        const blob = new Blob([result.content], {type: result.type});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = catalog.Table + "." + new Date().toLocaleString() + '.' + (this.exportOptions.fileType === "CSV" ? 'csv' : 'json');
+        a.click();
+        URL.revokeObjectURL(url);
+      }
     })
   }
+
+  extractError:string = ""
 
   validateAmount() {
     if (this.exportOptions.amount < 5) {

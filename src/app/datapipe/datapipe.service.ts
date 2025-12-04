@@ -538,7 +538,7 @@ export class DatapipeService {
   }
 
 
-  getTableColumns(Id: string | number): Observable<{ columns:TableColumn[], indexes:TableIndex[] }> | any {
+  getTableColumns(Id: string | number): Observable<{ columns: TableColumn[], indexes: TableIndex[] }> | any {
     return this.http.get(
       this.urlBase + `/catalog/${Id}/tableInfo`
     ).pipe(
@@ -580,12 +580,15 @@ export class DatapipeService {
       map(
         data => {
           return {
-            content: data, type:
-            fileType
+            content: data,
+            type: fileType
           }
         }
       ),
       catchError(err => {
+        if (err.status == 404) {
+          return of(JSON.parse(err.error))
+        }
         this.alertService.error('[extractData] ' + err.message)
         return throwError(() => err);
       })
