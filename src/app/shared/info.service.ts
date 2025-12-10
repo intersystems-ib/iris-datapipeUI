@@ -13,7 +13,7 @@ export class InfoService {
   getAppInfo(): any {
     return {
       name: 'datapipeUI',
-      version: '2.0',
+      version: '2.1',
       srcVersion: '@srcVersion',
       srcTooltip: '@srcTooltip'
     };
