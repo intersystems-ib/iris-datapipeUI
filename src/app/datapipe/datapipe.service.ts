@@ -526,6 +526,17 @@ export class DatapipeService {
     );
   }
 
+  deleteEntry(catalog: Catalog) {
+    this.http.delete(
+      this.urlBase + `/catalog/delete/${catalog.Id}`
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[getCatalog] ' + err.message)
+        return throwError(() => err);
+      })
+    ).subscribe();
+  }
+
   getNamespaces(): Observable<string[] | any> {
     return this.http.get(
       this.urlBase + `/catalog/namespaces`

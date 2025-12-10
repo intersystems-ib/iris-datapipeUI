@@ -102,7 +102,7 @@ export class CatalogComponent implements OnInit {
   }
 
   constructor(
-    private datapipeService: DatapipeService,
+    protected datapipeService: DatapipeService,
     protected cdr: ChangeDetectorRef,
     private clipboard: Clipboard,
     private toastService: ToastService
