@@ -168,7 +168,7 @@
             </p>
             <div class="warning-actions">
               <button mat-button class="btn-cancel" (click)="DeleteModal.closeModal()">Cancel</button>
-              <button mat-button class="btn-delete" (click)="datapipeService.deleteEntry(item);DeleteModal.closeModal();cdr.markForCheck()">
+              <button mat-button class="btn-delete" (click)="deleteEntry(item, index);DeleteModal.closeModal()">
                 <mat-icon style="color:white">warning</mat-icon>Delete catalog and all of its children</button>
             </div>
           </catalog-modal>

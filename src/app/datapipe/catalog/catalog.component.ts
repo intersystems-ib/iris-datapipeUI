@@ -678,6 +678,16 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  deleteEntry(catalog: Catalog, index:number){
+    this.datapipeService.deleteEntry(catalog).subscribe(
+      (result:any)=>{
+        this.catalogTree.splice(index, 1)
+        this.cdr.markForCheck()
+        this.loadCategories(result.categories)
+      }
+    );
+  }
+
 }
 
 export interface ExportDataOptions {
