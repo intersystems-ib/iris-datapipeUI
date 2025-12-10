@@ -1086,12 +1086,12 @@
 }
 
 .type-nullability.nullable {
-  background-color: #ecfdf3; // verde claro
+  background-color: #ecfdf3;
   color: #166534;
 }
 
 .type-nullability.not-null {
-  background-color: #fee2e2; // rojo claro
+  background-color: #fee2e2;
   color: #991b1b;
 }
 
@@ -1099,7 +1099,6 @@
   font-size: 1rem;
 }
 
-/* RIGHT: descripción */
 .column-right {
   display: flex;
   align-items: stretch;
@@ -1186,8 +1185,8 @@
 }
 
 .btn-delete {
-  background-color: #d32f2f; /* red */
-  color: #fff;              /* white font */
+  background-color: #d32f2f;
+  color: #fff;
   margin-left: 100px;
 }
 
