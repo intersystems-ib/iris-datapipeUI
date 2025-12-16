@@ -103,8 +103,8 @@ export interface Catalog {
   Table: string;
   Filter: string;
   MDXTotal: string;
-  MDXHistogram: string;
-  MDXHistogramUpdated: string;
+  MDXHistogram?: string;
+  MDXHistogramUpdated?: string;
   Order: number;
   Total?: number;
   Histogram?: { [year: string]: number };
@@ -120,7 +120,9 @@ export interface Catalog {
   showHistogram?: boolean;
   showColumns?: boolean;
   isEditing?: boolean;
-  columns?: TableColumn[]
+  columns?: TableColumn[],
+  ChartOptionsChart?: any,
+  DoneLoadingGraph?:boolean
 }
 
 export interface TableColumn {

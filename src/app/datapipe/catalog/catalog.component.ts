@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
 import {Catalog, TableColumn, TableIndex} from '../datapipe.model';
 import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
@@ -46,9 +46,6 @@ export class CatalogComponent implements OnInit {
   /** Map para guardar los índices por tabla: Namespace~Table */
   protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
 
-  /** Map to track which histograms are loading */
-  loadingHistogramMap = new Map<number, boolean>();
-
   protected isLoading: boolean = true
 
   protected namespaces: string[] = [];
@@ -76,14 +73,12 @@ export class CatalogComponent implements OnInit {
   search(catalog: Catalog, keywords: string): boolean {
     const regex = getSearchRegex(keywords)
     let includes = false;
-    if (!includes && this.hasAnySearchWord(catalog.Category, regex)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Entity, regex)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.EntityDescription, regex)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.DataOrigins, regex)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Usage, regex)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Namespace, regex)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Table, regex)) includes = true
-    if (!includes && this.hasAnySearchWord(catalog.Filter, regex)) includes = true
+    for (const prop in ['Category', 'Entity', 'EntityDescription', 'DataOrigins', 'Usage', 'Namespace', 'Table', 'Filter']) {
+      if (this.hasAnySearchWord((catalog as any)[prop], regex)) {
+        includes = true
+        break
+      }
+    }
     catalog.Children?.forEach(
       child => {
         if (this.search(child, keywords)) {
@@ -101,13 +96,10 @@ export class CatalogComponent implements OnInit {
     return string.match(regexp) !== null
   }
 
-  constructor(
-    protected datapipeService: DatapipeService,
-    protected cdr: ChangeDetectorRef,
-    private clipboard: Clipboard,
-    private toastService: ToastService
-  ) {
-  }
+  protected datapipeService = inject(DatapipeService)
+  protected cdr = inject(ChangeDetectorRef)
+  private clipboard = inject(Clipboard)
+  private toastService = inject(ToastService)
 
   ngOnInit(): void {
     this.datapipeService.getNamespaces().subscribe(
@@ -205,39 +197,6 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  /**
-   * Toggle histogram visibility for a specific item
-   */
-  toggleHistogram(item: Catalog): void {
-    const isShowing = !item.showHistogram;
-
-    if (isShowing) {
-      // Show loading spinner
-      this.loadingHistogramMap.set(item.Id, true);
-      item.showHistogram = true;
-      this.cdr.markForCheck();
-
-      // Use setTimeout to allow the DOM to update and show the spinner
-      // before the heavy rendering of the chart begins
-      setTimeout(() => {
-        this.loadingHistogramMap.set(item.Id, false);
-        this.cdr.markForCheck();
-      }, 100);
-    } else {
-      // Hide histogram immediately
-      item.showHistogram = false;
-      this.loadingHistogramMap.delete(item.Id);
-      this.cdr.markForCheck();
-    }
-  }
-
-  /**
-   * Check if histogram is loading
-   */
-  isHistogramLoading(item: Catalog): boolean {
-    return this.loadingHistogramMap.get(item.Id) || false;
-  }
-
   toggleEditMode(item: Catalog): void {
     item.isEditing = !item.isEditing;
     this.cdr.markForCheck();
@@ -245,12 +204,16 @@ export class CatalogComponent implements OnInit {
 
   saveEdit(item: Catalog): void {
     // Save logic will be implemented later
-    item.isEditing = false;
     this.datapipeService.updateEntry(item).subscribe(
       (result) => {
-        this.loadCategories(result.categories)
-        item = Object.assign(item, {...result.result, Children: item.Children})
-        this.cdr.markForCheck();
+        if(result.categories!=undefined) {
+          item.isEditing = false;
+          this.loadCategories(result.categories)
+          item = Object.assign(item, {...result.result, Children: item.Children})
+          this.cdr.markForCheck();
+        }else{
+          this.toastService.error("Error","Table not found in the given namespace")
+        }
       }
     )
 
@@ -372,11 +335,11 @@ export class CatalogComponent implements OnInit {
     }, 100);
   }
 
-  loadColumns(item: Catalog) {
+  loadColumns(item: Catalog, noCache:boolean = false) {
     const key = item.Namespace + '~' + item.Table;
 
     if (!this.catalogTablesColumns[key]) {
-      this.datapipeService.getTableColumns(item.Id).subscribe(
+      this.datapipeService.getTableColumns(item.Id, noCache).subscribe(
         (tableInfo: any) => {
           if (tableInfo.error) {
             this.catalogTablesColumns[key] = [];
@@ -386,7 +349,6 @@ export class CatalogComponent implements OnInit {
             this.catalogTableIndexes[key] = tableInfo.indexes || [];
           }
           this.cdr.markForCheck();
-          //console.log(tableInfo);
         },
         (error: any) => {
           console.error('Error loading table columns:', error);
@@ -399,10 +361,6 @@ export class CatalogComponent implements OnInit {
     }
   }
 
-  // En CatalogComponent
-  isCompact(item: Catalog): boolean {
-    return !this.showDescriptions && !this.showTableInfo && !item.showHistogram;
-  }
 
   toggleHistogramVisibility(catalogs: Catalog[], value: boolean) {
     catalogs.forEach(
@@ -472,7 +430,7 @@ export class CatalogComponent implements OnInit {
   }
 
 
-  protected options: Partial<ApexOptions> = {
+  protected chartOptions: Partial<ApexOptions> = {
     series: [{
       name: 'Records',
       data: []
@@ -483,14 +441,7 @@ export class CatalogComponent implements OnInit {
       toolbar: {
         show: false
       },
-      stacked: false,
-      events: {
-        mounted: (chartContext: any) => {
-          // Hide the second series (Updated) by default
-          if (chartContext)
-            chartContext.hideSeries('Updated (Last 90 days)');
-        }
-      }
+      stacked: false
     },
     plotOptions: {
       bar: {
@@ -559,6 +510,19 @@ export class CatalogComponent implements OnInit {
         if (catalog.Histogram) {
           catalog.HistogramSeries = this.getSeries(catalog.Histogram, catalog.HistogramUpdated)
           catalog.HistogramXaxis = this.getYears(catalog.Histogram, catalog.HistogramUpdated)
+          catalog.ChartOptionsChart = {
+            ...this.chartOptions.chart, events: {
+              mounted: (chartContext: any) => {
+                // Hide the second series (Updated) by default
+                try {
+                  if (chartContext)
+                    chartContext.hideSeries('Updated (Last 90 days)');
+                } catch (e) {///ignored
+                }
+                catalog.DoneLoadingGraph = true
+              }
+            }
+          }
         }
         if (catalog.Children) {
           catalog.Children = this.calculateGraphInfo(catalog.Children)
@@ -599,7 +563,7 @@ export class CatalogComponent implements OnInit {
     if (histData)
       years = [...years, ...Object.keys(histData)];
     return {
-      categories: Array.from(new Set(years.map(Number))).sort((a, b) => a - b),
+      categories: years,
       labels: {
         style: {
           fontSize: '11px'
@@ -666,7 +630,7 @@ export class CatalogComponent implements OnInit {
     })
   }
 
-  extractError:string = ""
+  extractError: string = ""
 
   validateAmount() {
     if (this.exportOptions.amount < 5) {
@@ -678,9 +642,9 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  deleteEntry(catalog: Catalog, index:number){
+  deleteEntry(catalog: Catalog, index: number) {
     this.datapipeService.deleteEntry(catalog).subscribe(
-      (result:any)=>{
+      (result: any) => {
         this.catalogTree.splice(index, 1)
         this.cdr.markForCheck()
         this.loadCategories(result.categories)
@@ -688,6 +652,12 @@ export class CatalogComponent implements OnInit {
     );
   }
 
+  resetTableInfo(item: Catalog) {
+    delete this.catalogTablesColumns[item.Namespace+'~'+item.Table]
+    delete this.catalogTableIndexes[item.Namespace+'~'+item.Table]
+    this.cdr.markForCheck()
+    this.loadColumns(item, true)
+  }
 }
 
 export interface ExportDataOptions {

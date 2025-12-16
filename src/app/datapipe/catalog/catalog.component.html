@@ -128,7 +128,7 @@
           </div>
         </div>
         <!-- TOTAL en cabecera SOLO en modo compacto -->
-        <div class="header-total" *ngIf="isCompact(item)">
+        <div class="header-total" *ngIf="!this.showDescriptions && !this.showTableInfo && !item.showHistogram">
           <div class="total-records">
             <div class="records-count" [matTooltip]="item.Total?.Count | numberWithSeparators">
               {{ item.Total?.Count | largeNumbers }}
@@ -169,12 +169,14 @@
             <div class="warning-actions">
               <button mat-button class="btn-cancel" (click)="DeleteModal.closeModal()">Cancel</button>
               <button mat-button class="btn-delete" (click)="deleteEntry(item, index);DeleteModal.closeModal()">
-                <mat-icon style="color:white">warning</mat-icon>Delete catalog and all of its children</button>
+                <mat-icon style="color:white">warning</mat-icon>
+                Delete catalog and all of its children
+              </button>
             </div>
           </catalog-modal>
 
           <!-- Show/Hide Histogram -->
-          <button mat-icon-button (click)="toggleHistogram(item)"
+          <button mat-icon-button (click)="item.showHistogram = !item.showHistogram"
                   [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
                   [class.active]="item.showHistogram"
                   class="toggle-button">
@@ -203,11 +205,10 @@
         </div>
       </div>
     </mat-card-header>
-    <mat-card-content *ngIf="!isCompact(item) || item.isEditing"
-                      [hidden]="categoryFiltering && selectedCategories[item.Category]">
+    <mat-card-content [hidden]="categoryFiltering && selectedCategories[item.Category]" >
       <div class="card-content-grid" [ngClass]="{'histogram-visible': item.showHistogram}">
         <!-- Stats siempre visibles -->
-        <div class="stats-section" *ngIf="!item.isEditing">
+        <div class="stats-section" [hidden]="item.isEditing || !item.showHistogram">
           <div class="total-records">
             <span class="records-label">Total</span>
             <span class="records-count" [matTooltip]="item.Total?.Count | numberWithSeparators">
@@ -217,21 +218,17 @@
               ({{ item.Total?.Count | numberWithSeparators }})
             </span>
           </div>
-
-          <div class="histogram-chart" *ngIf="item.showHistogram && item.Histogram">
-            <!-- Loading spinner -->
-            <div class="histogram-loading" *ngIf="isHistogramLoading(item)">
-              <mat-spinner diameter="50"></mat-spinner>
-              <span class="loading-text">Loading chart...</span>
-            </div>
-
-            <!-- Chart (hidden while loading) -->
-            <apx-chart *ngIf="!isHistogramLoading(item)" [series]="item.HistogramSeries!" [chart]="options.chart!"
-                       [plotOptions]="options.plotOptions!"
-                       [dataLabels]="item.HistogramSeries[0].data.length<=18?options.dataLabels!:{enabled: false }"
-                       [xaxis]="item.HistogramXaxis!" [yaxis]="options.yaxis!" [tooltip]="options.tooltip!"
-                       [legend]="options.legend!" [colors]="options.colors!">
-            </apx-chart>
+          <div class="histogram-chart">
+            <apx-chart *ngIf="item.ChartOptionsChart!==undefined"  [series]="item.HistogramSeries!" [chart]="item.ChartOptionsChart!"
+                       [plotOptions]="chartOptions.plotOptions!"
+                       [dataLabels]="item.HistogramSeries[0].data.length<=18?chartOptions.dataLabels!:{enabled: false }"
+                       [xaxis]="item.HistogramXaxis!" [yaxis]="chartOptions.yaxis!" [tooltip]="chartOptions.tooltip!"
+                       [legend]="chartOptions.legend!" [colors]="chartOptions.colors!"
+            />
+              <div class="histogram-loading" *ngIf="item.DoneLoadingGraph !== true">
+                <mat-spinner diameter="50"></mat-spinner>
+                <span class="loading-text">Loading table...</span>
+              </div>
           </div>
         </div>
 
@@ -364,6 +361,12 @@
                   *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0"
                   aria-label="Download Sample data">
             <mat-icon>download</mat-icon>
+          </button>
+          <button mat-icon-button matSuffix (click)="resetTableInfo(item)"
+                  matTooltip="Rebuild table info"
+                  *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0"
+                  aria-label="Rebuild table info">
+            <mat-icon>autorenew</mat-icon>
           </button>
         </div>
 

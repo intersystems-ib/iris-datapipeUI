@@ -504,7 +504,7 @@ export class DatapipeService {
   getById(id: string | number): Observable<{ result: Catalog[] } | any> {
     return this.http.get(this.urlBase + `/catalog/${id}`).pipe(
       catchError(err => {
-        this.alertService.error('[getCatalog] ' + err.message)
+        this.alertService.error('[getCatalogById] ' + err.message)
         return throwError(() => err);
       })
     )
@@ -520,7 +520,8 @@ export class DatapipeService {
       catalog
     ).pipe(
       catchError(err => {
-        this.alertService.error('[getCatalog] ' + err.message)
+        if(!err.error.error.includes("Table not found"))
+          this.alertService.error('[updateCatalog] ' + err.message)
         return throwError(() => err);
       })
     );
@@ -531,7 +532,7 @@ export class DatapipeService {
       this.urlBase + `/catalog/delete/${catalog.Id}`
     ).pipe(
       catchError(err => {
-        this.alertService.error('[getCatalog] ' + err.message)
+        this.alertService.error('[deleteCatalog] ' + err.message)
         return throwError(() => err);
       })
     )
@@ -542,16 +543,16 @@ export class DatapipeService {
       this.urlBase + `/catalog/namespaces`
     ).pipe(
       catchError(err => {
-        this.alertService.error('[getCatalog] ' + err.message)
+        this.alertService.error('[getNamespaces] ' + err.message)
         return throwError(() => err);
       })
     )
   }
 
 
-  getTableColumns(Id: string | number): Observable<{ columns: TableColumn[], indexes: TableIndex[] }> | any {
+  getTableColumns(Id: string | number, noCache: boolean = false): Observable<{ columns: TableColumn[], indexes: TableIndex[] }> | any {
     return this.http.get(
-      this.urlBase + `/catalog/${Id}/tableInfo`
+      this.urlBase + `/catalog/${Id}/tableInfo${noCache?'?noCache=1':''}`
     ).pipe(
       catchError(err => {
         if (err.status == 404) {
