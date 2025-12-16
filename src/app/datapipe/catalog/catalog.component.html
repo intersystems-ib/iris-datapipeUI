@@ -219,16 +219,12 @@
             </span>
           </div>
           <div class="histogram-chart">
-            <apx-chart *ngIf="item.ChartOptionsChart!==undefined"  [series]="item.HistogramSeries!" [chart]="item.ChartOptionsChart!"
+            <apx-chart *ngIf="item.showHistogram" [series]="item.HistogramSeries!" [chart]="item.ChartOptionsChart!"
                        [plotOptions]="chartOptions.plotOptions!"
                        [dataLabels]="item.HistogramSeries[0].data.length<=18?chartOptions.dataLabels!:{enabled: false }"
                        [xaxis]="item.HistogramXaxis!" [yaxis]="chartOptions.yaxis!" [tooltip]="chartOptions.tooltip!"
                        [legend]="chartOptions.legend!" [colors]="chartOptions.colors!"
             />
-              <div class="histogram-loading" *ngIf="item.DoneLoadingGraph !== true">
-                <mat-spinner diameter="50"></mat-spinner>
-                <span class="loading-text">Loading table...</span>
-              </div>
           </div>
         </div>
 
