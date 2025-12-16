@@ -206,13 +206,13 @@ export class CatalogComponent implements OnInit {
     // Save logic will be implemented later
     this.datapipeService.updateEntry(item).subscribe(
       (result) => {
-        if(result.categories!=undefined) {
+        if (result.categories != undefined) {
           item.isEditing = false;
           this.loadCategories(result.categories)
           item = Object.assign(item, {...result.result, Children: item.Children})
           this.cdr.markForCheck();
-        }else{
-          this.toastService.error("Error","Table not found in the given namespace")
+        } else {
+          this.toastService.error("Error", "Table not found in the given namespace")
         }
       }
     )
@@ -335,7 +335,7 @@ export class CatalogComponent implements OnInit {
     }, 100);
   }
 
-  loadColumns(item: Catalog, noCache:boolean = false) {
+  loadColumns(item: Catalog, noCache: boolean = false) {
     const key = item.Namespace + '~' + item.Table;
 
     if (!this.catalogTablesColumns[key]) {
@@ -557,13 +557,8 @@ export class CatalogComponent implements OnInit {
   getYears(histData: { [year: string]: number } | undefined, histUpdated: {
     [year: string]: number
   } | undefined): ApexXAxis {
-    let years: string[] = []
-    if (histUpdated)
-      years = [...Object.keys(histUpdated)]
-    if (histData)
-      years = [...years, ...Object.keys(histData)];
     return {
-      categories: years,
+      categories: histData ? Object.keys(histData) : (histUpdated ? histUpdated : []),
       labels: {
         style: {
           fontSize: '11px'
@@ -653,8 +648,8 @@ export class CatalogComponent implements OnInit {
   }
 
   resetTableInfo(item: Catalog) {
-    delete this.catalogTablesColumns[item.Namespace+'~'+item.Table]
-    delete this.catalogTableIndexes[item.Namespace+'~'+item.Table]
+    delete this.catalogTablesColumns[item.Namespace + '~' + item.Table]
+    delete this.catalogTableIndexes[item.Namespace + '~' + item.Table]
     this.cdr.markForCheck()
     this.loadColumns(item, true)
   }
