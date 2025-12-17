@@ -79,8 +79,8 @@
 <!-- Recursive Card Template -->
 <ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array">
   <mat-card class="catalog-card"
-            [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ') + (categoryFiltering && selectedCategories[item.Category]==false?'catalog-card-disabled':'')"
-            [id]="'catalog-card-' + item.Id" [hidden]="categoryFiltering && selectedCategories[item.Category] == false">
+            [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ') + (categoryFiltering && selectedCategories[item.Category.Name]==false?'catalog-card-disabled':'')"
+            [id]="'catalog-card-' + item.Id" [hidden]="categoryFiltering && selectedCategories[item.Category.Name] == false">
     <mat-card-header>
       <div class="card-header-content">
         <div class="entity-info">
@@ -99,7 +99,7 @@
 
             <!-- View mode -->
             <mat-chip *ngIf="!item.isEditing" class="category-chip" [ngClass]="level > 1 ? 'subcategory' : ''">{{
-                item.Category
+                item.Category.Name
               }}
             </mat-chip>
             <mat-icon *ngIf="!item.isEditing && item.MDXError && item.MDXError.length > 0" class="error-icon"
@@ -119,7 +119,7 @@
             <!-- Edit mode -->
             <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
               <mat-label>Category</mat-label>
-              <input matInput [(ngModel)]="item.Category" [disabled]="item.Subtypeof!=undefined">
+              <input matInput [(ngModel)]="item.Category.Name" [disabled]="item.Subtypeof!=undefined">
             </mat-form-field>
             <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
               <mat-label>Entity</mat-label>
@@ -207,7 +207,7 @@
         </div>
       </div>
     </mat-card-header>
-    <mat-card-content [hidden]="categoryFiltering && selectedCategories[item.Category]">
+    <mat-card-content [hidden]="categoryFiltering && selectedCategories[item.Category.Name]">
       <div class="card-content-grid" [ngClass]="{'histogram-visible': item.showHistogram}">
         <!-- Stats siempre visibles -->
         <div class="stats-section" [hidden]="item.isEditing || !item.showHistogram">

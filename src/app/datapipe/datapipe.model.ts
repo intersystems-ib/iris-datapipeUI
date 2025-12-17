@@ -93,7 +93,7 @@ export interface QueryResult<T> {
  */
 export interface Catalog {
   Id: number;
-  Category: string;
+  Category?: Category;
   Subtypeof: number | null;
   Entity: string;
   EntityDescription: string;
@@ -124,6 +124,13 @@ export interface Catalog {
   ChartOptionsChart?: any,
   DoneLoadingGraph?:boolean,
   refreshing?:boolean
+}
+
+export interface Category {
+  Id: number,
+  Attributes?:string,
+  Name:string,
+  Resource?:string
 }
 
 export interface TableColumn {

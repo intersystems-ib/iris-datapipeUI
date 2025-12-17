@@ -257,7 +257,7 @@ export class CatalogComponent implements OnInit {
     // Create a new root entity with default values
     const newEntity: Catalog = {
       Id: -1,
-      Category: '',
+      Category: undefined,
       Subtypeof: null,
       Entity: 'New Entity',
       EntityDescription: '',
