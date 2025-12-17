@@ -122,7 +122,8 @@ export interface Catalog {
   isEditing?: boolean;
   columns?: TableColumn[],
   ChartOptionsChart?: any,
-  DoneLoadingGraph?:boolean
+  DoneLoadingGraph?:boolean,
+  refreshing?:boolean
 }
 
 export interface TableColumn {

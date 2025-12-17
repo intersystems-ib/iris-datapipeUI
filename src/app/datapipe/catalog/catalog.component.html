@@ -14,7 +14,7 @@
       </button>
       <mat-icon matSuffix *ngIf="!searchInput.value">search</mat-icon>
     </mat-form-field>
-    <div class="action-buttons">
+    <div class="action-buttons" >
       <button mat-icon-button (click)="expandAll()" matTooltip="Expand All">
         <mat-icon>unfold_more</mat-icon>
       </button>
@@ -79,7 +79,7 @@
 <!-- Recursive Card Template -->
 <ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array">
   <mat-card class="catalog-card"
-            [ngClass]="(level === 1 ? 'parent-card ' : 'child-card ') + (categoryFiltering && selectedCategories[item.Category]==false?'catalog-card-disabled':'')"
+            [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ') + (categoryFiltering && selectedCategories[item.Category]==false?'catalog-card-disabled':'')"
             [id]="'catalog-card-' + item.Id" [hidden]="categoryFiltering && selectedCategories[item.Category] == false">
     <mat-card-header>
       <div class="card-header-content">

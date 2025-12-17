@@ -131,63 +131,67 @@ export class CatalogComponent implements OnInit {
    */
   refreshCatalog(): void {
     // Save current expansion state
-    const expansionState = this.saveExpansionState(this.catalogTree);
-
+    this.markLoading(this.catalogTree);
     // Reload catalog
     this.datapipeService.getCatalog().subscribe(
       data => {
         if (data.result) {
-          this.catalogTree = data.result;
-
-          // Restore expansion state
-          this.restoreExpansionState(this.catalogTree, expansionState);
-
+          setTimeout(() => {
+            this.markLoading(this.catalogTree, false)
+            this.cdr.markForCheck();
+          }, 500)
+          const flattened = this.flattenData(this.catalogTree)
+          this.catalogTree = data.result
+          this.refreshLevel(flattened, this.catalogTree)
           this.loadCategories(data.categories)
-
           this.cdr.markForCheck();
         }
       }
     );
   }
 
-  /**
-   * Save expansion state of all items in the tree
-   */
-  private saveExpansionState(items: Catalog[]): Map<number, boolean> {
-    const state = new Map<number, boolean>();
-
-    const traverse = (items: Catalog[]) => {
-      items.forEach(item => {
-        if (item.expanded !== undefined) {
-          state.set(item.Id, item.expanded);
-        }
-        if (item.Children && item.Children.length > 0) {
-          traverse(item.Children);
-        }
-      });
-    };
-
-    traverse(items);
-    return state;
+  markLoading(catalogs: Catalog[], loading: boolean = true) {
+    catalogs.forEach(
+      catalog => {
+        catalog.refreshing = loading
+        if (catalog.Children !== undefined) this.markLoading(catalog.Children, loading)
+      }
+    )
   }
 
-  /**
-   * Restore expansion state to items in the tree
-   */
-  private restoreExpansionState(items: Catalog[], state: Map<number, boolean>): void {
-    const traverse = (items: Catalog[]) => {
-      items.forEach(item => {
-        if (state.has(item.Id)) {
-          item.expanded = state.get(item.Id);
-        }
-        if (item.Children && item.Children.length > 0) {
-          traverse(item.Children);
-        }
-      });
-    };
-
-    traverse(items);
+  flattenData(catalogs: Catalog[]):{[id:string]:Catalog}
+  {
+    let res:{[id:string]:Catalog} = {}
+    catalogs.forEach(
+      catalog=>{
+        res[catalog.Id+""] = catalog
+        if(catalog.Children) res ={...this.flattenData(catalog.Children),...res}
+      }
+    )
+    return res
   }
+
+  refreshLevel(flattenedCatalogs: {[id:string]:Catalog}, backendData: Catalog[]) {
+    backendData.forEach(
+      catalog=>{
+        const existingCatalog = flattenedCatalogs[catalog.Id+""]
+        if(existingCatalog!==undefined){
+          catalog.expanded = existingCatalog.expanded
+          catalog.HistogramSeries = existingCatalog.HistogramSeries
+          catalog.HistogramXaxis = existingCatalog.HistogramXaxis
+          catalog.showHistogram = existingCatalog.showHistogram
+          catalog.showColumns = existingCatalog.showColumns
+          catalog.refreshing = existingCatalog.refreshing
+          if(catalog.showHistogram){
+            this.loadHistogram(catalog)
+          }
+        }
+        if(catalog.Children) this.refreshLevel(flattenedCatalogs, catalog.Children)
+      }
+    )
+    return backendData
+  }
+
 
   /**
    * Toggle expand/collapse for an item
@@ -639,6 +643,7 @@ export class CatalogComponent implements OnInit {
             catalog.HistogramXaxis = this.getYears(catalog.Histogram, catalog.HistogramUpdated)
             catalog.ChartOptionsChart = {
               ...this.chartOptions.chart, events: {
+                //Do not remove it is used
                 mounted: (chartContext: any) => {
                   // Hide the second series (Updated) by default
                   try {
