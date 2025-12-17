@@ -110,9 +110,9 @@ export interface Catalog {
   Histogram?: { [year: string]: number };
   HistogramUpdated?: { [year: string]: number };
   MDXError?: string[]
+  Children?: Catalog[];
 
   // UI properties
-  Children?: Catalog[];
   expanded?: boolean;
   ///Both HistogramSeries and HistogramXaxis are calculated upon receiving backend result
   HistogramSeries?: ApexAxisChartSeries;
@@ -141,4 +141,10 @@ export interface TableIndex {
   type: string;         // "bitmap" | "key" | "index"...
   isUnique: "YES" | "NO";
   isPrimaryKey: "YES" | "NO";
+}
+
+export interface CatalogGraphResult {
+  Histogram: {[index:string]:number},
+  HistogramUpdated:{[index:string]:number},
+  time?: {name:string, tm:number}[]
 }

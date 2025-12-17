@@ -5,7 +5,18 @@ import moment from 'moment';
 import {catchError, map, Observable, of, tap, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {AlertService} from '../shared/alert.service';
-import {Catalog, Inbox, Ingestion, Oper, Pipe, QueryResult, Staging, TableColumn, TableIndex} from './datapipe.model';
+import {
+  Catalog,
+  CatalogGraphResult,
+  Inbox,
+  Ingestion,
+  Oper,
+  Pipe,
+  QueryResult,
+  Staging,
+  TableColumn,
+  TableIndex
+} from './datapipe.model';
 import {ViewstreamDialogComponent} from './viewstream-dialog/viewstream-dialog.component';
 import {ExportDataOptions} from "./catalog/catalog.component";
 
@@ -520,7 +531,7 @@ export class DatapipeService {
       catalog
     ).pipe(
       catchError(err => {
-        if(!err.error.error.includes("Table not found"))
+        if (!err.error.error.includes("Table not found"))
           this.alertService.error('[updateCatalog] ' + err.message)
         return throwError(() => err);
       })
@@ -550,9 +561,12 @@ export class DatapipeService {
   }
 
 
-  getTableColumns(Id: string | number, noCache: boolean = false): Observable<{ columns: TableColumn[], indexes: TableIndex[] }> | any {
+  getTableColumns(Id: string | number, noCache: boolean = false): Observable<{
+    columns: TableColumn[],
+    indexes: TableIndex[]
+  }> | any {
     return this.http.get(
-      this.urlBase + `/catalog/${Id}/tableInfo${noCache?'?noCache=1':''}`
+      this.urlBase + `/catalog/${Id}/tableInfo${noCache ? '?noCache=1' : ''}`
     ).pipe(
       catchError(err => {
         if (err.status == 404) {
@@ -606,6 +620,16 @@ export class DatapipeService {
       })
     )
 
+  }
+
+  getHistogram(catalogId: string | number):Observable<CatalogGraphResult|any> {
+    return this.http.get(this.urlBase + `/catalog/${catalogId}/histogram`).pipe(catchError(err => {
+      if (err.status == 404) {
+        return of(JSON.parse(err.error))
+      }
+      this.alertService.error('[extractData] ' + err.message)
+      return throwError(() => err);
+    }))
   }
 
 

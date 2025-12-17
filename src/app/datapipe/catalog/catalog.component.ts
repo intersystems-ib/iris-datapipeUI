@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
-import {Catalog, TableColumn, TableIndex} from '../datapipe.model';
+import {Catalog, CatalogGraphResult, TableColumn, TableIndex} from '../datapipe.model';
 import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 import {ToastService} from '../../shared/toast/toast.service';
@@ -116,7 +116,7 @@ export class CatalogComponent implements OnInit {
     this.datapipeService.getCatalog().subscribe(
       data => {
         if (data.result) {
-          this.catalogTree = this.calculateGraphInfo(data.result);
+          this.catalogTree = data.result;
           // Trim categories to avoid whitespace issues
           this.loadCategories(data.categories)
           this.isLoading = false
@@ -137,7 +137,7 @@ export class CatalogComponent implements OnInit {
     this.datapipeService.getCatalog().subscribe(
       data => {
         if (data.result) {
-          this.catalogTree = this.calculateGraphInfo(data.result);
+          this.catalogTree = data.result;
 
           // Restore expansion state
           this.restoreExpansionState(this.catalogTree, expansionState);
@@ -504,44 +504,18 @@ export class CatalogComponent implements OnInit {
     }
   }
 
-  calculateGraphInfo(catalogs: Catalog[]) {
-    catalogs.forEach(
-      catalog => {
-        if (catalog.Histogram) {
-          catalog.HistogramSeries = this.getSeries(catalog.Histogram, catalog.HistogramUpdated)
-          catalog.HistogramXaxis = this.getYears(catalog.Histogram, catalog.HistogramUpdated)
-          catalog.ChartOptionsChart = {
-            ...this.chartOptions.chart, events: {
-              mounted: (chartContext: any) => {
-                // Hide the second series (Updated) by default
-                try {
-                  if (chartContext)
-                    chartContext.hideSeries('Updated (Last 90 days)');
-                } catch (e) {///ignored
-                }
-                catalog.DoneLoadingGraph = true
-              }
-            }
-          }
-        }
-        if (catalog.Children) {
-          catalog.Children = this.calculateGraphInfo(catalog.Children)
-        }
-      }
-    )
-    return catalogs
-  }
-
-  getSeries(histData: { [year: string]: number }, histUpdated?: { [year: string]: number }): ApexAxisChartSeries {
+  getSeries(histData: { [year: string]: number } | undefined, histUpdated?: {
+    [year: string]: number
+  }): ApexAxisChartSeries {
     const series: any[] = [{
       name: 'Total Records',
-      data: Object.values(histData)
+      data: histData ? Object.values(histData) : []
     }];
 
     // Add updated records series if available and has data
     if (histUpdated && Object.keys(histUpdated).length > 0) {
       // Get all years from main histogram
-      const allYears = Object.keys(histData);
+      const allYears = histData ? Object.keys(histData) : [];
       // Map updated data to match all years (fill with 0 if not present)
       const updatedData = allYears.map(year => histUpdated[year] || 0);
 
@@ -652,6 +626,35 @@ export class CatalogComponent implements OnInit {
     delete this.catalogTableIndexes[item.Namespace + '~' + item.Table]
     this.cdr.markForCheck()
     this.loadColumns(item, true)
+  }
+
+  loadHistogram(catalog: Catalog) {
+    if (!catalog.DoneLoadingGraph)
+      this.datapipeService.getHistogram(catalog.Id).subscribe(
+        (data: CatalogGraphResult | any) => {
+          if (data.Histogram !== undefined || data.HistogramUpdated !== undefined) {
+            catalog.Histogram = data.Histogram
+            catalog.HistogramUpdated = data.HistogramUpdated
+            catalog.HistogramSeries = this.getSeries(catalog.Histogram, catalog.HistogramUpdated)
+            catalog.HistogramXaxis = this.getYears(catalog.Histogram, catalog.HistogramUpdated)
+            catalog.ChartOptionsChart = {
+              ...this.chartOptions.chart, events: {
+                mounted: (chartContext: any) => {
+                  // Hide the second series (Updated) by default
+                  try {
+                    if (chartContext)
+                      chartContext.hideSeries('Updated (Last 90 days)');
+                  } catch (e) {///ignored
+                  }
+
+                }
+              }
+            }
+            catalog.DoneLoadingGraph = true
+            this.cdr.markForCheck()
+          }
+        }
+      )
   }
 }
 

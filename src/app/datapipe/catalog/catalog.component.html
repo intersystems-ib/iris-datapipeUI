@@ -128,7 +128,7 @@
           </div>
         </div>
         <!-- TOTAL en cabecera SOLO en modo compacto -->
-        <div class="header-total" *ngIf="!this.showDescriptions && !this.showTableInfo && !item.showHistogram">
+        <div class="header-total" *ngIf="!showDescriptions && !showTableInfo && !item.showHistogram">
           <div class="total-records">
             <div class="records-count" [matTooltip]="item.Total?.Count | numberWithSeparators">
               {{ item.Total?.Count | largeNumbers }}
@@ -176,7 +176,9 @@
           </catalog-modal>
 
           <!-- Show/Hide Histogram -->
-          <button mat-icon-button (click)="item.showHistogram = !item.showHistogram"
+          <button mat-icon-button
+                  [disabled]="item.showHistogram && !item.DoneLoadingGraph && (item.MDXHistogram || item.MDXHistogramUpdated)"
+                  (click)="item.showHistogram = !item.showHistogram; item.showHistogram? loadHistogram(item) : ''"
                   [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
                   [class.active]="item.showHistogram"
                   class="toggle-button">
@@ -205,7 +207,7 @@
         </div>
       </div>
     </mat-card-header>
-    <mat-card-content [hidden]="categoryFiltering && selectedCategories[item.Category]" >
+    <mat-card-content [hidden]="categoryFiltering && selectedCategories[item.Category]">
       <div class="card-content-grid" [ngClass]="{'histogram-visible': item.showHistogram}">
         <!-- Stats siempre visibles -->
         <div class="stats-section" [hidden]="item.isEditing || !item.showHistogram">
@@ -218,14 +220,24 @@
               ({{ item.Total?.Count | numberWithSeparators }})
             </span>
           </div>
-          <div class="histogram-chart">
-            <apx-chart *ngIf="item.showHistogram" [series]="item.HistogramSeries!" [chart]="item.ChartOptionsChart!"
+          <div class="histogram-chart" *ngIf="item.MDXHistogram || item.MDXHistogramUpdated; else NoGraphs">
+            <apx-chart *ngIf="item.DoneLoadingGraph; else loadingGraph" [hidden]="!item.showHistogram"
+                       [series]="item.HistogramSeries!" [chart]="item.ChartOptionsChart!"
                        [plotOptions]="chartOptions.plotOptions!"
                        [dataLabels]="item.HistogramSeries[0].data.length<=18?chartOptions.dataLabels!:{enabled: false }"
                        [xaxis]="item.HistogramXaxis!" [yaxis]="chartOptions.yaxis!" [tooltip]="chartOptions.tooltip!"
                        [legend]="chartOptions.legend!" [colors]="chartOptions.colors!"
             />
+            <ng-template #loadingGraph>
+              <div style="width: 100%;display: flex;  flex-direction: column;  align-items: center;">
+                <mat-spinner diameter="50"></mat-spinner>
+                <span class="loading-text">Loading catalogs...</span>
+              </div>
+            </ng-template>
           </div>
+          <ng-template #NoGraphs>
+            No graph to load
+          </ng-template>
         </div>
 
         <!-- Descripción (según toggle) -->
