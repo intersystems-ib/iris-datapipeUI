@@ -63,12 +63,12 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  callSearch = debounceAction((text: string) => {
+  searchTree(text:string){
     this.catalogTree.forEach(
       catalog => this.search(catalog, text)
     )
     this.cdr.markForCheck();
-  }, 100);
+  }
 
   search(catalog: Catalog, keywords: string): boolean {
     const regex = getSearchRegex(keywords)
@@ -257,7 +257,10 @@ export class CatalogComponent implements OnInit {
     // Create a new root entity with default values
     const newEntity: Catalog = {
       Id: -1,
-      Category: undefined,
+      Category:{
+        Id:-1,
+        Name:''
+      },
       Subtypeof: null,
       Entity: 'New Entity',
       EntityDescription: '',
@@ -682,14 +685,3 @@ export function GetExportOptionsDefaults(): ExportDataOptions {
     columns: []
   }
 }
-
-
-export function debounceAction<T extends (...args: any[]) => any>(fn: T, delay = 200) {
-  let timer: any;
-
-  return (...args: Parameters<T>) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
-}
-

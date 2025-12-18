@@ -22,6 +22,7 @@ import {NumberWithSeparatorsPipe} from "./catalog/pipes/number-with-separators.p
 import {LargeNumbersPipe} from "./catalog/pipes/large-numbers.pipe";
 import {HighlightTextPipe} from "./catalog/pipes/highlight-text.pipe";
 import {SearchTextPipe} from "./catalog/pipes/search-text.pipe";
+import {DebouncedInputDirective} from "./catalog/debounced-input.directive";
 
 @NgModule({
   declarations: [
@@ -35,20 +36,21 @@ import {SearchTextPipe} from "./catalog/pipes/search-text.pipe";
     PipeDetailComponent,
     CatalogComponent,
   ],
-  imports: [
-    CommonModule,
-    DatapipeRoutingModule,
-    SharedModule,
-    NgApexchartsModule,
-    SideBySideDiffComponent,
-    CatalogModalComponent,
-    MatButtonToggleGroup,
-    MatButtonToggle,
-    MatSlideToggle,
-    NumberWithSeparatorsPipe,
-    LargeNumbersPipe,
-    HighlightTextPipe,
-    SearchTextPipe
-  ]
+    imports: [
+        CommonModule,
+        DatapipeRoutingModule,
+        SharedModule,
+        NgApexchartsModule,
+        SideBySideDiffComponent,
+        CatalogModalComponent,
+        MatButtonToggleGroup,
+        MatButtonToggle,
+        MatSlideToggle,
+        NumberWithSeparatorsPipe,
+        LargeNumbersPipe,
+        HighlightTextPipe,
+        SearchTextPipe,
+        DebouncedInputDirective
+    ]
 })
 export class DatapipeModule { }

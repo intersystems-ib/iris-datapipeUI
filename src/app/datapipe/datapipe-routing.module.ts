@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { InboxInfoComponent } from './inbox-info/inbox-info.component';
-import { InboxListComponent } from './inbox-list/inbox-list.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { PipeListComponent } from './pipe-list/pipe-list.component';
-import { PipeDetailComponent } from './pipe-detail/pipe-detail.component';
-import { CatalogComponent } from './catalog/catalog.component';
-import { AuthGuard } from '../auth/auth.guard';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
+import {InboxInfoComponent} from './inbox-info/inbox-info.component';
+import {InboxListComponent} from './inbox-list/inbox-list.component';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {PipeListComponent} from './pipe-list/pipe-list.component';
+import {PipeDetailComponent} from './pipe-detail/pipe-detail.component';
+import {CatalogComponent} from './catalog/catalog.component';
+import {CatalogCategoriesComponent} from "./catalog/catalog-categories/catalog-categories.component";
 
 export const routes: Routes = [
   /* default re-direction: inbox list */
@@ -37,6 +37,11 @@ export const routes: Routes = [
   {
     path: 'admin/catalog',
     component: CatalogComponent,
+    canActivate: []
+  },
+  {
+    path: 'admin/catalog/categories',
+    component: CatalogCategoriesComponent,
     canActivate: []
   },
   /* search: view inbox details */

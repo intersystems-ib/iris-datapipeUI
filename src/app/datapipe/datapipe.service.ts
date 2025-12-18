@@ -2,12 +2,13 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import moment from 'moment';
-import {catchError, map, Observable, of, tap, throwError} from 'rxjs';
+import {catchError, map, Observable, of, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {AlertService} from '../shared/alert.service';
 import {
   Catalog,
   CatalogGraphResult,
+  Category,
   Inbox,
   Ingestion,
   Oper,
@@ -622,15 +623,51 @@ export class DatapipeService {
 
   }
 
-  getHistogram(catalogId: string | number):Observable<CatalogGraphResult|any> {
+  getHistogram(catalogId: string | number): Observable<CatalogGraphResult | any> {
     return this.http.get(this.urlBase + `/catalog/${catalogId}/histogram`).pipe(catchError(err => {
       if (err.status == 404) {
         return of(JSON.parse(err.error))
       }
-      this.alertService.error('[extractData] ' + err.message)
+      this.alertService.error('[getHistogram] ' + err.message)
       return throwError(() => err);
     }))
   }
 
 
+  getCategories(filter: string): Observable<any | { categories: Category[] }> {
+    return this.http.get(this.urlBase + `/catalog/categories${filter != '' ? '?filter=' + filter : ''}`).pipe(catchError(err => {
+      this.alertService.error('[getCategories] ' + err.message)
+      return throwError(() => err);
+    }))
+  }
+
+  getResources(): Observable<any | { resources: string[] }> {
+    return this.http.get(this.urlBase + `/catalog/categories/resources`).pipe(catchError(err => {
+      this.alertService.error('[getResources] ' + err.message)
+      return throwError(() => err);
+    }))
+  }
+
+  updateCategories(categories: Category[]): Observable<any> {
+    return this.http.post(this.urlBase + `/catalog/categories/update`,
+      categories
+    ).pipe(catchError(err => {
+      if (err.status !== 400 && err.status !== 404) {
+        this.alertService.error('[extractData] ' + err.message)
+        return throwError(() => err);
+      }
+      return of(err.error)
+    }))
+  }
+
+  deleteCategory(Id: any) {
+    return this.http.delete(this.urlBase + `/catalog/categories/${Id}`
+    ).pipe(catchError(err => {
+      if (err.status !== 400 && err.status !== 404) {
+        this.alertService.error('[extractData] ' + err.message)
+        return throwError(() => err);
+      }
+      return of(err.error)
+    }))
+  }
 }

@@ -5,7 +5,7 @@
   <div class="search-section">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search catalog...</mat-label>
-      <input matInput #searchInput (input)="callSearch(searchInput.value)"
+      <input matInput #searchInput debouncedInput (debouncedValue)="searchTree(searchInput.value)"
              placeholder="Search by entity, description or table">
       <span matSuffix *ngIf="searchInput.value" class="search-results-count">({{ filteredResultsCount }})</span>
       <button mat-icon-button matSuffix *ngIf="searchInput.value" (click)="searchInput.value=''"
@@ -14,7 +14,7 @@
       </button>
       <mat-icon matSuffix *ngIf="!searchInput.value">search</mat-icon>
     </mat-form-field>
-    <div class="action-buttons" >
+    <div class="action-buttons">
       <button mat-icon-button (click)="expandAll()" matTooltip="Expand All">
         <mat-icon>unfold_more</mat-icon>
       </button>
@@ -80,7 +80,8 @@
 <ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array">
   <mat-card class="catalog-card"
             [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ') + (categoryFiltering && selectedCategories[item.Category.Name]==false?'catalog-card-disabled':'')"
-            [id]="'catalog-card-' + item.Id" [hidden]="categoryFiltering && selectedCategories[item.Category.Name] == false">
+            [id]="'catalog-card-' + item.Id"
+            [hidden]="categoryFiltering && selectedCategories[item.Category.Name] == false">
     <mat-card-header>
       <div class="card-header-content">
         <div class="entity-info">
@@ -119,7 +120,10 @@
             <!-- Edit mode -->
             <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
               <mat-label>Category</mat-label>
-              <input matInput [(ngModel)]="item.Category.Name" [disabled]="item.Subtypeof!=undefined">
+              <mat-select [(ngModel)]="item.Category.Name" [disabled]="item.Subtypeof!=undefined"
+                          [matTooltip]="item.Subtypeof!=undefined?'A subtype must have the same category as its father':'Select a category'">
+                <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
+              </mat-select>
             </mat-form-field>
             <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
               <mat-label>Entity</mat-label>

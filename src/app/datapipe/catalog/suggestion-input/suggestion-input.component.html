@@ -1,0 +1,39 @@
+<div cdkOverlayOrigin class="autocomplete-container" #trigger="cdkOverlayOrigin">
+  <mat-form-field>
+    <input
+      type="text"
+      matInput
+      [(ngModel)]="value"
+      (ngModelChange)="open=true;valueChange.emit($event); filterSuggestions()"
+      (blur)="open=false"
+      class="input-box"
+    />
+  </mat-form-field>
+  <ng-template
+    cdk-connected-overlay
+    [cdkConnectedOverlayOpen]="open&&filtered.length > 0"
+    [cdkConnectedOverlayOrigin]="trigger"
+    [cdkConnectedOverlayPositions]=" [
+    {
+      originX: 'start',
+      originY: 'bottom',
+      overlayX: 'start',
+      overlayY: 'top'
+    },
+    {
+      originX: 'start',
+      originY: 'top',
+      overlayX: 'start',
+      overlayY: 'bottom'
+    }
+  ]"
+  >
+    <ul class="suggestions-overlay" (blur)="open=false">
+      <li
+        *ngFor="let item of filtered"
+        (mousedown)="selectSuggestion(item)">
+        {{ item }}
+      </li>
+    </ul>
+  </ng-template>
+</div>
