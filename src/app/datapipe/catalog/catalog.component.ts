@@ -130,9 +130,8 @@ export class CatalogComponent implements OnInit {
    * Refresh catalog data from backend
    */
   refreshCatalog(): void {
-    // Save current expansion state
     this.markLoading(this.catalogTree);
-    // Reload catalog
+    // Reload catalog, we mantain frontend properties, expansion, editing, etc by flattening the backend incoming data, and importing via the id
     this.datapipeService.getCatalog().subscribe(
       data => {
         if (data.result) {
@@ -619,10 +618,9 @@ export class CatalogComponent implements OnInit {
 
   deleteEntry(catalog: Catalog, index: number) {
     this.datapipeService.deleteEntry(catalog).subscribe(
-      (result: any) => {
-        this.catalogTree.splice(index, 1)
+      () => {
+        this.refreshCatalog()
         this.cdr.markForCheck()
-        this.loadCategories(result.categories)
       }
     );
   }
@@ -712,7 +710,11 @@ export class CatalogComponent implements OnInit {
         return
       }
       this.datapipeService.importCatalogs(data).subscribe(
-        ()=>this.importModal = false
+        ()=> {
+          this.importModal = false
+          this.toastService.success("Done")
+          this.refreshCatalog()
+        }
       )
     } else {
       this.toastService.error("Can not import empty content")
