@@ -123,7 +123,8 @@ export interface Catalog {
   columns?: TableColumn[],
   ChartOptionsChart?: any,
   DoneLoadingGraph?:boolean,
-  refreshing?:boolean
+  refreshing?:boolean,
+  histogramErrors?:string[]
 }
 
 export interface Category {

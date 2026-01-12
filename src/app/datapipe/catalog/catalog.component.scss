@@ -269,11 +269,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
 
-    ::ng-deep mark {
-      background-color: #ffeb3b;
-      padding: 2px 4px;
-      border-radius: 2px;
-    }
   }
 
   .documentation-section {
@@ -321,11 +316,6 @@
           white-space: pre-wrap;
           word-break: break-word;
 
-          ::ng-deep mark {
-            background-color: #ffeb3b;
-            padding: 2px 4px;
-            border-radius: 2px;
-          }
         }
       }
     }
@@ -352,11 +342,6 @@
       color: #424242;
       word-break: break-all;
 
-      ::ng-deep mark {
-        background-color: #ffeb3b;
-        padding: 2px 4px;
-        border-radius: 2px;
-      }
     }
   }
 
@@ -1238,4 +1223,5 @@ export-modal-area {
   resize: none;
   box-sizing: border-box;
 }
+
 

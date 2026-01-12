@@ -230,7 +230,7 @@
               ({{ item.Total?.Count | numberWithSeparators }})
             </span>
           </div>
-          <div class="histogram-chart" *ngIf="item.MDXHistogram || item.MDXHistogramUpdated; else NoGraphs">
+          <div class="histogram-chart" *ngIf="(item.MDXHistogram || item.MDXHistogramUpdated) && !item.histogramErrors; else NoGraphs">
             <apx-chart *ngIf="item.DoneLoadingGraph; else loadingGraph" [hidden]="!item.showHistogram"
                        [series]="item.HistogramSeries!" [chart]="item.ChartOptionsChart!"
                        [plotOptions]="chartOptions.plotOptions!"
@@ -246,7 +246,11 @@
             </ng-template>
           </div>
           <ng-template #NoGraphs>
-            No graph to load
+            <mat-icon *ngIf="item.histogramErrors; else NoGraph" class="error-icon"
+                      [matTooltip]="item.histogramErrors?.join('\n,')" matTooltipClass="error-tooltip">
+              error
+            </mat-icon>
+            <ng-template #NoGraph> No graph to load</ng-template>
           </ng-template>
         </div>
 

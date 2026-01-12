@@ -636,27 +636,33 @@ export class CatalogComponent implements OnInit {
     if (!catalog.DoneLoadingGraph)
       this.datapipeService.getHistogram(catalog.Id).subscribe(
         (data: CatalogGraphResult | any) => {
-          if (data.Histogram !== undefined || data.HistogramUpdated !== undefined) {
-            catalog.Histogram = data.Histogram
-            catalog.HistogramUpdated = data.HistogramUpdated
-            catalog.HistogramSeries = this.getSeries(catalog.Histogram, catalog.HistogramUpdated)
-            catalog.HistogramXaxis = this.getYears(catalog.Histogram, catalog.HistogramUpdated)
-            catalog.ChartOptionsChart = {
-              ...this.chartOptions.chart, events: {
-                //Do not remove it is used
-                mounted: (chartContext: any) => {
-                  // Hide the second series (Updated) by default
-                  try {
-                    if (chartContext)
-                      chartContext.hideSeries('Updated (Last 90 days)');
-                  } catch (e) {///ignored
-                  }
+          if (data.MDXError == undefined) {
+            if (data.Histogram !== undefined || data.HistogramUpdated !== undefined) {
+              catalog.Histogram = data.Histogram
+              catalog.HistogramUpdated = data.HistogramUpdated
+              catalog.HistogramSeries = this.getSeries(catalog.Histogram, catalog.HistogramUpdated)
+              catalog.HistogramXaxis = this.getYears(catalog.Histogram, catalog.HistogramUpdated)
+              catalog.ChartOptionsChart = {
+                ...this.chartOptions.chart, events: {
+                  //Do not remove it is used
+                  mounted: (chartContext: any) => {
+                    // Hide the second series (Updated) by default
+                    try {
+                      if (chartContext)
+                        chartContext.hideSeries('Updated (Last 90 days)');
+                    } catch (e) {///ignored
+                    }
 
+                  }
                 }
               }
+              catalog.DoneLoadingGraph = true
+              this.cdr.markForCheck()
             }
+          } else {
+            console.error(data)
+            catalog.histogramErrors = data.MDXError
             catalog.DoneLoadingGraph = true
-            this.cdr.markForCheck()
           }
         }
       )
