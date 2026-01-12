@@ -514,7 +514,7 @@ export class DatapipeService {
 
 //Used to refresh a single element
   getById(id: string | number, exportChildren: boolean = false): Observable<{ result: Catalog[] } | any> {
-    return this.http.get(this.urlBase + `/catalog/${id}${exportChildren?'?exportChildren=1':''}`).pipe(
+    return this.http.get(this.urlBase + `/catalog/${id}${exportChildren ? '?exportChildren=1' : ''}`).pipe(
       catchError(err => {
         this.alertService.error('[getCatalogById] ' + err.message)
         return throwError(() => err);
@@ -532,6 +532,9 @@ export class DatapipeService {
       catalog
     ).pipe(
       catchError(err => {
+        if (err.status == 404 ||err.status == 400) {
+          return of(err.error)
+        }
         if (!err.error.error.includes("Table not found"))
           this.alertService.error('[updateCatalog] ' + err.message)
         return throwError(() => err);
@@ -550,10 +553,10 @@ export class DatapipeService {
     )
   }
 
-  importCatalogs(obj: any){
+  importCatalogs(obj: any) {
     return this.http.post(
       this.urlBase + `/catalog/import`,
-      Array.isArray(obj)?obj:[obj]
+      Array.isArray(obj) ? obj : [obj]
     ).pipe(
       catchError(err => {
         this.alertService.error('[importCatalog] ' + err.message)

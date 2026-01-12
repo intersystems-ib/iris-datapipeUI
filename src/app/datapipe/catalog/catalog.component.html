@@ -187,8 +187,7 @@
                   [disabled]="item.showHistogram && !item.DoneLoadingGraph && (item.MDXHistogram || item.MDXHistogramUpdated)"
                   (click)="item.showHistogram = !item.showHistogram; item.showHistogram? loadHistogram(item) : ''"
                   [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
-                  [class.active]="item.showHistogram"
-                  class="toggle-button">
+                  [class.active]="item.showHistogram" class="toggle-button">
             <mat-icon>{{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
           </button>
 
@@ -628,13 +627,13 @@
   <textarea class="export-modal-area" [(ngModel)]="importData"
             style="height: 80vh"></textarea>
   <div style="display: inline-flex">
-  <button mat-icon-button matSuffix color="primary" (click)="pasteData()"
-          aria-label="Paste" [matTooltip]="'Paste clipboard content'">
-    <mat-icon>content_paste</mat-icon>
-  </button>
-  <button mat-icon-button matSuffix color="primary" (click)="importContent()" [matTooltip]="'Upload content'"
-          aria-label="Upload">
-    <mat-icon>upload</mat-icon>
-  </button>
+    <button mat-icon-button matSuffix color="primary" (click)="pasteData()"
+            aria-label="Paste" [matTooltip]="'Paste clipboard content'">
+      <mat-icon>content_paste</mat-icon>
+    </button>
+    <button mat-icon-button matSuffix color="primary" (click)="importContent()" [matTooltip]="'Upload content'"
+            aria-label="Upload">
+      <mat-icon>upload</mat-icon>
+    </button>
   </div>
 </catalog-modal>

@@ -208,13 +208,13 @@ export class CatalogComponent implements OnInit {
     // Save logic will be implemented later
     this.datapipeService.updateEntry(item).subscribe(
       (result) => {
-        if (result.categories != undefined) {
+        if (result.error == undefined) {
           item.isEditing = false;
           this.loadCategories(result.categories)
           item = Object.assign(item, {...result.result, Children: item.Children})
           this.cdr.markForCheck();
         } else {
-          this.toastService.error("Error", "Table not found in the given namespace")
+          this.toastService.error("Error", result.error.split('-')[0])
         }
       }
     )
