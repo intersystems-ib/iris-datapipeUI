@@ -19,7 +19,6 @@
           <mat-label class="highlight-field">Filter</mat-label>
           <input matInput [(ngModel)]="filter" debouncedInput (debouncedValue)="search()" name="Filter">
         </mat-form-field>
-
       </div>
 
       <!-- filters buttons -->
@@ -46,7 +45,8 @@
       <th mat-header-cell *matHeaderCellDef style="width:15%;"> Name</th>
       <td mat-cell *matCellDef="let category" style="width:15%;">
         <mat-form-field floatLabel="always" class="field-s">
-          <input matInput [(ngModel)]="category.Name" (ngModelChange)="anyChanges = true; cdr.markForCheck()" name="Name">
+          <input matInput [(ngModel)]="category.Name" (ngModelChange)="anyChanges = true; cdr.markForCheck()"
+                 name="Name">
         </mat-form-field>
       </td>
     </ng-container>
@@ -54,7 +54,8 @@
     <ng-container matColumnDef="Resource">
       <th mat-header-cell *matHeaderCellDef style="width:25%;"> Resource</th>
       <td mat-cell *matCellDef="let category" style="width:25%;">
-        <catalog-suggestion-input [suggestions]="resources" [(value)]="category.Resource" (valueChange)="anyChanges = true;cdr.markForCheck()"/>
+        <catalog-suggestion-input [suggestions]="resources" [(value)]="category.Resource"
+                                  (valueChange)="anyChanges = true;cdr.markForCheck()"/>
       </td>
     </ng-container>
 

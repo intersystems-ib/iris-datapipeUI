@@ -4,7 +4,7 @@ import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 import {ToastService} from '../../shared/toast/toast.service';
 import {Clipboard} from '@angular/cdk/clipboard';
-import {getSearchRegex} from "./pipes/highlight-text.pipe";
+import {getSearchRegex} from "./pipes/highlight-search-text.pipe";
 
 @Component({
   selector: 'app-catalog',
@@ -63,7 +63,7 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  searchTree(text:string){
+  searchTree(text: string) {
     this.catalogTree.forEach(
       catalog => this.search(catalog, text)
     )
@@ -159,34 +159,33 @@ export class CatalogComponent implements OnInit {
     )
   }
 
-  flattenData(catalogs: Catalog[]):{[id:string]:Catalog}
-  {
-    let res:{[id:string]:Catalog} = {}
+  flattenData(catalogs: Catalog[]): { [id: string]: Catalog } {
+    let res: { [id: string]: Catalog } = {}
     catalogs.forEach(
-      catalog=>{
-        res[catalog.Id+""] = catalog
-        if(catalog.Children) res ={...this.flattenData(catalog.Children),...res}
+      catalog => {
+        res[catalog.Id + ""] = catalog
+        if (catalog.Children) res = {...this.flattenData(catalog.Children), ...res}
       }
     )
     return res
   }
 
-  refreshLevel(flattenedCatalogs: {[id:string]:Catalog}, backendData: Catalog[]) {
+  refreshLevel(flattenedCatalogs: { [id: string]: Catalog }, backendData: Catalog[]) {
     backendData.forEach(
-      catalog=>{
-        const existingCatalog = flattenedCatalogs[catalog.Id+""]
-        if(existingCatalog!==undefined){
+      catalog => {
+        const existingCatalog = flattenedCatalogs[catalog.Id + ""]
+        if (existingCatalog !== undefined) {
           catalog.expanded = existingCatalog.expanded
           catalog.HistogramSeries = existingCatalog.HistogramSeries
           catalog.HistogramXaxis = existingCatalog.HistogramXaxis
           catalog.showHistogram = existingCatalog.showHistogram
           catalog.showColumns = existingCatalog.showColumns
           catalog.refreshing = existingCatalog.refreshing
-          if(catalog.showHistogram){
+          if (catalog.showHistogram) {
             this.loadHistogram(catalog)
           }
         }
-        if(catalog.Children) this.refreshLevel(flattenedCatalogs, catalog.Children)
+        if (catalog.Children) this.refreshLevel(flattenedCatalogs, catalog.Children)
       }
     )
     return backendData
@@ -257,9 +256,9 @@ export class CatalogComponent implements OnInit {
     // Create a new root entity with default values
     const newEntity: Catalog = {
       Id: -1,
-      Category:{
-        Id:-1,
-        Name:''
+      Category: {
+        Id: -1,
+        Name: ''
       },
       Subtypeof: null,
       Entity: 'New Entity',
@@ -664,6 +663,57 @@ export class CatalogComponent implements OnInit {
         }
       )
   }
+
+  exportItem(item: Catalog) {
+    this.exportCatalogModal = true
+    this.datapipeService.getById(item.Id, true).subscribe(
+      data => this.exportedCatalogJSON = this.formatJSON(data.result)
+    )
+  }
+
+  formatJSON(object: any) {
+    return JSON.stringify(object, undefined, 4)
+    /*const stringSanitized = this.sanitizer.sanitize(SecurityContext.HTML, JSON.stringify(object))
+    if (!stringSanitized)
+      return ''
+    return this.sanitizer.bypassSecurityTrustHtml(JSON.stringify(JSON.parse(stringSanitized), (key, value) => markVal(value), 2))*/
+  }
+
+  exportedCatalogJSON: string | undefined | null
+
+  exportCatalogModal = false;
+
+  copyData() {
+    if (this.exportedCatalogJSON)
+      this.clipboard.copy(this.exportedCatalogJSON)
+  }
+
+  //Import related
+  importModal: boolean = false
+
+  importData: string | undefined
+
+  async pasteData() {
+    try{
+      this.importData = await navigator.clipboard.readText()
+    }catch (e) {
+      this.toastService.error("Not allowed to read clipboard, change the settings")
+    }
+    this.cdr.markForCheck()
+  }
+
+  importContent(){
+    if(!this.importData){
+      this.toastService.error("Can not import empty content")
+    }
+    try{
+      
+    }catch (e) {
+      
+    }
+  }
+
+
 }
 
 export interface ExportDataOptions {
@@ -684,4 +734,16 @@ export function GetExportOptionsDefaults(): ExportDataOptions {
     addInfo: false,
     columns: []
   }
+}
+
+export function markVal(value: any): any {
+  switch (typeof value) {
+    case typeof "string":
+      return '<mark class="mark-blue">' + value + '</mark>'
+    case "boolean":
+      return '<mark class="mark-orange">' + value + '</mark>'
+    case "number":
+      return '<mark class="mark-red">' + value + '</mark>'
+  }
+  return value
 }

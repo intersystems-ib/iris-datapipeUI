@@ -20,7 +20,7 @@ import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-to
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {NumberWithSeparatorsPipe} from "./catalog/pipes/number-with-separators.pipe";
 import {LargeNumbersPipe} from "./catalog/pipes/large-numbers.pipe";
-import {HighlightTextPipe} from "./catalog/pipes/highlight-text.pipe";
+import {HighlightSearchTextPipe} from "./catalog/pipes/highlight-search-text.pipe";
 import {SearchTextPipe} from "./catalog/pipes/search-text.pipe";
 import {DebouncedInputDirective} from "./catalog/debounced-input.directive";
 
@@ -48,7 +48,7 @@ import {DebouncedInputDirective} from "./catalog/debounced-input.directive";
         MatSlideToggle,
         NumberWithSeparatorsPipe,
         LargeNumbersPipe,
-        HighlightTextPipe,
+        HighlightSearchTextPipe,
         SearchTextPipe,
         DebouncedInputDirective
     ]

@@ -30,7 +30,6 @@ import {DebouncedInputDirective} from "../debounced-input.directive";
 import {NgIf} from "@angular/common";
 import {SuggestionInputComponent} from "../suggestion-input/suggestion-input.component";
 import {ToastService} from "../../../shared/toast/toast.service";
-import {unwrapConstructorDependencies} from "@angular/compiler-cli/src/ngtsc/annotations/common";
 
 @Component({
   selector: 'app-catalog-categories',

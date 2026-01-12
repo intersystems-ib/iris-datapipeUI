@@ -5,7 +5,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
   name: 'highlightText',
   standalone: true
 })
-export class HighlightTextPipe implements PipeTransform {
+export class HighlightSearchTextPipe implements PipeTransform {
 
   private sanitizer = inject(DomSanitizer);
 

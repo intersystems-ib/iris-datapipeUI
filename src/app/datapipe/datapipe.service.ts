@@ -513,8 +513,8 @@ export class DatapipeService {
   }
 
 //Used to refresh a single element
-  getById(id: string | number): Observable<{ result: Catalog[] } | any> {
-    return this.http.get(this.urlBase + `/catalog/${id}`).pipe(
+  getById(id: string | number, exportChildren: boolean = false): Observable<{ result: Catalog[] } | any> {
+    return this.http.get(this.urlBase + `/catalog/${id}${exportChildren?'?exportChildren=1':''}`).pipe(
       catchError(err => {
         this.alertService.error('[getCatalogById] ' + err.message)
         return throwError(() => err);

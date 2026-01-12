@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {getSearchRegex} from "./highlight-text.pipe";
+import {getSearchRegex} from "./highlight-search-text.pipe";
 
 @Pipe({
   name: 'searchText',

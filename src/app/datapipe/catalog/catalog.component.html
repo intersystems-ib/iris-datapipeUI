@@ -30,6 +30,9 @@
               [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
         <mat-icon>{{ showTableInfo ? 'table_view' : 'grid_off' }}</mat-icon>
       </button>
+      <button mat-icon-button (click)="importModal=true" [matTooltip]="'Import catalogs'">
+        <mat-icon color="primary">publish</mat-icon>
+      </button>
     </div>
   </div>
 
@@ -203,6 +206,10 @@
           <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item, array, index)"
                   matTooltip="Cancel">
             <mat-icon>close</mat-icon>
+          </button>
+          <button *ngIf="item.isEditing" mat-icon-button color="primary" (click)="exportItem(item)"
+                  matTooltip="Export">
+            <mat-icon>download</mat-icon>
           </button>
           <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent"
                   (click)="saveEdit(item)" matTooltip="Save">
@@ -534,7 +541,8 @@
                           </div>
                           <div class="index-properties" *ngIf="index.properties; else noProps">
                             <span>Properties: </span>
-                            <strong [innerHTML]="ColumnIndexSearch.value | highlightText : index.properties"></strong>
+                            <strong
+                              [innerHTML]="ColumnIndexSearch.value | highlightText : index.properties"></strong>
                           </div>
 
                           <ng-template #noProps>
@@ -606,3 +614,27 @@
     </ng-container>
   </div>
 </ng-template>
+
+<catalog-modal [(open)]="exportCatalogModal" [title]="'JSON export'">
+  <textarea class="export-modal-area" [readOnly]="true" [innerHTML]="exportedCatalogJSON"
+            style="height: 80vh"></textarea>
+  <button mat-icon-button matSuffix color="primary" (click)="copyData()"
+          aria-label="Copy">
+    <mat-icon>copy_all</mat-icon>
+  </button>
+</catalog-modal>
+
+<catalog-modal [(open)]="importModal" [title]="'Import catalogs'">
+  <textarea class="export-modal-area" [(ngModel)]="importData"
+            style="height: 80vh"></textarea>
+  <div style="display: inline-flex">
+  <button mat-icon-button matSuffix color="primary" (click)="pasteData()"
+          aria-label="Paste" [matTooltip]="'Paste clipboard content'">
+    <mat-icon>content_paste</mat-icon>
+  </button>
+  <button mat-icon-button matSuffix color="primary" (click)="importContent()" [matTooltip]="'Upload content'"
+          aria-label="Upload">
+    <mat-icon>upload</mat-icon>
+  </button>
+  </div>
+</catalog-modal>
