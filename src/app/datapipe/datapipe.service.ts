@@ -550,6 +550,18 @@ export class DatapipeService {
     )
   }
 
+  importCatalogs(obj: any){
+    return this.http.post(
+      this.urlBase + `/catalog/import`,
+      Array.isArray(obj)?obj:[obj]
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[importCatalog] ' + err.message)
+        return throwError(() => err);
+      })
+    )
+  }
+
   getNamespaces(): Observable<string[] | any> {
     return this.http.get(
       this.urlBase + `/catalog/namespaces`

@@ -694,23 +694,30 @@ export class CatalogComponent implements OnInit {
   importData: string | undefined
 
   async pasteData() {
-    try{
+    try {
       this.importData = await navigator.clipboard.readText()
-    }catch (e) {
+    } catch (e) {
       this.toastService.error("Not allowed to read clipboard, change the settings")
     }
     this.cdr.markForCheck()
   }
 
-  importContent(){
-    if(!this.importData){
+  importContent() {
+    if (this.importData) {
+      let data;
+      try {
+        data = JSON.parse(this.importData)
+      } catch (e) {
+        this.toastService.error("Not valid JSON")
+        return
+      }
+      this.datapipeService.importCatalogs(data).subscribe(
+        ()=>this.importModal = false
+      )
+    } else {
       this.toastService.error("Can not import empty content")
     }
-    try{
-      
-    }catch (e) {
-      
-    }
+
   }
 
 
