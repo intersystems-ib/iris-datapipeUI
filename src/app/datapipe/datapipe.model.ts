@@ -114,24 +114,27 @@ export interface Catalog {
 
   // UI properties
   expanded?: boolean;
-  ///Both HistogramSeries and HistogramXaxis are calculated upon receiving backend result
-  HistogramSeries?: ApexAxisChartSeries;
-  HistogramXaxis?: ApexXAxis;
   showHistogram?: boolean;
   showColumns?: boolean;
   isEditing?: boolean;
   columns?: TableColumn[],
-  ChartOptionsChart?: any,
-  DoneLoadingGraph?:boolean,
+  chartOptionsChart?: any,
+  doneLoadingGraph?:boolean,
   refreshing?:boolean,
   histogramErrors?:string[]
+  ///Both HistogramSeries and HistogramXaxis are calculated upon receiving backend result
+  histogramSeries?: ApexAxisChartSeries;
+  histogramXaxis?: ApexXAxis;
+
 }
 
 export interface Category {
   Id: number,
   Attributes?:string,
   Name:string,
-  Resource?:string
+  Resource?:string,
+
+
 }
 
 export interface TableColumn {

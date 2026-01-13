@@ -36,7 +36,7 @@
       </a>
       <a mat-list-item routerLink="/datapipe/admin/catalog/categories"
          *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_ADMIN', 'U')">
-        <mat-icon matListItemIcon>auto_stories</mat-icon>
+        <mat-icon matListItemIcon>category</mat-icon>
         <span matListItemTitle>Catalog categories</span>
       </a>
 
