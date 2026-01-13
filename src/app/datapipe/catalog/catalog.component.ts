@@ -734,6 +734,22 @@ export class CatalogComponent implements OnInit {
             }
         )
     }
+
+    toggleHistogram(item: Catalog) {
+        if((item.MDXHistogram || item.MDXHistogramUpdated)) {
+            item.showHistogram = !item.showHistogram;
+            if (item.showHistogram)
+                this.loadHistogram(item)
+        }
+    }
+
+    toggleTreeMap(item: any) {
+        if(item.MDXTreeMap) {
+            item.showTreeMap = !item.showTreeMap;
+            if (item.showTreeMap)
+                this.loadHistogram(item)
+        }
+    }
 }
 
 export interface ExportDataOptions {

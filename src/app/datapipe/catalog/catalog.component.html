@@ -8,7 +8,8 @@
             <input matInput #searchInput debouncedInput
                    (debouncedValue)="searchStringValue = $event"
                    placeholder="Search by entity, description or table">
-            <span matSuffix *ngIf="searchInput.value" class="search-results-count"><!-- TODO({{ searchResults }})--></span>
+            <span matSuffix *ngIf="searchInput.value"
+                  class="search-results-count"><!-- TODO({{ searchResults }})--></span>
             <button mat-icon-button matSuffix *ngIf="searchInput.value"
                     (click)="searchInput.value='';searchStringValue = ''"
                     aria-label="Clear search">
@@ -203,12 +204,22 @@
 
                     <!-- Show/Hide Histogram -->
                     <button mat-icon-button
-                            [disabled]="item.showHistogram && !item.doneLoadingGraph && (item.MDXHistogram || item.MDXHistogramUpdated)"
-                            (click)="item.showHistogram = !item.showHistogram; item.showHistogram? loadHistogram(item) : ''"
-                            [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
+                            [disabled]="(item.showHistogram && !item.doneLoadingGraph)"
+                            (click)="toggleHistogram(item)"
+                            [matTooltip]="(item.MDXHistogram || item.MDXHistogramUpdated)?(item.showHistogram ? 'Hide Histogram' : 'Show Histogram'):'Nothing to load'"
                             [class.active]="item.showHistogram" class="toggle-button">
-                        <mat-icon>{{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}</mat-icon>
+                        <mat-icon [ngStyle]="{'color':!(item.MDXHistogram || item.MDXHistogramUpdated)?'#d5d4d4':''}">
+                            {{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}
+                        </mat-icon>
                     </button>
+                    <button mat-icon-button
+                            [disabled]="item.showTreeMap && !item.doneLoadingGraph"
+                            (click)="toggleTreeMap(item)"
+                            [matTooltip]="(item.MDXTreeMap)?(item.showTreeMap ? 'Hide treemap' : 'Show treemap'):'Nothing to load'"
+                            [class.active]="item.showTreeMap" class="toggle-button">
+                        <mat-icon [ngStyle]="{'color':!(item.MDXTreeMap)?'#d5d4d4':''}">dashboard</mat-icon>
+                    </button>
+
 
                     <!-- Show/Hide Columns -->
                     <button mat-icon-button (click)="item.showColumns = true; loadColumns(item); cdr.markForCheck()"
@@ -391,6 +402,11 @@
                     <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field full-width">
                         <mat-label>MDX Histogram Updated</mat-label>
                         <textarea matInput [(ngModel)]="item.MDXHistogramUpdated" rows="2"></textarea>
+                    </mat-form-field>
+
+                    <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field full-width">
+                        <mat-label>MDX TreeMap</mat-label>
+                        <textarea matInput [(ngModel)]="item.MDXTreeMap" rows="2"></textarea>
                     </mat-form-field>
                 </div>
             </div>

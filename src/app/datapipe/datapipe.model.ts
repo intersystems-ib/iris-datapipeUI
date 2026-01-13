@@ -105,6 +105,7 @@ export interface Catalog {
   MDXTotal: string;
   MDXHistogram?: string;
   MDXHistogramUpdated?: string;
+  MDXTreeMap?:string;
   Order: number;
   Total?: number;
   Histogram?: { [year: string]: number };
@@ -115,6 +116,7 @@ export interface Catalog {
   // UI properties
   expanded?: boolean;
   showHistogram?: boolean;
+  showTreeMap?:boolean;
   showColumns?: boolean;
   isEditing?: boolean;
   columns?: TableColumn[],
