@@ -65,13 +65,6 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  searchTree(text: string) {
-    //this.catalogTree.forEach(
-      //catalog => this.search(catalog, text)
-    //)
-    this.cdr.markForCheck();
-  }
-
   searchStringValue:string|undefined;
 
   search(catalog: Catalog, keywords: string): boolean {

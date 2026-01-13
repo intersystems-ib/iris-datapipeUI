@@ -105,7 +105,7 @@
                         </div>
 
                         <!-- View mode -->
-                        <mat-chip *ngIf="!item.isEditing" class="category-chip"
+                        <mat-chip *ngIf="!item.isEditing && item.Subtypeof == undefined" class="category-chip"
                                   [ngClass]="level > 1 ? 'subcategory' : ''">{{
                                 item.Category.Name
                             }}
@@ -129,7 +129,7 @@
                             (click)="toggleExpand(item)"></h4>
 
                         <!-- Edit mode -->
-                        <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field">
+                        <mat-form-field *ngIf="item.isEditing && item.Subtypeof==undefined" appearance="outline" class="edit-field">
                             <mat-label>Category</mat-label>
                             <mat-select [(ngModel)]="item.Category.Name" [disabled]="item.Subtypeof!=undefined"
                                         [matTooltip]="item.Subtypeof!=undefined?'A subtype must have the same category as its father':'Select a category'">
