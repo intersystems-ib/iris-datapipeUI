@@ -220,6 +220,8 @@ export class CatalogComponent implements OnInit {
                     cat.selected = this.categories[cat.Name].selected
                 else
                     cat.selected = false
+                if (cat.Attributes)
+                    cat.loadedAttributes = JSON.parse(cat.Attributes)
                 this.categories[cat.Name] = cat
 
             }
@@ -417,10 +419,15 @@ export class CatalogComponent implements OnInit {
         if (item.Id === -1) return;
         if (direction === 'up' && index === 0) return;
         if (direction === 'down' && index === array.length - 1) return;
-        this.datapipeService.reorder(item.Id, array[index + (direction === 'up' ? -1 : 1)].Id).subscribe(
+        const newIndex = index + (direction === 'up' ? -1 : 1)
+        this.datapipeService.reorder(item.Id, array[newIndex].Id).subscribe(
             () => {
-                array[index] = array[index + (direction === 'up' ? -1 : 1)]
-                array[index + (direction === 'up' ? -1 : 1)] = item
+                const item2 = array[newIndex]
+                const order2 = item2.Order
+                item2.Order = item.Order
+                item.Order = order2
+                array[index] = item2
+                array[newIndex] = item
                 this.cdr.markForCheck();
             }
         )

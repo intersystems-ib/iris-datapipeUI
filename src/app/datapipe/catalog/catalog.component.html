@@ -42,7 +42,10 @@
     <div class="category-filters">
         <mat-chip-set>
             <mat-chip-option *ngFor="let category of Object.values(categories)" [selected]="category.selected"
-                             (selectionChange)="categoryChange(category)">
+                             (selectionChange)="categoryChange(category)"
+                             [ngStyle]="{'--mdc-chip-label-text-color': category.loadedAttributes?.['Color'],
+                                '--mdc-chip-selected-label-text-color': category.loadedAttributes?.['Color'],
+                              'background-color':category.loadedAttributes?.['BackgroundColor']}">
                 {{ category.Name }}
             </mat-chip-option>
         </mat-chip-set>
@@ -105,6 +108,7 @@
 
                         <!-- View mode -->
                         <mat-chip *ngIf="!item.isEditing && item.Subtypeof == undefined" class="category-chip"
+                                  [color]="categories[item.Category.Name].loadedAttributes?.['Color']"
                                   [ngClass]="level > 1 ? 'subcategory' : ''">{{
                                 item.Category.Name
                             }}
@@ -114,6 +118,7 @@
                                   [matTooltip]="item.MDXError.join('\n')" matTooltipClass="error-tooltip">
                             error
                         </mat-icon>
+                        {{item.Order}}
                         <h2 *ngIf="!item.isEditing && level === 1" class="entity-title"
                             HighlightSearchText [text]="item.Entity" [searchString]="searchStringValue"
                             (resultChange)="searchResults = searchResults+$event" (click)="toggleExpand(item)"></h2>
@@ -133,7 +138,8 @@
                             <mat-label>Category</mat-label>
                             <mat-select [(ngModel)]="item.Category.Name" [disabled]="item.Subtypeof!=undefined"
                                         [matTooltip]="item.Subtypeof!=undefined?'A subtype must have the same category as its father':'Select a category'">
-                                <mat-option *ngFor="let category of Object.values(categories)" [value]="category.Name">{{ category.Name }}
+                                <mat-option *ngFor="let category of Object.values(categories)"
+                                            [value]="category.Name">{{ category.Name }}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>

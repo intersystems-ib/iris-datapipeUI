@@ -120,7 +120,7 @@ export class CatalogCategoriesComponent implements OnInit {
     }
   }
 
-  displayedColumns = ['Name', 'Resource', 'Color', 'DeleteCategory']
+  displayedColumns = ['Name', 'Resource', 'Color', 'BackgroundColor', 'DeleteCategory']
 
 
   save() {

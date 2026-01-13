@@ -68,6 +68,17 @@
         </mat-form-field>
     </ng-container>
 
+    <ng-container matColumnDef="BackgroundColor">
+      <th mat-header-cell *matHeaderCellDef style="width:15%;"> BackgroundColor in HEX</th>
+      <td mat-cell *matCellDef="let category" style="width:15%;">
+        <mat-form-field floatLabel="always" class="field-s">
+          <input matInput [(ngModel)]="category.loadedAttributes.BackgroundColor" (ngModelChange)="anyChanges = true; cdr.markForCheck()"
+                 name="BackgroundColor">
+        </mat-form-field>
+    </ng-container>
+
+
+
     <ng-container matColumnDef="DeleteCategory">
       <th mat-header-cell *matHeaderCellDef style="width:25%;"></th>
       <td mat-cell *matCellDef="let category" style="width:25%;">
