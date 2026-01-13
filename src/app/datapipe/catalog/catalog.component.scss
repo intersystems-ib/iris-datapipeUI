@@ -636,7 +636,7 @@
 
   .histogram-chart {
     width: 600px;
-    height: 200px;
+    min-height: 200px;
     position: relative;
     display: inline-flex;
 
