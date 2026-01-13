@@ -5,7 +5,8 @@
     <div class="search-section">
         <mat-form-field appearance="outline" class="search-field">
             <mat-label>Search catalog...</mat-label>
-            <input matInput #searchInput debouncedInput (debouncedValue)="searchTree(searchInput.value)"
+            <input matInput #searchInput debouncedInput
+                   (debouncedValue)="this.searchStringValue = $event"
                    placeholder="Search by entity, description or table">
             <span matSuffix *ngIf="searchInput.value" class="search-results-count">({{ searchResults }})</span>
             <button mat-icon-button matSuffix *ngIf="searchInput.value" (click)="searchInput.value=''"
@@ -81,7 +82,7 @@
 </div>
 
 <!-- Recursive Card Template -->
-<ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array">
+<ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array" let-parent="parent">
     <mat-card class="catalog-card"
               [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ') + (categoryFiltering && selectedCategories[item.Category.Name]==false?'catalog-card-disabled':'')"
               [id]="'catalog-card-' + item.Id"
@@ -114,16 +115,16 @@
                             error
                         </mat-icon>
                         <h2 *ngIf="!item.isEditing && level === 1" class="entity-title"
-                            HighlightSearchText [text]="item.Entity" [searchString]="searchInput.value"
+                            HighlightSearchText [text]="item.Entity" [searchString]="searchStringValue"
                             (resultChange)="searchResults = searchResults+$event" (click)="toggleExpand(item)"></h2>
 
                         <h3 *ngIf="!item.isEditing && level === 2" class="entity-title"
-                            HighlightSearchText [text]="item.Entity" [searchString]="searchInput.value"
-                            (resultChange)="searchResults = searchResults+$event"
+                            HighlightSearchText [text]="item.Entity" [searchString]="searchStringValue"
+                            (resultChange)="((searchStringValue&&$event>0)?parent.expanded=true:'');searchResults = searchResults+$event"
                             (click)="toggleExpand(item)"></h3>
                         <h4 *ngIf="!item.isEditing && level > 2" class="entity-title"
-                            HighlightSearchText [text]="item.Entity" [searchString]="searchInput.value"
-                            (resultChange)="searchResults = searchResults+$event"
+                            HighlightSearchText [text]="item.Entity" [searchString]="searchStringValue"
+                            (resultChange)="((searchStringValue&&$event>0)?parent.expanded=true:'');searchResults = searchResults+$event"
                             (click)="toggleExpand(item)"></h4>
 
                         <!-- Edit mode -->
@@ -270,7 +271,7 @@
                 <div class="description-section" *ngIf="showDescriptions || showTableInfo || item.isEditing">
                     <!-- View mode -->
                     <p *ngIf="!item.isEditing && showDescriptions" class="entity-description"
-                       HighlightSearchText [text]="item.EntityDescription" [searchString]="searchInput.value"
+                       HighlightSearchText [text]="item.EntityDescription" [searchString]="searchStringValue"
                        (resultChange)="searchResults = searchResults+$event">
                     </p>
 
@@ -281,7 +282,7 @@
                             <div class="doc-content">
                                 <span class="doc-label">Data Origins:</span>
                                 <span class="doc-text"
-                                      HighlightSearchText [text]="item.DataOrigins" [searchString]="searchInput.value"
+                                      HighlightSearchText [text]="item.DataOrigins" [searchString]="searchStringValue"
                                       (resultChange)="searchResults = searchResults+$event"></span>
                             </div>
                         </div>
@@ -290,7 +291,7 @@
                             <div class="doc-content">
                                 <span class="doc-label">Usage:</span>
                                 <span class="doc-text"
-                                      HighlightSearchText [text]="item.Usage" [searchString]="searchInput.value"
+                                      HighlightSearchText [text]="item.Usage" [searchString]="searchStringValue"
                                       (resultChange)="searchResults = searchResults+$event"></span>
                             </div>
                         </div>
@@ -300,17 +301,21 @@
                         <div class="table-info">
                             <mat-icon class="table-icon">dns</mat-icon>
                             <span class="table-name"
-                                  [innerHTML]="searchInput.value | highlightText : item.Namespace"></span>
+                                  HighlightSearchText [text]="item.Namespace" [searchString]="searchStringValue"
+                                  (resultChange)="searchResults = searchResults+$event"
+                            ></span>
                         </div>
                         <div class="table-info">
                             <mat-icon class="table-icon">table_view</mat-icon>
                             <span class="table-name"
-                                  [innerHTML]="searchInput.value | highlightText : item.Table"></span>
+                                  HighlightSearchText [text]="item.Table" [searchString]="searchStringValue"
+                                  (resultChange)="searchResults = searchResults+$event"></span>
                         </div>
                         <div class="table-info filter-info">
                             <mat-icon class="table-icon">filter_alt</mat-icon>
                             <span class="table-name"
-                                  [innerHTML]="searchInput.value | highlightText : item.Filter"></span>
+                                  HighlightSearchText [text]="item.Filter" [searchString]="searchStringValue"
+                                  (resultChange)="searchResults = searchResults+$event"></span>
                         </div>
                     </div>
                     <div *ngIf="item.MDXError">
@@ -641,10 +646,10 @@
     </mat-card>
 
     <!-- Recursively render children -->
-    <div class="children-container" *ngIf="item.expanded && item.Children && item.Children.length > 0">
+    <div class="children-container" [hidden]="!(item.expanded && item.Children && item.Children.length > 0)">
         <ng-container *ngFor="let child of item.Children; trackBy: trackById; let index = index">
             <ng-container
-                    *ngTemplateOutlet="catalogCard; context: {$implicit: child, level: level + 1, index : index, array: item.Children}"></ng-container>
+                    *ngTemplateOutlet="catalogCard; context: {$implicit: child, level: level + 1, index : index, array: item.Children, parent:item}"></ng-container>
         </ng-container>
     </div>
 </ng-template>

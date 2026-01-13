@@ -66,11 +66,13 @@ export class CatalogComponent implements OnInit {
   }
 
   searchTree(text: string) {
-    this.catalogTree.forEach(
-      catalog => this.search(catalog, text)
-    )
+    //this.catalogTree.forEach(
+      //catalog => this.search(catalog, text)
+    //)
     this.cdr.markForCheck();
   }
+
+  searchStringValue:string|undefined;
 
   search(catalog: Catalog, keywords: string): boolean {
     const regex = getSearchRegex(keywords)

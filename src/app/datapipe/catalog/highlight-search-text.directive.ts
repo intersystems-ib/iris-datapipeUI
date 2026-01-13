@@ -1,4 +1,14 @@
-import {Directive, ElementRef, EventEmitter, inject, Input, Output, Renderer2, SecurityContext} from '@angular/core';
+import {
+    Directive,
+    ElementRef,
+    EventEmitter,
+    inject,
+    Input,
+    OnDestroy,
+    Output,
+    Renderer2,
+    SecurityContext
+} from '@angular/core';
 import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 
 @Directive({
@@ -12,7 +22,7 @@ import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 <!--Where text ought to be the text to display, searchString must be the string to search for in the text,
 can be empty or null and searchResults a numerical value with starting value 0-->
 * */
-export class HighlightSearchTextDirective {
+export class HighlightSearchTextDirective implements OnDestroy {
 
     private sanitizer = inject(DomSanitizer)
     private renderer = inject(Renderer2)
@@ -29,7 +39,7 @@ export class HighlightSearchTextDirective {
         this.search(searchString)
     }
 
-    search(searchString: string | undefined | null){
+    search(searchString: string | undefined | null) {
         let safeHtml: string | null = '';
         if (this.text) {
             const escaped = this.escapeHtml(this.text)
@@ -43,7 +53,7 @@ export class HighlightSearchTextDirective {
     }
 
     @Input()
-    set reload(reload:boolean){
+    set reload(reload: boolean) {
         this.search(this.searchString)
     }
 
@@ -80,6 +90,10 @@ export class HighlightSearchTextDirective {
         this.resultChange.emit(replacedValues - this.results)
         this.results = replacedValues
         return result
+    }
+
+    ngOnDestroy() {
+        this.resultChange.emit(-this.results)
     }
 
 }
