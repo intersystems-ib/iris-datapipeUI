@@ -118,7 +118,6 @@
                                   [matTooltip]="item.MDXError.join('\n')" matTooltipClass="error-tooltip">
                             error
                         </mat-icon>
-                        {{item.Order}}
                         <h2 *ngIf="!item.isEditing && level === 1" class="entity-title"
                             HighlightSearchText [text]="item.Entity" [searchString]="searchStringValue"
                             (resultChange)="searchResults = searchResults+$event" (click)="toggleExpand(item)"></h2>
