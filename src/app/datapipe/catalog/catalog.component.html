@@ -8,7 +8,7 @@
             <input matInput #searchInput debouncedInput
                    (debouncedValue)="searchStringValue = $event"
                    placeholder="Search by entity, description or table">
-            <span matSuffix *ngIf="searchInput.value" class="search-results-count">({{ searchResults }})</span>
+            <span matSuffix *ngIf="searchInput.value" class="search-results-count"><!-- TODO({{ searchResults }})--></span>
             <button mat-icon-button matSuffix *ngIf="searchInput.value"
                     (click)="searchInput.value='';searchStringValue = ''"
                     aria-label="Clear search">
