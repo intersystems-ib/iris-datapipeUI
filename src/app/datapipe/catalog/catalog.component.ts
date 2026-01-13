@@ -169,9 +169,10 @@ export class CatalogComponent implements OnInit {
                     catalog.histogramSeries = existingCatalog.histogramSeries
                     catalog.histogramXaxis = existingCatalog.histogramXaxis
                     catalog.showHistogram = existingCatalog.showHistogram
+                    catalog.showTreeMap = existingCatalog.showTreeMap
                     catalog.showColumns = existingCatalog.showColumns
                     catalog.refreshing = existingCatalog.refreshing
-                    if (catalog.showHistogram) {
+                    if (catalog.showHistogram || catalog.showTreeMap) {
                         this.loadGraphData(catalog)
                     }
                 }
