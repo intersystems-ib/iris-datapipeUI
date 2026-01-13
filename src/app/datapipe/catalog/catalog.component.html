@@ -108,7 +108,9 @@
 
                         <!-- View mode -->
                         <mat-chip *ngIf="!item.isEditing && item.Subtypeof == undefined" class="category-chip"
-                                  [color]="categories[item.Category.Name].loadedAttributes?.['Color']"
+                                  [ngStyle]="{'--mdc-chip-label-text-color': categories[item.Category.Name].loadedAttributes?.['Color'],
+                                '--mdc-chip-selected-label-text-color': categories[item.Category.Name].loadedAttributes?.['Color'],
+                              'background-color':categories[item.Category.Name].loadedAttributes?.['BackgroundColor']}"
                                   [ngClass]="level > 1 ? 'subcategory' : ''">{{
                                 item.Category.Name
                             }}
@@ -234,7 +236,7 @@
                 </div>
             </div>
         </mat-card-header>
-        <mat-card-content [hidden]="categoryFiltering && categories[item.Category.Name].selected">
+        <mat-card-content>
             <div class="card-content-grid" [ngClass]="{'histogram-visible': item.showHistogram}">
                 <!-- Stats siempre visibles -->
                 <div class="stats-section" [hidden]="item.isEditing || !item.showHistogram">
