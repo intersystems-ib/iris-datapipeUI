@@ -196,7 +196,7 @@
 
                     <!-- Show/Hide Histogram -->
                     <button mat-icon-button
-                            [disabled]="item.showHistogram && !item.DoneLoadingGraph && (item.MDXHistogram || item.MDXHistogramUpdated)"
+                            [disabled]="item.showHistogram && !item.doneLoadingGraph && (item.MDXHistogram || item.MDXHistogramUpdated)"
                             (click)="item.showHistogram = !item.showHistogram; item.showHistogram? loadHistogram(item) : ''"
                             [matTooltip]="item.showHistogram ? 'Hide Histogram' : 'Show Histogram'"
                             [class.active]="item.showHistogram" class="toggle-button">
