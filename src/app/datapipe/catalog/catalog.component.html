@@ -152,7 +152,8 @@
                     </div>
                 </div>
                 <!-- TOTAL en cabecera SOLO en modo compacto -->
-                <div class="header-total" *ngIf="!showDescriptions && !showTableInfo && !item.showHistogram">
+                <div class="header-total"
+                     *ngIf="!showDescriptions && !showTableInfo && !(item.showHistogram || item.showTreeMap)">
                     <div class="total-records">
                         <div class="records-count" [matTooltip]="item.Total?.Count | numberWithSeparators">
                             {{ item.Total?.Count | largeNumbers }}
@@ -248,41 +249,62 @@
             </div>
         </mat-card-header>
         <mat-card-content>
-            <div class="card-content-grid" [ngClass]="{'histogram-visible': item.showHistogram}">
+            <div class="card-content-grid" [ngClass]="{'histogram-visible': (item.showHistogram || item.showTreeMap)}">
                 <!-- Stats siempre visibles -->
-                <div class="stats-section" [hidden]="item.isEditing || !item.showHistogram">
+                <div class="stats-section" [hidden]="item.isEditing || (!item.showHistogram && !item.showTreeMap) ">
                     <div class="total-records">
                         <span class="records-label">Total</span>
                         <span class="records-count" [matTooltip]="item.Total?.Count | numberWithSeparators">
-              {{ item.Total?.Count | largeNumbers }}
-            </span>
+                            {{ item.Total?.Count | largeNumbers }}
+                        </span>
                         <span class="records-count-full" *ngIf="showDescriptions">
-              ({{ item.Total?.Count | numberWithSeparators }})
-            </span>
+                        ({{ item.Total?.Count | numberWithSeparators }})
+                        </span>
                     </div>
-                    <div class="histogram-chart"
-                         *ngIf="(item.MDXHistogram || item.MDXHistogramUpdated) && !item.histogramErrors; else NoGraphs">
-                        <apx-chart *ngIf="item.doneLoadingGraph; else loadingGraph" [hidden]="!item.showHistogram"
-                                   [series]="item.histogramSeries!" [chart]="item.chartOptionsChart!"
-                                   [plotOptions]="chartOptions.plotOptions!"
-                                   [dataLabels]="item.histogramSeries[0].data.length<=18?chartOptions.dataLabels!:{enabled: false }"
-                                   [xaxis]="item.histogramXaxis!" [yaxis]="chartOptions.yaxis!"
-                                   [tooltip]="chartOptions.tooltip!"
-                                   [legend]="chartOptions.legend!" [colors]="chartOptions.colors!"
-                        />
-                        <ng-template #loadingGraph>
-                            <div style="width: 100%;display: flex;  flex-direction: column;  align-items: center;">
-                                <mat-spinner diameter="50"></mat-spinner>
-                                <span class="loading-text">Loading catalogs...</span>
+                    <div *ngIf="item.MDXHistogram || item.MDXHistogramUpdated || item.MDXTreeMap"
+                         class="histogram-chart">
+                        <div *ngIf="item.doneLoadingGraph; else loadingGraph" style="height: 100%; width: 100%">
+                            <ng-container *ngIf="item.MDXHistogram || item.MDXHistogramUpdated; else ErrorWithGraph">
+                                <apx-chart *ngIf="item.showHistogram"
+                                           [series]="item.histogramSeries!" [chart]="item.chartOptionsChart!"
+                                           [plotOptions]="chartOptions.plotOptions!"
+                                           [dataLabels]="item.histogramSeries[0].data.length<=18?chartOptions.dataLabels!:{enabled: false }"
+                                           [xaxis]="item.histogramXaxis!" [yaxis]="chartOptions.yaxis!"
+                                           [tooltip]="chartOptions.tooltip!"
+                                           [legend]="chartOptions.legend!" [colors]="chartOptions.colors!"
+                                />
+                            </ng-container>
+                            <ng-container *ngIf="item.MDXTreeMap; else ErrorWithGraph">
+                                <apx-chart
+                                        *ngIf="item.showTreeMap;"
+                                        [hidden]="!item.showTreeMap"
+                                        [series]="item.treeMapSeries"
+                                        [chart]="{type:'treemap'}"
+                                        [title]="{text:'Treemap', align:'center'}"
+                                        [legend]="{show:false}"
+                                        [dataLabels]="{enabled: true}"
+                                        [plotOptions]="{
+                                treemap: {
+                                  distributed: false,
+                                  enableShades: true
+                                }
+                              }"
+                                />
+                            </ng-container>
+                        </div>
+                    </div>
+                    <ng-template #loadingGraph>
+                        <div style="width: 100%;display: flex;  flex-direction: column;  align-items: center;">
+                            <mat-spinner diameter="50"></mat-spinner>
+                            <span class="loading-text">Loading catalogs...</span>
+                        </div>
+                    </ng-template>
+                    <ng-template #ErrorWithGraph>
+                        <div *ngIf="item.MDXError">
+                            <div *ngFor="let error of item.MDXError">
+                                <span style="color:red">{{ error }}</span>
                             </div>
-                        </ng-template>
-                    </div>
-                    <ng-template #NoGraphs>
-                        <mat-icon *ngIf="item.histogramErrors; else NoGraph" class="error-icon"
-                                  [matTooltip]="item.histogramErrors?.join('\n,')" matTooltipClass="error-tooltip">
-                            error
-                        </mat-icon>
-                        <ng-template #NoGraph> No graph to load</ng-template>
+                        </div>
                     </ng-template>
                 </div>
 

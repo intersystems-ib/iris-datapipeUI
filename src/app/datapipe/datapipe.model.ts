@@ -110,6 +110,7 @@ export interface Catalog {
   Total?: number;
   Histogram?: { [year: string]: number };
   HistogramUpdated?: { [year: string]: number };
+  TreeMap?:{[key:string]:number};
   MDXError?: string[]
   Children?: Catalog[];
 
@@ -127,6 +128,7 @@ export interface Catalog {
   ///Both HistogramSeries and HistogramXaxis are calculated upon receiving backend result
   histogramSeries?: ApexAxisChartSeries;
   histogramXaxis?: ApexXAxis;
+  treeMapSeries?:ApexAxisChartSeries
 
 }
 

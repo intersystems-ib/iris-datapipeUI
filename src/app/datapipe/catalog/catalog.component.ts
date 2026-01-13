@@ -10,7 +10,7 @@ import {getSearchRegex} from "./pipes/highlight-search-text.pipe";
     selector: 'app-catalog',
     templateUrl: './catalog.component.html',
     styleUrls: ['./catalog.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogComponent implements OnInit {
 
@@ -172,7 +172,7 @@ export class CatalogComponent implements OnInit {
                     catalog.showColumns = existingCatalog.showColumns
                     catalog.refreshing = existingCatalog.refreshing
                     if (catalog.showHistogram) {
-                        this.loadHistogram(catalog)
+                        this.loadGraphData(catalog)
                     }
                 }
                 if (catalog.Children) this.refreshLevel(flattenedCatalogs, catalog.Children)
@@ -632,11 +632,12 @@ export class CatalogComponent implements OnInit {
         this.loadColumns(item, true)
     }
 
-    loadHistogram(catalog: Catalog) {
+    loadGraphData(catalog: Catalog) {
         if (!catalog.doneLoadingGraph)
             this.datapipeService.getHistogram(catalog.Id).subscribe(
                 (data: CatalogGraphResult | any) => {
                     if (data.MDXError == undefined) {
+                        ///Load the histogram data and adapt it
                         if (data.Histogram !== undefined || data.HistogramUpdated !== undefined) {
                             catalog.Histogram = data.Histogram
                             catalog.HistogramUpdated = data.HistogramUpdated
@@ -659,6 +660,17 @@ export class CatalogComponent implements OnInit {
                             catalog.doneLoadingGraph = true
                             this.cdr.markForCheck()
                         }
+                        if (data.TreeMap) {
+                            catalog.TreeMap = data.TreeMap
+                            catalog.treeMapSeries = Object.keys(catalog.TreeMap!).map((key) => {
+                                return {
+                                    name: key,
+                                    data: [
+                                        {x: key, y: catalog.TreeMap![key]}
+                                    ]
+                                }
+                            })
+                        }
                     } else {
                         console.error(data)
                         catalog.histogramErrors = data.MDXError
@@ -666,6 +678,7 @@ export class CatalogComponent implements OnInit {
                     }
                 }
             )
+        this.cdr.markForCheck()
     }
 
     exportItem(item: Catalog) {
@@ -736,18 +749,22 @@ export class CatalogComponent implements OnInit {
     }
 
     toggleHistogram(item: Catalog) {
-        if((item.MDXHistogram || item.MDXHistogramUpdated)) {
+        if ((item.MDXHistogram || item.MDXHistogramUpdated)) {
             item.showHistogram = !item.showHistogram;
+            if (item.showTreeMap)
+                item.showTreeMap = false
             if (item.showHistogram)
-                this.loadHistogram(item)
+                this.loadGraphData(item)
         }
     }
 
     toggleTreeMap(item: any) {
-        if(item.MDXTreeMap) {
+        if (item.MDXTreeMap) {
             item.showTreeMap = !item.showTreeMap;
+            if (item.showHistogram)
+                item.showHistogram = false
             if (item.showTreeMap)
-                this.loadHistogram(item)
+                this.loadGraphData(item)
         }
     }
 }
