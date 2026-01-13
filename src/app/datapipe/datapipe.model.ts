@@ -105,42 +105,42 @@ export interface Catalog {
   MDXTotal: string;
   MDXHistogram?: string;
   MDXHistogramUpdated?: string;
-  MDXTreeMap?:string;
+  MDXTreeMap?: string;
   Order: number;
   Total?: number;
   Histogram?: { [year: string]: number };
   HistogramUpdated?: { [year: string]: number };
-  TreeMap?:{[key:string]:number};
-  MDXError?: string[]
+  TreeMap?: { [key: string]: number };
+  MDXError?: { [MDX: string]: string[] }
   Children?: Catalog[];
 
   // UI properties
   expanded?: boolean;
   showHistogram?: boolean;
-  showTreeMap?:boolean;
+  showTreeMap?: boolean;
   showColumns?: boolean;
   isEditing?: boolean;
   columns?: TableColumn[],
   chartOptionsChart?: any,
-  doneLoadingGraph?:boolean,
-  refreshing?:boolean,
-  histogramErrors?:string[]
+  doneLoadingGraph?: boolean,
+  refreshing?: boolean,
+  histogramErrors?: string[]
   ///Both HistogramSeries and HistogramXaxis are calculated upon receiving backend result
   histogramSeries?: ApexAxisChartSeries;
   histogramXaxis?: ApexXAxis;
-  treeMapSeries?:ApexAxisChartSeries
+  treeMapSeries?: ApexAxisChartSeries
 
 }
 
 export interface Category {
   Id: number,
-  Attributes?:string,
-  Name:string,
-  Resource?:string,
+  Attributes?: string,
+  Name: string,
+  Resource?: string,
 
   //UI
-  loadedAttributes?:{[index:string]:string},
-  selected?:boolean
+  loadedAttributes?: { [index: string]: string },
+  selected?: boolean
 }
 
 export interface TableColumn {
@@ -162,7 +162,7 @@ export interface TableIndex {
 }
 
 export interface CatalogGraphResult {
-  Histogram: {[index:string]:number},
-  HistogramUpdated:{[index:string]:number},
-  time?: {name:string, tm:number}[]
+  Histogram: { [index: string]: number },
+  HistogramUpdated: { [index: string]: number },
+  time?: { name: string, tm: number }[]
 }

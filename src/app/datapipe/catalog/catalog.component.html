@@ -264,7 +264,7 @@
                     <div *ngIf="item.MDXHistogram || item.MDXHistogramUpdated || item.MDXTreeMap"
                          class="histogram-chart">
                         <div *ngIf="item.doneLoadingGraph; else loadingGraph" style="height: 100%; width: 100%">
-                            <ng-container *ngIf="item.MDXHistogram || item.MDXHistogramUpdated; else ErrorWithGraph">
+                            <ng-container *ngIf="!item.MDXError['MDXHistogram'] && !item.MDXError['MDXHistogramUpdated']; else ErrorWithGraph">
                                 <apx-chart *ngIf="item.showHistogram"
                                            [series]="item.histogramSeries!" [chart]="item.chartOptionsChart!"
                                            [plotOptions]="chartOptions.plotOptions!"
@@ -274,7 +274,7 @@
                                            [legend]="chartOptions.legend!" [colors]="chartOptions.colors!"
                                 />
                             </ng-container>
-                            <ng-container *ngIf="item.MDXTreeMap; else ErrorWithGraph">
+                            <ng-container *ngIf="!item.MDXError['MDXTreeMap']; else ErrorWithGraph">
                                 <apx-chart
                                         *ngIf="item.showTreeMap;"
                                         [hidden]="!item.showTreeMap"
@@ -301,8 +301,10 @@
                     </ng-template>
                     <ng-template #ErrorWithGraph>
                         <div *ngIf="item.MDXError">
-                            <div *ngFor="let error of item.MDXError">
-                                <span style="color:red">{{ error }}</span>
+                            <div *ngFor="let MDX of Object.keys(item.MDXError)">
+                                <div *ngFor="let error of item.MDXError[MDX]">
+                                    <span style="color:red">{{ MDX+': '+error }}</span>
+                                </div>
                             </div>
                         </div>
                     </ng-template>
@@ -357,11 +359,6 @@
                             <span class="table-name"
                                   HighlightSearchText [text]="item.Filter" [searchString]="searchStringValue"
                                   (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
-                        </div>
-                    </div>
-                    <div *ngIf="item.MDXError">
-                        <div *ngFor="let error of item.MDXError">
-                            <span style="color:red">{{ error }}</span>
                         </div>
                     </div>
 

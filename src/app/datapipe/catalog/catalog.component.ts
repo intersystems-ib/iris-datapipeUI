@@ -657,8 +657,6 @@ export class CatalogComponent implements OnInit {
                                     }
                                 }
                             }
-                            catalog.doneLoadingGraph = true
-                            this.cdr.markForCheck()
                         }
                         if (data.TreeMap) {
                             catalog.TreeMap = data.TreeMap
@@ -671,10 +669,15 @@ export class CatalogComponent implements OnInit {
                                 }
                             })
                         }
+                        catalog.doneLoadingGraph = true
+                        this.cdr.markForCheck()
+                        catalog.MDXError = {}
                     } else {
                         console.error(data)
+                        catalog.MDXError = data.MDXError
                         catalog.histogramErrors = data.MDXError
                         catalog.doneLoadingGraph = true
+                        this.cdr.markForCheck()
                     }
                 }
             )
