@@ -23,6 +23,7 @@ import {LargeNumbersPipe} from "./catalog/pipes/large-numbers.pipe";
 import {HighlightSearchTextPipe} from "./catalog/pipes/highlight-search-text.pipe";
 import {SearchTextPipe} from "./catalog/pipes/search-text.pipe";
 import {DebouncedInputDirective} from "./catalog/debounced-input.directive";
+import {HighlightSearchTextDirective} from "./catalog/highlight-search-text.directive";
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import {DebouncedInputDirective} from "./catalog/debounced-input.directive";
         LargeNumbersPipe,
         HighlightSearchTextPipe,
         SearchTextPipe,
-        DebouncedInputDirective
+        DebouncedInputDirective,
+        HighlightSearchTextDirective
     ]
 })
 export class DatapipeModule { }

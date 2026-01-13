@@ -50,6 +50,8 @@ export class CatalogComponent implements OnInit {
 
   protected namespaces: string[] = [];
 
+  protected searchResults:number = 0;
+
   showDescriptions = false;
   showTableInfo = false;
 
