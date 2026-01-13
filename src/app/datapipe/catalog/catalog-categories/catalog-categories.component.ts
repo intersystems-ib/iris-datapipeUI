@@ -94,6 +94,9 @@ export class CatalogCategoriesComponent implements OnInit {
     this.anyChanges = false
     this.datapipeService.getCategories(this.filter).subscribe(
       (result: any | ({ categories: Category[] })) => {
+        result.categories.forEach((cat: Category) => {
+          cat.loadedAttributes = cat.Attributes ? JSON.parse(cat.Attributes) : {}
+        })
         if (result.categories)
           this.categories = result.categories
         this.cdr.markForCheck()
@@ -107,7 +110,8 @@ export class CatalogCategoriesComponent implements OnInit {
       cat.unshift(
         {
           Id: -1,
-          Name: "Category name"
+          Name: "Category name",
+          loadedAttributes: {}
         }
       )
       this.categories = cat
@@ -116,12 +120,15 @@ export class CatalogCategoriesComponent implements OnInit {
     }
   }
 
-  displayedColumns = ['Name', 'Resource', 'DeleteCategory']
+  displayedColumns = ['Name', 'Resource', 'Color', 'DeleteCategory']
 
 
   save() {
+    this.categories!.forEach(cat => {
+      cat.Attributes = JSON.stringify(cat.loadedAttributes)
+    })
     this.datapipeService.updateCategories(this.categories!).subscribe(
-      (val:any) => {
+      (val: any) => {
         if (val != undefined && val.error) {
           this.toastService.error(val.error)
         } else {
@@ -134,7 +141,7 @@ export class CatalogCategoriesComponent implements OnInit {
 
   deleteCategory(Id: any) {
     this.datapipeService.deleteCategory(Id).subscribe(
-      (val:any) => {
+      (val: any) => {
         if (val != undefined && val.error) {
           this.toastService.error(val.error)
         } else {

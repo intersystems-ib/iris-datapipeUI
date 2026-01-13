@@ -503,7 +503,7 @@ export class DatapipeService {
 
   //catalog
 
-  getCatalog(): Observable<{ result: Catalog[], categories: string[] } | any> {
+  getCatalog(): Observable<{ result: Catalog[], categories: Category[] } | any> {
     return this.http.get(this.urlBase + `/catalog`).pipe(
       catchError(err => {
         this.alertService.error('[getCatalog] ' + err.message)

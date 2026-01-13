@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
-import {Catalog, CatalogGraphResult, TableColumn, TableIndex} from '../datapipe.model';
+import {Catalog, CatalogGraphResult, Category, TableColumn, TableIndex} from '../datapipe.model';
 import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 import {ToastService} from '../../shared/toast/toast.service';
@@ -19,13 +19,10 @@ export class CatalogComponent implements OnInit {
     //////////////////////////////
 
     /** Available categories */
-    categories: string[] = [];
+    categories: { [name: string]: Category } = {};
 
     ///False if no categories selected
     categoryFiltering = false;
-
-    ///Object to check if categories are selected, should be loaded with the categories whenever they load
-    selectedCategories: { [key: string]: boolean } = {};
 
     //////////////////////////////
     //////////////////////////////
@@ -215,16 +212,18 @@ export class CatalogComponent implements OnInit {
 
     }
 
-    loadCategories(categories: string[]) {
-        let selectedCategories: { [key: string]: boolean } = {}
+    loadCategories(categories: Category[]) {
         categories.forEach(
             cat => {
-                cat = cat.trim()
-                selectedCategories[cat] = this.selectedCategories[cat] !== undefined ? this.selectedCategories[cat] : false
+                cat.Name = cat.Name.trim()
+                if (this.categories[cat.Name])
+                    cat.selected = this.categories[cat.Name].selected
+                else
+                    cat.selected = false
+                this.categories[cat.Name] = cat
+
             }
         )
-        this.selectedCategories = selectedCategories
-        this.categories = Object.keys(this.selectedCategories)
     }
 
     cancelEdit(item: Catalog, array: Catalog [], index: number): void {
@@ -719,6 +718,15 @@ export class CatalogComponent implements OnInit {
     }
 
 
+    categoryChange(category: Category) {
+        category.selected = !category.selected;
+        this.categoryFiltering = false
+        Object.values(this.categories).forEach(
+            cat => {
+                if (cat.selected === true) this.categoryFiltering = true
+            }
+        )
+    }
 }
 
 export interface ExportDataOptions {

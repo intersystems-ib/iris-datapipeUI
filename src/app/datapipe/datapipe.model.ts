@@ -134,7 +134,9 @@ export interface Category {
   Name:string,
   Resource?:string,
 
-
+  //UI
+  loadedAttributes?:{[index:string]:string},
+  selected?:boolean
 }
 
 export interface TableColumn {
