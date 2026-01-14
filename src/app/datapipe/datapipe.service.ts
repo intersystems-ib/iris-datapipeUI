@@ -638,12 +638,12 @@ export class DatapipeService {
 
   }
 
-  getHistogram(catalogId: string | number): Observable<CatalogGraphResult | any> {
-    return this.http.get(this.urlBase + `/catalog/${catalogId}/histogram`).pipe(catchError(err => {
+  getGraphData(catalogId: string | number): Observable<CatalogGraphResult | any> {
+    return this.http.get(this.urlBase + `/catalog/${catalogId}/graphData`).pipe(catchError(err => {
       if (err.status == 404) {
         return of(JSON.parse(err.error))
       }
-      this.alertService.error('[getHistogram] ' + err.message)
+      this.alertService.error('[graphData] ' + err.message)
       return throwError(() => err);
     }))
   }

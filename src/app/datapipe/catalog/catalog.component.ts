@@ -635,7 +635,7 @@ export class CatalogComponent implements OnInit {
 
     loadGraphData(catalog: Catalog) {
         if (!catalog.doneLoadingGraph)
-            this.datapipeService.getHistogram(catalog.Id).subscribe(
+            this.datapipeService.getGraphData(catalog.Id).subscribe(
                 (data: CatalogGraphResult | any) => {
                     if (data.MDXError == undefined) {
                         ///Load the histogram data and adapt it
