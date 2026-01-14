@@ -52,11 +52,6 @@ export class HighlightSearchTextDirective implements OnDestroy {
         this.renderer.setProperty(this.el.nativeElement, 'innerHTML', safeHtml ? safeHtml : '');
     }
 
-    @Input()
-    set reload(reload: boolean) {
-        this.search(this.searchString)
-    }
-
     @Output()
     results: number = 0;
 

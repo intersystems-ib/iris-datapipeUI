@@ -9,7 +9,7 @@
                    (debouncedValue)="searchStringValue = $event"
                    placeholder="Search by entity, description or table">
             <span matSuffix *ngIf="searchInput.value"
-                  class="search-results-count"><!-- TODO({{ searchResults }})--></span>
+                  class="search-results-count">({{ searchResults }})</span>
             <button mat-icon-button matSuffix *ngIf="searchInput.value"
                     (click)="searchInput.value='';searchStringValue = ''"
                     aria-label="Clear search">
@@ -127,11 +127,11 @@
 
                         <h3 *ngIf="!item.isEditing && level === 2" class="entity-title"
                             HighlightSearchText [text]="item.Entity" [searchString]="searchStringValue"
-                            (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event"
+                            (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"
                             (click)="toggleExpand(item)"></h3>
                         <h4 *ngIf="!item.isEditing && level > 2" class="entity-title"
                             HighlightSearchText [text]="item.Entity" [searchString]="searchStringValue"
-                            (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event"
+                            (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"
                             (click)="toggleExpand(item)"></h4>
 
                         <!-- Edit mode -->
@@ -315,7 +315,7 @@
                     <!-- View mode -->
                     <p *ngIf="!item.isEditing && showDescriptions" class="entity-description"
                        HighlightSearchText [text]="item.EntityDescription" [searchString]="searchStringValue"
-                       (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event">
+                       (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event">
                     </p>
 
                     <div *ngIf="!item.isEditing && showDescriptions && (item.DataOrigins || item.Usage)"
@@ -326,7 +326,7 @@
                                 <span class="doc-label">Data Origins:</span>
                                 <span class="doc-text"
                                       HighlightSearchText [text]="item.DataOrigins" [searchString]="searchStringValue"
-                                      (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                                      (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
                             </div>
                         </div>
                         <div *ngIf="item.Usage" class="doc-info">
@@ -335,7 +335,7 @@
                                 <span class="doc-label">Usage:</span>
                                 <span class="doc-text"
                                       HighlightSearchText [text]="item.Usage" [searchString]="searchStringValue"
-                                      (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                                      (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
                             </div>
                         </div>
                     </div>
@@ -345,20 +345,20 @@
                             <mat-icon class="table-icon">dns</mat-icon>
                             <span class="table-name"
                                   HighlightSearchText [text]="item.Namespace" [searchString]="searchStringValue"
-                                  (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event"
+                                  (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"
                             ></span>
                         </div>
                         <div class="table-info">
                             <mat-icon class="table-icon">table_view</mat-icon>
                             <span class="table-name"
                                   HighlightSearchText [text]="item.Table" [searchString]="searchStringValue"
-                                  (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                                  (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
                         </div>
                         <div class="table-info filter-info">
                             <mat-icon class="table-icon">filter_alt</mat-icon>
                             <span class="table-name"
                                   HighlightSearchText [text]="item.Filter" [searchString]="searchStringValue"
-                                  (resultChange)="(searchStringValue&&$event>0)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                                  (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
                         </div>
                     </div>
 
