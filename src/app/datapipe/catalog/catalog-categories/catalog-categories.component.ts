@@ -27,7 +27,7 @@ import {Category} from "../../datapipe.model";
 import {DatapipeService} from "../../datapipe.service";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {DebouncedInputDirective} from "../debounced-input.directive";
-import {NgIf} from "@angular/common";
+import {NgIf, NgStyle} from "@angular/common";
 import {SuggestionInputComponent} from "../suggestion-input/suggestion-input.component";
 import {ToastService} from "../../../shared/toast/toast.service";
 
@@ -59,7 +59,8 @@ import {ToastService} from "../../../shared/toast/toast.service";
     MatHeaderCellDef,
     DebouncedInputDirective,
     NgIf,
-    SuggestionInputComponent
+    SuggestionInputComponent,
+    NgStyle
   ],
   templateUrl: './catalog-categories.component.html',
   styleUrl: './catalog-categories.component.scss',

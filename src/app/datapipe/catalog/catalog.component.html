@@ -229,7 +229,7 @@
                     </button>
 
                     <!-- Edit / Cancel / Save -->
-                    <button *ngIf="!item.isEditing" mat-icon-button color="primary" (click)="toggleEditMode(item)"
+                    <button *ngIf="!item.isEditing && canEdit" mat-icon-button color="primary" (click)="toggleEditMode(item)"
                             matTooltip="Edit">
                         <mat-icon>edit</mat-icon>
                     </button>

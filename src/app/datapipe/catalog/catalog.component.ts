@@ -5,6 +5,7 @@ import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
 import {ToastService} from '../../shared/toast/toast.service';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {getSearchRegex} from "./pipes/highlight-search-text.pipe";
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
     selector: 'app-catalog',
@@ -45,6 +46,8 @@ export class CatalogComponent implements OnInit {
     protected namespaces: string[] = [];
 
     protected searchResults: number = 0;
+
+    protected canEdit = false;
 
     showDescriptions = false;
     showTableInfo = false;
@@ -87,16 +90,18 @@ export class CatalogComponent implements OnInit {
         return string.match(regexp) !== null
     }
 
-    protected datapipeService = inject(DatapipeService)
+    private datapipeService = inject(DatapipeService)
     protected cdr = inject(ChangeDetectorRef)
     private clipboard = inject(Clipboard)
     private toastService = inject(ToastService)
+    private authService = inject(AuthService)
 
     ngOnInit(): void {
         this.datapipeService.getNamespaces().subscribe(
             namespaces => this.namespaces = namespaces
         )
         this.loadCatalog();
+        this.canEdit = this.authService.checkPermission('DP_ADMIN', 'U')
     }
 
     /**

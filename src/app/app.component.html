@@ -29,8 +29,8 @@
         <mat-icon matListItemIcon>account_tree</mat-icon>
         <span matListItemTitle>Pipes</span>
       </a>
-      <a mat-list-item routerLink="/datapipe/admin/catalog"
-        *ngIf="(isLoggedIn$ | async) && authService.checkPermission('DP_ADMIN', 'U')">
+      <a mat-list-item routerLink="/datapipe/catalog"
+        *ngIf="(isLoggedIn$ | async)">
         <mat-icon matListItemIcon>auto_stories</mat-icon>
         <span matListItemTitle>Catalog</span>
       </a>

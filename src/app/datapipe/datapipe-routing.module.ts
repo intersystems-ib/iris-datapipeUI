@@ -33,9 +33,9 @@ export const routes: Routes = [
     component: PipeDetailComponent,
     canActivate: []
   },
-  /* admin: catalog */
+  /* catalog */
   {
-    path: 'admin/catalog',
+    path: 'catalog',
     component: CatalogComponent,
     canActivate: []
   },

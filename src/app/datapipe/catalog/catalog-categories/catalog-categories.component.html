@@ -61,22 +61,34 @@
 
     <ng-container matColumnDef="Color">
       <th mat-header-cell *matHeaderCellDef style="width:15%;"> Color in HEX</th>
-      <td mat-cell *matCellDef="let category" style="width:15%;">
-        <mat-form-field floatLabel="always" class="field-s">
-          <input matInput [(ngModel)]="category.loadedAttributes.Color" (ngModelChange)="anyChanges = true; cdr.markForCheck()"
-                 name="Color">
-        </mat-form-field>
+      <td mat-cell *matCellDef="let category" style="width:15%">
+        <div style="display: inline-flex">
+          <div [ngStyle]="{'background-color':category.loadedAttributes?.Color}"
+               style="width: 30px; height:30px; border: 1px solid black;"><br>
+          </div>
+          <mat-form-field floatLabel="always" class="field-s">
+            <input matInput [(ngModel)]="category.loadedAttributes.Color"
+                   (ngModelChange)="anyChanges = true; cdr.markForCheck()"
+                   name="Color">
+          </mat-form-field>
+        </div>
     </ng-container>
 
     <ng-container matColumnDef="BackgroundColor">
       <th mat-header-cell *matHeaderCellDef style="width:15%;"> BackgroundColor in HEX</th>
       <td mat-cell *matCellDef="let category" style="width:15%;">
-        <mat-form-field floatLabel="always" class="field-s">
-          <input matInput [(ngModel)]="category.loadedAttributes.BackgroundColor" (ngModelChange)="anyChanges = true; cdr.markForCheck()"
-                 name="BackgroundColor">
-        </mat-form-field>
+        <div style="display: inline-flex">
+          <div [ngStyle]="{'background-color':category.loadedAttributes?.BackgroundColor}"
+               style="width: 30px; height:30px; border: 1px solid black;"><br>
+          </div>
+          <mat-form-field floatLabel="always" class="field-s">
+            <input matInput [(ngModel)]="category.loadedAttributes.BackgroundColor"
+                   (ngModelChange)="anyChanges = true; cdr.markForCheck()"
+                   name="BackgroundColor">
+          </mat-form-field>
+        </div>
+      </td>
     </ng-container>
-
 
 
     <ng-container matColumnDef="DeleteCategory">

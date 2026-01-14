@@ -18,7 +18,7 @@ export class AuthGuard  {
    */
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> {
     return this.authService.isLoggedIn().pipe(
-      map(authenticated => { 
+      map(authenticated => {
         if (authenticated) {
           if (state.url.startsWith("/datapipe/dashboard")) {
             return this.authService.checkPermission("DP_MENU_DASHBOARD", "R")
@@ -26,8 +26,11 @@ export class AuthGuard  {
           else if (state.url.startsWith("/datapipe/admin")) {
             return this.authService.checkPermission("DP_ADMIN", "U")
           }
+          else if(state.url.startsWith("/datapipe/catalog")){
+            return true
+          }
           else if (state.url.startsWith("/datapipe")) {
-            return this.authService.checkPermission("DP_MENU_SEARCH", "R") 
+            return this.authService.checkPermission("DP_MENU_SEARCH", "R")
           }
           // optionally redirect to error page
           return false;
