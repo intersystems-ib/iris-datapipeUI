@@ -553,6 +553,30 @@ export class DatapipeService {
     )
   }
 
+  syncCube(catalogId: string | number) {
+    return this.http.post(
+      this.urlBase + `/catalog/syncCube/${catalogId}`,
+      {}
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[syncCube] ' + err.message)
+        return throwError(() => err);
+      })
+    )
+  }
+
+  buildCube(catalogId: string | number) {
+    return this.http.post(
+      this.urlBase + `/catalog/buildCube/${catalogId}`,
+      {}
+    ).pipe(
+      catchError(err => {
+        this.alertService.error('[buildCube] ' + err.message)
+        return throwError(() => err);
+      })
+    )
+  }
+
   importCatalogs(obj: any) {
     return this.http.post(
       this.urlBase + `/catalog/import`,

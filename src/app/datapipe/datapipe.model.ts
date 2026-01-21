@@ -100,6 +100,11 @@ export interface Catalog {
   DataOrigins: string;
   Usage: string;
   Namespace: string;
+  Cube?: string;
+  LastSync?: Date;
+  LastBuild?: Date;
+  LstSyncTime?: number;
+  LstBuildTime?: number;
   Table: string;
   Filter: string;
   MDXTotal: string;

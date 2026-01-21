@@ -397,7 +397,7 @@
       }
 
       .namespace-width {
-        flex: 0 0 20%;
+        flex: 1 1 0;
         min-width: 0;
 
         @media (max-width: 768px) {
@@ -411,7 +411,7 @@
       }
 
       .table-width {
-        flex: 0 0 24%;
+        flex: 1 1 0;
         min-width: 0;
 
         @media (max-width: 768px) {
@@ -425,7 +425,7 @@
       }
 
       .filter-width {
-        flex: 0 0 calc(29% - 8px);
+        flex: 1 1 0;
         min-width: 0;
 
         @media (max-width: 768px) {
@@ -1164,6 +1164,10 @@
   background-color: #e0e0e0;
   color: #333;
 }
+.btn-sync {
+  background-color: #2e3486;
+  color: #fff;
+}
 
 .btn-delete {
   background-color: #d32f2f;
@@ -1178,10 +1182,26 @@
 .btn-delete:hover {
   background-color: #b71c1c;
 }
+.btn-sync:hover {
+  background-color: #272d76;
+}
 
 
 .delete-button {
   color: red;
+}
+
+.sync-spin {
+  animation: sync-spin 1s linear infinite;
+}
+
+@keyframes sync-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 
@@ -1219,5 +1239,3 @@ export-modal-area {
   resize: none;
   box-sizing: border-box;
 }
-
-

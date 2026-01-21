@@ -218,6 +218,12 @@ export class CatalogComponent implements OnInit {
 
     }
 
+    synchroniseCube(item: Catalog): void {
+        this.syncTarget = item
+        this.syncCubeModal = true
+        this.cdr.markForCheck()
+    }
+
     loadCategories(categories: Category[]) {
         categories.forEach(
             cat => {
@@ -266,6 +272,7 @@ export class CatalogComponent implements OnInit {
             DataOrigins: '',
             Usage: '',
             Namespace: '',
+            Cube: '',
             Table: '',
             Filter: '',
             MDXTotal: '',
@@ -299,6 +306,7 @@ export class CatalogComponent implements OnInit {
             DataOrigins: '',
             Usage: '',
             Namespace: '',
+            Cube: '',
             Table: '',
             Filter: '',
             MDXTotal: '',
@@ -775,6 +783,78 @@ export class CatalogComponent implements OnInit {
             if (item.showTreeMap)
                 this.loadGraphData(item)
         }
+    }
+
+    syncCubeModal = false;
+    syncTarget: Catalog | null = null;
+    private syncingIds = new Set<number>();
+
+    isSyncing(item: Catalog): boolean {
+        return item.Id !== -1 && this.syncingIds.has(item.Id);
+    }
+
+    confirmSynchroniseCube() {
+        this.startCubeProcess('Synchronise', 'Cube synchronised', 'sync')
+    }
+
+    confirmBuildCube() {
+        this.startCubeProcess('Build', 'Cube build completed', 'build')
+    }
+
+    private startCubeProcess(actionLabel: string, toastTitle: string, action: 'sync' | 'build') {
+        if (!this.syncTarget) {
+            this.syncCubeModal = false
+            this.cdr.markForCheck()
+            return
+        }
+        const targetId = this.syncTarget.Id
+        if (targetId !== -1) {
+            this.syncingIds.add(targetId)
+        }
+        this.syncCubeModal = false
+        this.syncTarget = null
+        this.cdr.markForCheck()
+        const finalizeProcess = () => {
+            this.refreshCatalog()
+            this.toastService.success(toastTitle, `Catalog refreshed successfully after ${actionLabel.toLowerCase()}`)
+            if (targetId !== -1) {
+                this.syncingIds.delete(targetId)
+            }
+            this.cdr.markForCheck()
+        }
+        if (action === 'sync' && targetId !== -1) {
+            this.datapipeService.syncCube(targetId).subscribe({
+                next: () => finalizeProcess(),
+                error: () => {
+                    if (targetId !== -1) {
+                        this.syncingIds.delete(targetId)
+                    }
+                    this.toastService.error('Sync failed', 'Could not start cube synchronisation')
+                    this.cdr.markForCheck()
+                }
+            })
+            return
+        }
+        if (action === 'build' && targetId !== -1) {
+            this.datapipeService.buildCube(targetId).subscribe({
+                next: () => finalizeProcess(),
+                error: () => {
+                    if (targetId !== -1) {
+                        this.syncingIds.delete(targetId)
+                    }
+                    this.toastService.error('Build failed', 'Could not start cube build')
+                    this.cdr.markForCheck()
+                }
+            })
+            return
+        }
+        finalizeProcess()
+    }
+
+    cancelSynchroniseCube() {
+        this.syncCubeModal = false
+        this.syncTarget = null
+        this.cdr.markForCheck()
     }
 }
 
