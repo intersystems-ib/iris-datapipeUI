@@ -702,16 +702,32 @@
 
 <catalog-modal [(open)]="syncCubeModal" [title]="'Synchronise cube?'" [modalStyle]="{width:'50%'}">
     <p class="warning-text">
-        This will synchronise the data for Cube: {{ syncTarget?.Entity }}. This action will include last operations
-        on the table {{ syncTarget?.Table }} Continue?
+        <mat-icon class="warning-icon-inline">warning</mat-icon>
+        <strong>ATENTION!</strong> These refresh actions are a <strong>heavy process</strong> that could impact
+        <strong>server reliability</strong>.
     </p>
+    <p class="warning-text">
+        <strong>Build</strong> process was done last time on <strong>{{ syncTarget?.LastBuild || 'N/A' }}</strong>
+        and it took <strong>{{ syncTarget?.LstBuildTime || 'N/A' }}</strong>.
+    </p>
+    <p class="warning-text">
+        <strong>Synchronization</strong> process was done last time on <strong>{{ syncTarget?.LastSync || 'N/A' }}</strong>
+        and it took <strong>{{ syncTarget?.LstSyncTime || 'N/A' }}</strong>.
+    </p>
+    <mat-checkbox [(ngModel)]="syncAcknowledged">
+        I acknowledge the implications of this process.
+    </mat-checkbox>
     <div class="warning-actions">
-        <button mat-button class="btn-cancel" (click)="cancelSynchroniseCube()">Cancel</button>
-        <button mat-button class="btn-sync" (click)="confirmSynchroniseCube()">
-            <mat-icon style="color:white">sync</mat-icon>
-            <span style="color:white">Synchronise</span>
+        <button mat-button class="btn-cancel" (click)="cancelSynchroniseCube()">
+            <mat-icon class="btn-icon">close</mat-icon>
+            <span class="btn-text-long">Cancel</span>
         </button>
-        <button mat-button class="btn-sync" (click)="confirmBuildCube()">
+        <button mat-button class="btn-sync" (click)="confirmSynchroniseCube()" [disabled]="!syncAcknowledged">
+            <mat-icon style="color:white">sync</mat-icon>
+            <span class="btn-text-long" style="color:white">Synchronise</span>
+            <span class="btn-text-short" style="color:white">Sync</span>
+        </button>
+        <button mat-button class="btn-sync" (click)="confirmBuildCube()" [disabled]="!syncAcknowledged">
             <mat-icon style="color:white">plumbing</mat-icon>
             <span style="color:white">Build</span>
         </button>

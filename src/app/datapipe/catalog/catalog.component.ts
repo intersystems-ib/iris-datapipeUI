@@ -221,6 +221,7 @@ export class CatalogComponent implements OnInit {
     synchroniseCube(item: Catalog): void {
         this.syncTarget = item
         this.syncCubeModal = true
+        this.syncAcknowledged = false
         this.cdr.markForCheck()
     }
 
@@ -787,6 +788,7 @@ export class CatalogComponent implements OnInit {
 
     syncCubeModal = false;
     syncTarget: Catalog | null = null;
+    syncAcknowledged = false;
     private syncingIds = new Set<number>();
 
     isSyncing(item: Catalog): boolean {
@@ -854,6 +856,7 @@ export class CatalogComponent implements OnInit {
     cancelSynchroniseCube() {
         this.syncCubeModal = false
         this.syncTarget = null
+        this.syncAcknowledged = false
         this.cdr.markForCheck()
     }
 }

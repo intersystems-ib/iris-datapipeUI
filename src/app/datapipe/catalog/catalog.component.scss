@@ -1145,6 +1145,13 @@
   color: #333;
 }
 
+.warning-icon-inline {
+  color: #d32f2f;
+  font-size: 20px;
+  margin-right: 6px;
+  vertical-align: text-bottom;
+}
+
 .warning-actions {
   display: flex;
   justify-content: center;
@@ -1184,6 +1191,40 @@
 }
 .btn-sync:hover {
   background-color: #272d76;
+}
+
+.warning-actions button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
+
+.btn-sync[disabled] {
+  background-color: #2e3486;
+}
+
+.btn-text-short {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .btn-text-long {
+    display: none;
+  }
+
+  .btn-text-short {
+    display: inline;
+  }
+}
+
+.btn-icon {
+  margin-right: 6px;
+}
+
+@media (max-width: 600px) {
+  .btn-cancel .btn-icon {
+    margin-right: 0;
+  }
 }
 
 
