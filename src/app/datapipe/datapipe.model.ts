@@ -134,8 +134,8 @@ export interface Catalog {
   histogramSeries?: ApexAxisChartSeries;
   histogramXaxis?: ApexXAxis;
   treeMapSeries?: ApexAxisChartSeries
-  cubeOperationRunning?:boolean
-
+  cubeOperationRunning?: boolean
+  cubeStatus?: CubeStatus
 }
 
 export interface Category {
@@ -171,4 +171,14 @@ export interface CatalogGraphResult {
   Histogram: { [index: string]: number },
   HistogramUpdated: { [index: string]: number },
   time?: { name: string, tm: number }[]
+}
+
+export interface CubeStatus {
+  "status": ("NA" | "BUILD" | "SYNC" | "TIMEOUT" | "ERROR"),
+  "stage"?: {
+    [index: string]: {
+      "entriesProcessed": number,
+      "progress": number
+    }
+  }
 }

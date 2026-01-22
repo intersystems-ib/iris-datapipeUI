@@ -8,7 +8,7 @@ import {AlertService} from '../shared/alert.service';
 import {
   Catalog,
   CatalogGraphResult,
-  Category,
+  Category, CubeStatus,
   Inbox,
   Ingestion,
   Oper,
@@ -580,7 +580,7 @@ export class DatapipeService {
     )
   }
 
-  pollCube(catalog: Catalog, minutesTillDrop: number = 1, pollingIntervalInSec = 5): Observable<any> {
+  pollCube(catalog: Catalog, minutesTillDrop: number = 1, pollingIntervalInSec = 1): Observable<any> {
     let shouldContinue = true;
     ///Time in ms, by default 10 seconds per call
     return timer(0, pollingIntervalInSec * 1000)
@@ -759,4 +759,3 @@ export class DatapipeService {
 }
 
 
-export type CubeStatus = { status: ("NA" | "BUILD" | "SYNC" | "TIMEOUT" | "ERROR") }
