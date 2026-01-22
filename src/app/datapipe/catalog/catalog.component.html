@@ -254,14 +254,22 @@
           <div class="cube-progress-circle" [ngStyle]="{'--stage-color': stage.color}">
             <svg class="cube-progress-svg" viewBox="0 0 64 64" aria-hidden="true">
               <circle class="cube-progress-track" cx="32" cy="32" [attr.r]="cubeProgressRadius"></circle>
-              <circle class="cube-progress-fill" cx="32" cy="32" [attr.r]="cubeProgressRadius"
-                      [attr.stroke-dasharray]="cubeProgressCircumference"
-                      [attr.stroke-dashoffset]=" this.cubeProgressRadius * (1 - (item?.cubeStatus?.stage?.[stage.key]?.progress?? 0) / 100)"></circle>
+              <circle
+                class="cube-progress-fill"
+                cx="32"
+                cy="32"
+                [attr.r]="cubeProgressRadius"
+                [attr.stroke-dasharray]="cubeProgressCircumference"
+                [attr.stroke-dashoffset]="cubeProgressCircumference * (1-((item?.cubeStatus?.stage?.[stage.key]?.progress ?? 0)/100))">
+              </circle>
             </svg>
-            <span class="cube-progress-value">{{ item?.cubeStatus?.stage?.[stage.key]?.progress?? 0 }}%</span>
+            <span class="cube-progress-value">{{ item?.cubeStatus?.stage?.[stage.key]?.progress ?? 0 }}%</span>
           </div>
           <div class="cube-progress-label">{{ stage.label }}</div>
-          <div class="cube-progress-rows">{{ getStageRows(item?.cubeStatus?.stage?.[stage.key]?.entriesProcessed??0) | number }} rows</div>
+          <div
+            class="cube-progress-rows">{{ item?.cubeStatus?.stage?.[stage.key]?.entriesProcessed ?? 0 | number }}
+            rows
+          </div>
         </div>
       </div>
       <div class="card-content-grid" [ngClass]="{'histogram-visible': (item.showHistogram || item.showTreeMap)}">
