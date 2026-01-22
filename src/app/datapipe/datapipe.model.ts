@@ -103,8 +103,8 @@ export interface Catalog {
   Cube?: string;
   LastSync?: Date;
   LastBuild?: Date;
-  LstSyncTime?: number;
-  LstBuildTime?: number;
+  LastSyncTime?: number;
+  LastBuildTime?: number;
   Table: string;
   Filter: string;
   MDXTotal: string;
@@ -134,6 +134,7 @@ export interface Catalog {
   histogramSeries?: ApexAxisChartSeries;
   histogramXaxis?: ApexXAxis;
   treeMapSeries?: ApexAxisChartSeries
+  cubeOperationRunning?:boolean
 
 }
 

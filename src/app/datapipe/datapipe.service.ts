@@ -2,7 +2,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import moment from 'moment';
-import {catchError, map, Observable, of, throwError} from 'rxjs';
+import {catchError, finalize, map, Observable, of, switchMap, take, takeWhile, throwError, timer} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {AlertService} from '../shared/alert.service';
 import {
@@ -20,6 +20,8 @@ import {
 } from './datapipe.model';
 import {ViewstreamDialogComponent} from './viewstream-dialog/viewstream-dialog.component';
 import {ExportDataOptions} from "./catalog/catalog.component";
+import {tap} from "rxjs/operators";
+import {ToastService} from "../shared/toast/toast.service";
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +42,8 @@ export class DatapipeService {
   constructor(
     private http: HttpClient,
     private alertService: AlertService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public toastService: ToastService
   ) {
   }
 
@@ -532,7 +535,7 @@ export class DatapipeService {
       catalog
     ).pipe(
       catchError(err => {
-        if (err.status == 404 ||err.status == 400) {
+        if (err.status == 404 || err.status == 400) {
           return of(err.error)
         }
         if (!err.error.error.includes("Table not found"))
@@ -575,6 +578,50 @@ export class DatapipeService {
         return throwError(() => err);
       })
     )
+  }
+
+  pollCube(catalog: Catalog, minutesTillDrop: number = 1, pollingIntervalInSec = 5): Observable<any> {
+    let shouldContinue = true;
+    ///Time in ms, by default 10 seconds per call
+    return timer(0, pollingIntervalInSec * 1000)
+      .pipe(
+        ///Max amount of times to call
+        take(minutesTillDrop * 60 / pollingIntervalInSec),
+        ///Forceful cutoff to when a status as NA or error is received
+        takeWhile(() => shouldContinue),
+        ///REST petition
+        switchMap((): Observable<CubeStatus> => {
+          return this.fetchCubeStatus(catalog.Id) as Observable<CubeStatus>
+        }),
+
+        ///Logic for the aforementioned status break
+        tap((status: CubeStatus) => {
+          if (status.status === "ERROR") {
+            this.alertService.error("Failed to listen for cube update finishing.")
+          }
+          shouldContinue = !(status.status === "NA" || status.status === "ERROR")
+        }),
+        ///If we reach here, the
+        finalize(() => {
+          if (shouldContinue) {
+            this.toastService.info("Cube is taking too long, stopped listening for updates.")
+            catalog.cubeOperationRunning = false
+          }
+        })
+      )
+  }
+
+  fetchCubeStatus(catalogId: string | number) {
+    return this.http.get(
+      this.urlBase + `/catalog/checkState/${catalogId}`
+    ).pipe(
+      catchError((err: any) => {
+        this.alertService.error('[fetchCubeStatus] ' + err.message)
+        return of({status: "ERROR"})
+      }),
+      tap(
+        obj => obj
+      ));
   }
 
   importCatalogs(obj: any) {
@@ -710,3 +757,6 @@ export class DatapipeService {
     }))
   }
 }
+
+
+export type CubeStatus = { status: ("NA" | "BUILD" | "SYNC" | "TIMEOUT" | "ERROR") }
