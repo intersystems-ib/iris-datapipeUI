@@ -789,6 +789,37 @@ export class CatalogComponent implements OnInit {
 
   cubeOperationsModal = false;
   syncTarget: Catalog | null = null;
+  cubeProgressRadius = 26;
+  cubeProgressCircumference = 2 * Math.PI * this.cubeProgressRadius;
+  cubeProgressTotalRows = 139000;
+  private cubeProgressTimers = new Map<number, number>();
+  private cubeProgressState = new Map<number, number>();
+  private cubeStageDefs = [
+    {label: 'Facts Delete', color: '#f59e0b'},
+    {label: 'Facts Build', color: '#10b981'},
+    {label: 'Indexes Build', color: '#3b82f6'},
+  ];
+
+  getCubeProgressStages(item: Catalog) {
+    const overall = this.cubeProgressState.get(item.Id) ?? 0;
+    const span = 100 / this.cubeStageDefs.length;
+    return this.cubeStageDefs.map((stage, index) => {
+      const start = span * index;
+      const raw = ((overall - start) / span) * 100;
+      const percent = Math.max(0, Math.min(100, Math.round(raw)));
+      return {...stage, percent};
+    });
+  }
+
+  getCircleDashoffset(percent: number): number {
+    const safePercent = Math.max(0, Math.min(100, percent));
+    return this.cubeProgressCircumference * (1 - safePercent / 100);
+  }
+
+  getStageRows(percent: number): number {
+    const safePercent = Math.max(0, Math.min(100, percent));
+    return Math.round(this.cubeProgressTotalRows * (safePercent / 100));
+  }
 
   /*confirmSynchroniseCube() {
       this.startCubeProcess('Synchronise', 'Cube synchronised', 'sync')
@@ -801,6 +832,7 @@ export class CatalogComponent implements OnInit {
   syncCube() {
     if (this.syncTarget && this.syncTarget.Id !== -1) {
       this.syncTarget.cubeOperationRunning = true
+      this.startPrototypeProgress(this.syncTarget)
       this.datapipeService.syncCube(this.syncTarget.Id).subscribe({
           next: () => {
             this.closeCubeModal()
@@ -817,6 +849,7 @@ export class CatalogComponent implements OnInit {
   buildCube() {
     if (this.syncTarget && this.syncTarget.Id !== -1) {
       this.syncTarget.cubeOperationRunning = true
+      this.startPrototypeProgress(this.syncTarget)
       this.datapipeService.buildCube(this.syncTarget.Id).subscribe({
           next: () => {
             this.closeCubeModal()
@@ -836,6 +869,7 @@ export class CatalogComponent implements OnInit {
           if (status.status === 'NA') {
             this.toastService.success("Completed " + type + " of cube " + item.Cube)
             item.cubeOperationRunning = false
+            this.stopPrototypeProgress(item)
             this.cdr.markForCheck()
           }
         }
@@ -843,6 +877,32 @@ export class CatalogComponent implements OnInit {
     ).add(()=>{
       this.cdr.markForCheck()
     })
+  }
+
+  private startPrototypeProgress(item: Catalog) {
+    if (item.Id === -1 || this.cubeProgressTimers.has(item.Id)) {
+      return
+    }
+    this.cubeProgressState.set(item.Id, 0)
+    const intervalId = window.setInterval(() => {
+      const current = this.cubeProgressState.get(item.Id) ?? 0
+      const next = current >= 100 ? 0 : current + 4
+      this.cubeProgressState.set(item.Id, next)
+      this.cdr.markForCheck()
+    }, 250)
+    this.cubeProgressTimers.set(item.Id, intervalId)
+  }
+
+  private stopPrototypeProgress(item: Catalog) {
+    if (item.Id === -1) {
+      return
+    }
+    const timer = this.cubeProgressTimers.get(item.Id)
+    if (timer !== undefined) {
+      clearInterval(timer)
+      this.cubeProgressTimers.delete(item.Id)
+    }
+    this.cubeProgressState.delete(item.Id)
   }
 
   closeCubeModal() {
