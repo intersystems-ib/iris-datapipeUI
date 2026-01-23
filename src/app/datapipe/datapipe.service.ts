@@ -580,7 +580,7 @@ export class DatapipeService {
     )
   }
 
-  pollCube(catalog: Catalog, minutesTillDrop: number = 1, pollingIntervalInSec = 1): Observable<any> {
+  pollCube(catalog: Catalog, minutesTillDrop: number = 20, pollingIntervalInSec = 1): Observable<any> {
     let shouldContinue = true;
     ///Time in ms, by default 10 seconds per call
     return timer(0, pollingIntervalInSec * 1000)

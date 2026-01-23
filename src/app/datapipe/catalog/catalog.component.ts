@@ -170,23 +170,54 @@ export class CatalogComponent implements OnInit {
   refreshLevel(flattenedCatalogs: { [id: string]: Catalog }, backendData: Catalog[]) {
     backendData.forEach(
       catalog => {
-        const existingCatalog = flattenedCatalogs[catalog.Id + ""]
-        if (existingCatalog !== undefined) {
-          catalog.expanded = existingCatalog.expanded
-          catalog.histogramSeries = existingCatalog.histogramSeries
-          catalog.histogramXaxis = existingCatalog.histogramXaxis
-          catalog.showHistogram = existingCatalog.showHistogram
-          catalog.showTreeMap = existingCatalog.showTreeMap
-          catalog.showColumns = existingCatalog.showColumns
-          catalog.refreshing = existingCatalog.refreshing
-          if (catalog.showHistogram || catalog.showTreeMap) {
-            this.loadGraphData(catalog)
-          }
-        }
+        this.refreshCatalogEntry(catalog, flattenedCatalogs[catalog.Id + ""])
         if (catalog.Children) this.refreshLevel(flattenedCatalogs, catalog.Children)
       }
     )
     return backendData
+  }
+
+  refreshCatalogEntry(catalog: Catalog, oldCatalog: Catalog) {
+    if (oldCatalog !== undefined) {
+      catalog.expanded = oldCatalog.expanded
+      catalog.histogramSeries = oldCatalog.histogramSeries
+      catalog.histogramXaxis = oldCatalog.histogramXaxis
+      catalog.showHistogram = oldCatalog.showHistogram
+      catalog.showTreeMap = oldCatalog.showTreeMap
+      catalog.showColumns = oldCatalog.showColumns
+      catalog.refreshing = oldCatalog.refreshing
+      if (catalog.showHistogram || catalog.showTreeMap) {
+        this.loadGraphData(catalog)
+      }
+    }
+    return catalog
+  }
+
+  ///Call this to update a specific catalog entry when you do not have it's tree reference
+  refreshCatalogEntryInTree(catalog: Catalog, treeReference: Catalog[] | undefined = this.catalogTree) {
+    if (treeReference !== undefined) {
+      ///Iterate the level
+      treeReference.forEach(
+        (cat, index) => {
+          ///If matching entities it is the same catalogEntry
+          if (cat.Entity === catalog.Entity) {
+            ///Fetch it from backend
+            this.datapipeService.getById(catalog.Id).subscribe(
+              (result: { result: Catalog }) => {
+                ///Update it using the tree reference
+                const backCatalog = result.result
+                backCatalog.Children = treeReference[index].Children
+                treeReference[index] = this.refreshCatalogEntry(backCatalog, treeReference[index])
+                this.cdr.markForCheck()
+              }
+            )
+
+          } else if (cat.Children) {
+            this.refreshCatalogEntryInTree(catalog, cat.Children)
+          }
+        }
+      )
+    }
   }
 
 
@@ -791,22 +822,11 @@ export class CatalogComponent implements OnInit {
   syncTarget: Catalog | null = null;
   cubeProgressRadius = 26;
   cubeProgressCircumference = 2 * Math.PI * this.cubeProgressRadius;
-  cubeProgressTotalRows = 139000;
   protected cubeStageDefs = [
-    {label: 'Facts Delete', color: '#f59e0b', key:"delete"},
-    {label: 'Facts Build', color: '#10b981', key:"facts"},
-    {label: 'Indexes Build', color: '#3b82f6', key:"indices"},
+    {label: 'Facts Delete', color: '#f59e0b', key: "delete"},
+    {label: 'Facts Build', color: '#10b981', key: "facts"},
+    {label: 'Indexes Build', color: '#3b82f6', key: "indices"},
   ];
-
-  getCircleDashoffset(percent: number, item:Catalog): number {
-    const safePercent = Math.max(0, Math.min(100, percent));
-    return this.cubeProgressCircumference * (1 - safePercent / 100);
-  }
-
-  getStageRows(percent: number): number {
-    const safePercent = Math.max(0, Math.min(100, percent));
-    return Math.round(this.cubeProgressTotalRows * (safePercent / 100));
-  }
 
   syncCube() {
     if (this.syncTarget && this.syncTarget.Id !== -1) {
@@ -840,18 +860,19 @@ export class CatalogComponent implements OnInit {
     }
   }
 
-  pollCube(item:Catalog, type: "build"|"sync") {
+  pollCube(item: Catalog, type: "build" | "sync") {
     this.datapipeService.pollCube(item).subscribe({
         next: (status: CubeStatus) => {
           if (status.status === 'NA') {
             this.toastService.success("Completed " + type + " of cube " + item.Cube)
+            this.refreshCatalogEntryInTree(item)
             item.cubeOperationRunning = false
           }
           item.cubeStatus = status
           this.cdr.markForCheck()
         }
       }
-    ).add(()=>{
+    ).add(() => {
       this.cdr.markForCheck()
     })
   }
@@ -861,8 +882,6 @@ export class CatalogComponent implements OnInit {
     this.ackCube = false
     this.cdr.markForCheck()
   }
-
-  protected readonly Math = Math;
 }
 
 export interface ExportDataOptions {

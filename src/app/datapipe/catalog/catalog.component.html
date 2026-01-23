@@ -240,9 +240,8 @@
           <button mat-icon-button color="primary" (click)="openCubeModal(item)"
                   [disabled]="!item.Cube || item.cubeOperationRunning"
                   matTooltip="Refresh Data">
-            <mat-icon [class.sync-spin]="item.cubeOperationRunning">{{
-                item.cubeOperationRunning ? 'autorenew' : 'sync'
-              }}
+            <mat-icon
+              [class.sync-spin]="item.cubeOperationRunning">{{ item.cubeOperationRunning ? 'autorenew' : 'sync' }}
             </mat-icon>
           </button>
         </div>
