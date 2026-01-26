@@ -84,8 +84,8 @@
 <!-- Recursive Card Template -->
 <ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array" let-parent="parent">
   <mat-card class="catalog-card"
-            [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ') + (categoryFiltering && !categories[item.Category.Name].selected?'catalog-card-disabled':'')"
-            [id]="'catalog-card-' + item.Id" [hidden]="categoryFiltering && !categories[item.Category.Name].selected">
+            [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ')"
+            [id]="'catalog-card-' + item.Id" [hidden]="categoryFiltering && categories[item.Category.Name] && !categories[item.Category.Name].selected">
     <mat-card-header>
       <div class="card-header-content">
         <div class="entity-info">
