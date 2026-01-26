@@ -418,9 +418,9 @@
               <input matInput [(ngModel)]="item.Cube">
             </mat-form-field>
             <mat-icon matPrefix class="field-icon"
-                      [matTooltip]="item.Cube?((item.ShouldRefreshCube?'Refresh':'Do not refresh') + ' the cube daily'):'Add a cube to enable'"
-                      (click)="item.ShouldRefreshCube = !item.ShouldRefreshCube"
-                      [ngStyle]="{'color':(item.Cube?(item.ShouldRefreshCube?'green':'red'):'grey'), 'cursor':'pointer'}"
+                      [matTooltip]="item.Cube?((item.ShouldSyncCube?'Refresh':'Do not refresh') + ' the cube daily'):'Add a cube to enable'"
+                      (click)="item.ShouldSyncCube = !item.ShouldSyncCube"
+                      [ngStyle]="{'color':(item.Cube?(item.ShouldSyncCube?'green':'red'):'grey'), 'cursor':'pointer'}"
                       size="30"
             >autorenew
             </mat-icon>
