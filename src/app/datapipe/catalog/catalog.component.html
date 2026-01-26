@@ -417,19 +417,30 @@
               <mat-icon matPrefix class="field-icon">view_in_ar</mat-icon>
               <input matInput [(ngModel)]="item.Cube">
             </mat-form-field>
+             <mat-icon matPrefix class="field-icon" [matTooltip]="(item.ShouldRefreshCube?'Refresh':'Do not refresh') + ' the cube daily'"
+                        (click)="item.ShouldRefreshCube = !item.ShouldRefreshCube"
+                       [ngStyle]="{'color':(item.ShouldRefreshCube?'green':'red'), 'cursor':'pointer'}"
+                       size="30"
+              >autorenew</mat-icon>
+            <mat-icon matPrefix class="field-icon" [matTooltip]="(item.ShouldRebuildCube?'Rebuild':'Do not rebuild') + ' the cube weekly'"
+                      (click)="item.ShouldRebuildCube = !item.ShouldRebuildCube"
+                      [ngStyle]="{'color':(item.ShouldRebuildCube?'green':'red'), 'cursor':'pointer'}"
+                      size="30"
+            >build_circle</mat-icon>
 
-            <mat-form-field appearance="outline" class="edit-field table-width">
-              <mat-label>Table</mat-label>
-              <mat-icon matPrefix class="field-icon">table_view</mat-icon>
-              <input matInput [(ngModel)]="item.Table">
-            </mat-form-field>
 
+          </div>
+          <div class="namespace-table-filter-row">
             <mat-form-field appearance="outline" class="edit-field filter-width">
               <mat-label>Filter</mat-label>
               <mat-icon matPrefix class="field-icon">filter_alt</mat-icon>
               <input matInput [(ngModel)]="item.Filter">
             </mat-form-field>
-
+            <mat-form-field appearance="outline" class="edit-field table-width">
+              <mat-label>Table</mat-label>
+              <mat-icon matPrefix class="field-icon">table_view</mat-icon>
+              <input matInput [(ngModel)]="item.Table">
+            </mat-form-field>
             <mat-form-field appearance="outline" class="edit-field table-width">
               <mat-label>Deidentified View</mat-label>
               <mat-icon matPrefix class="field-icon">visibility_off</mat-icon>
