@@ -580,13 +580,11 @@ export class DatapipeService {
     )
   }
 
-  pollCube(catalog: Catalog, minutesTillDrop: number = 20, pollingIntervalInSec = 1): Observable<any> {
+  pollCube(catalog: Catalog, pollingIntervalInSec = 1): Observable<any> {
     let shouldContinue = true;
     ///Time in ms, by default 10 seconds per call
     return timer(0, pollingIntervalInSec * 1000)
       .pipe(
-        ///Max amount of times to call
-        take(minutesTillDrop * 60 / pollingIntervalInSec),
         ///Forceful cutoff to when a status as NA or error is received
         takeWhile(() => shouldContinue),
         ///REST petition
