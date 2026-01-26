@@ -39,11 +39,11 @@
   <!-- Category Filters -->
   <div class="category-filters">
     <mat-chip-set>
-      <mat-chip-option *ngFor="let category of Object.values(categories)" [selected]="category.selected"
-                       (selectionChange)="categoryChange(category)" [ngStyle]="{'--mdc-chip-label-text-color': category.loadedAttributes?.['Color'],
-                                '--mdc-chip-selected-label-text-color': category.loadedAttributes?.['Color'],
-                              'background-color':category.loadedAttributes?.['BackgroundColor']}">
-        {{ category.Name }}
+      <mat-chip-option *ngFor="let category of Object.keys(categories)" [selected]="categories[category].selected"
+                       (selectionChange)="categoryChange(categories[category])" [ngStyle]="{'--mdc-chip-label-text-color': categories[category].loadedAttributes?.['Color'],
+                                '--mdc-chip-selected-label-text-color': categories[category].loadedAttributes?.['Color'],
+                              'background-color':categories[category].loadedAttributes?.['BackgroundColor']}">
+        {{ categories[category].Name }}
       </mat-chip-option>
     </mat-chip-set>
   </div>
