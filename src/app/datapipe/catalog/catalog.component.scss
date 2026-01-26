@@ -444,6 +444,62 @@
       color: #3d3d3d;
     }
 
+    .sync-options-box {
+      position: relative;
+      border: 1px solid rgba(0, 0, 0, 0.38);
+      border-radius: 4px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+
+      .sync-options-label {
+        position: absolute;
+        top: -8px;
+        left: 12px;
+        background: white;
+        padding: 0 4px;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+
+    .sync-box-width {
+      flex: 1 1 0;
+      min-width: 0;
+
+      @media (max-width: 768px) {
+        flex: 1 1 100%;
+      }
+    }
+
+    .cube-toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .toggle-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+
+        mat-slide-toggle {
+          transform: scale(0.8);
+        }
+
+        span {
+          font-size: 12px;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+      }
+    }
+
     .namespace-table-filter-row {
       display: flex;
       gap: 12px;

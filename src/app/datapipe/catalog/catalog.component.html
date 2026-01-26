@@ -403,7 +403,7 @@
           </mat-form-field>
 
           <div *ngIf="item.isEditing" class="namespace-table-filter-row">
-            <mat-form-field appearance="outline" class="edit-field namespace-width">
+            <mat-form-field appearance="outline" class="edit-field sync-box-width">
               <mat-label>Namespace</mat-label>
               <mat-icon matPrefix class="field-icon">dns</mat-icon>
               <mat-select [(ngModel)]="item.Namespace" placeholder="Select namespace...">
@@ -412,25 +412,38 @@
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="edit-field table-width">
+            <mat-form-field appearance="outline" class="edit-field sync-box-width">
               <mat-label>Cube</mat-label>
               <mat-icon matPrefix class="field-icon">view_in_ar</mat-icon>
               <input matInput [(ngModel)]="item.Cube">
             </mat-form-field>
-            <mat-icon matPrefix class="field-icon"
-                      [matTooltip]="item.Cube?((item.ShouldSyncCube?'Refresh':'Do not refresh') + ' the cube daily'):'Add a cube to enable'"
-                      (click)="item.ShouldSyncCube = !item.ShouldSyncCube"
-                      [ngStyle]="{'color':(item.Cube?(item.ShouldSyncCube?'green':'red'):'grey'), 'cursor':'pointer'}"
-                      size="30"
-            >autorenew
-            </mat-icon>
-            <mat-icon matPrefix class="field-icon"
-                      [matTooltip]="item.Cube?((item.ShouldRebuildCube?'Rebuild':'Do not rebuild') + ' the cube weekly'):'Add a cube to enable'"
-                      (click)="item.ShouldRebuildCube = !item.ShouldRebuildCube"
-                      [ngStyle]="{'color':(item.Cube?(item.ShouldRebuildCube?'green':'red'):'grey'), 'cursor':'pointer'}"
-                      size="30"
-            >build_circle
-            </mat-icon>
+            <div class="sync-options-box sync-box-width">
+              <span class="sync-options-label">Sync Options</span>
+              <div class="cube-toggles">
+                <div class="toggle-row">
+                  <mat-slide-toggle
+                    color="primary"
+                    [(ngModel)]="item.ShouldSyncCube"
+                    matTooltip="Sync the cube daily">
+                  </mat-slide-toggle>
+                  <mat-icon class="toggle-icon" [ngStyle]="{'color': item.ShouldSyncCube ? 'green' : 'grey'}">autorenew</mat-icon>
+                  <span [ngStyle]="{'color': item.ShouldSyncCube ? 'green' : 'grey'}">
+                    {{ item.ShouldSyncCube ? 'Enabled Automatic Sync' : 'Enable Automatic Sync' }}
+                  </span>
+                </div>
+                <div class="toggle-row">
+                  <mat-slide-toggle
+                    color="primary"
+                    [(ngModel)]="item.ShouldRebuildCube"
+                    matTooltip="Rebuild the cube weekly">
+                  </mat-slide-toggle>
+                  <mat-icon class="toggle-icon" [ngStyle]="{'color': item.ShouldRebuildCube ? 'green' : 'grey'}">build_circle</mat-icon>
+                  <span [ngStyle]="{'color': item.ShouldRebuildCube ? 'green' : 'grey'}">
+                    {{ item.ShouldRebuildCube ? 'Enabled Automatic Build' : 'Enable Automatic Build' }}
+                  </span>
+                </div>
+              </div>
+            </div>
 
 
           </div>
