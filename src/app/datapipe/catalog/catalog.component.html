@@ -417,16 +417,20 @@
               <mat-icon matPrefix class="field-icon">view_in_ar</mat-icon>
               <input matInput [(ngModel)]="item.Cube">
             </mat-form-field>
-             <mat-icon matPrefix class="field-icon" [matTooltip]="(item.ShouldRefreshCube?'Refresh':'Do not refresh') + ' the cube daily'"
-                        (click)="item.ShouldRefreshCube = !item.ShouldRefreshCube"
-                       [ngStyle]="{'color':(item.ShouldRefreshCube?'green':'red'), 'cursor':'pointer'}"
-                       size="30"
-              >autorenew</mat-icon>
-            <mat-icon matPrefix class="field-icon" [matTooltip]="(item.ShouldRebuildCube?'Rebuild':'Do not rebuild') + ' the cube weekly'"
-                      (click)="item.ShouldRebuildCube = !item.ShouldRebuildCube"
-                      [ngStyle]="{'color':(item.ShouldRebuildCube?'green':'red'), 'cursor':'pointer'}"
+            <mat-icon matPrefix class="field-icon"
+                      [matTooltip]="item.Cube?((item.ShouldRefreshCube?'Refresh':'Do not refresh') + ' the cube daily'):'Add a cube to enable'"
+                      (click)="item.ShouldRefreshCube = !item.ShouldRefreshCube"
+                      [ngStyle]="{'color':(item.Cube?(item.ShouldRefreshCube?'green':'red'):'grey'), 'cursor':'pointer'}"
                       size="30"
-            >build_circle</mat-icon>
+            >autorenew
+            </mat-icon>
+            <mat-icon matPrefix class="field-icon"
+                      [matTooltip]="item.Cube?((item.ShouldRebuildCube?'Rebuild':'Do not rebuild') + ' the cube weekly'):'Add a cube to enable'"
+                      (click)="item.ShouldRebuildCube = !item.ShouldRebuildCube"
+                      [ngStyle]="{'color':(item.Cube?(item.ShouldRebuildCube?'green':'red'):'grey'), 'cursor':'pointer'}"
+                      size="30"
+            >build_circle
+            </mat-icon>
 
 
           </div>
