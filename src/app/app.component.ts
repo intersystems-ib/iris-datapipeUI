@@ -23,20 +23,21 @@ export class AppComponent {
    * Application constructor
    * This is used whether the app is loaded / reloaded
    * @param authService
-   * @param infoService 
+   * @param infoService
+   * @param router
    */
   constructor(
     public authService: AuthService,
     private infoService: InfoService,
     private router: Router
-  ) { 
+  ) {
       // retrieve user information
       authService.getUserInfo().subscribe({});
 
       // get whether the user is logged in
       this.isLoggedIn$ = this.authService.isLoggedIn();
   }
-  
+
   /**
    * Init
    */
@@ -44,8 +45,8 @@ export class AppComponent {
     this.info = this.infoService.getAppInfo();
   }
 
-  /** 
-   * Navigate to some URL 
+  /**
+   * Navigate to some URL
    */
   navigate(route: string) {
     this.router.navigate([route]).then();
