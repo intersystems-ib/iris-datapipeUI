@@ -114,8 +114,8 @@
                 item.Category.Name
               }}
             </mat-chip>
-            <mat-icon *ngIf="!item.isEditing && item.MDXError && item.MDXError.length > 0"
-                      class="error-icon" [matTooltip]="item.MDXError.join('\n')" matTooltipClass="error-tooltip">
+            <mat-icon *ngIf="!item?.isEditing && item?.MDXError && item.MDXError?.MDXTotal"
+                      class="error-icon" [matTooltip]="item.MDXError.MDXTotal.join('\n')" matTooltipClass="error-tooltip">
               error
             </mat-icon>
             <h2 *ngIf="!item.isEditing && level === 1" class="entity-title" HighlightSearchText

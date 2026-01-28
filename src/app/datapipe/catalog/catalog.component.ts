@@ -103,7 +103,6 @@ export class CatalogComponent implements OnInit {
       namespaces => this.namespaces = namespaces
     )
     this.loadCatalog();
-    this.canEdit = this.authService.checkPermission('DP_ADMIN', 'U')
   }
 
   /**
@@ -118,6 +117,7 @@ export class CatalogComponent implements OnInit {
           // Trim categories to avoid whitespace issues
           this.loadCategories(data.categories)
           this.isLoading = false
+          this.canEdit = this.authService.checkPermission('DP_ADMIN', 'U')
           this.cdr.markForCheck();
         }
       }
