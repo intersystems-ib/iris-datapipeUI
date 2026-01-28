@@ -105,6 +105,7 @@ export interface Catalog {
   LastBuild?: Date;
   LastSyncTime?: number;
   LastBuildTime?: number;
+  LastSyncErrors?: string;
   Table: string;
   Filter: string;
   MDXTotal: string;

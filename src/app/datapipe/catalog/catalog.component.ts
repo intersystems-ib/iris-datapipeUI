@@ -229,6 +229,33 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  hasSyncError(item: Catalog): boolean {
+    if (!item.LastSyncErrors) return false;
+    return item.LastSyncErrors.trim() !== '0';
+  }
+
+  hasMdxError(item: Catalog): boolean {
+    if (!item.MDXError) return false;
+    if (Array.isArray(item.MDXError)) return item.MDXError.length > 0;
+    return Object.keys(item.MDXError).some(
+      key => (item.MDXError as { [key: string]: string[] })[key]?.length > 0
+    );
+  }
+
+  hasAnyError(item: Catalog): boolean {
+    return this.hasSyncError(item) || this.hasMdxError(item);
+  }
+
+  getMdxErrorTooltip(item: Catalog): string {
+    if (!item.MDXError) return '';
+    if (Array.isArray(item.MDXError)) {
+      return `MDX Error:\n${item.MDXError.join('\n')}`;
+    }
+    const entries = Object.entries(item.MDXError);
+    const lines = entries.flatMap(([key, msgs]) => msgs?.map(msg => `${key}: ${msg}`) || []);
+    return lines.length ? `MDX Error:\n${lines.join('\n')}` : 'MDX Error';
+  }
+
   toggleEditMode(item: Catalog): void {
     item.isEditing = !item.isEditing;
     this.cdr.markForCheck();
