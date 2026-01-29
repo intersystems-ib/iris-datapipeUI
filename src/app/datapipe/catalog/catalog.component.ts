@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnInit} from '@angular/core';
 import {Catalog, CatalogGraphResult, Category, CubeStatus, TableColumn, TableIndex} from '../datapipe.model';
 import {DatapipeService} from '../datapipe.service';
 import {ApexAxisChartSeries, ApexOptions, ApexXAxis} from "ng-apexcharts";
@@ -37,6 +37,12 @@ export class CatalogComponent implements OnInit {
 
   /** Map to store search terms for each table */
   protected columnSearchTerms: { [key: string]: string } = {}
+  protected columnSearchMatchCount: { [key: string]: number } = {}
+  protected columnSearchActiveIndex: { [key: string]: number } = {}
+
+  private columnSearchMatches: { [key: string]: HTMLElement[] } = {}
+  private columnSearchActiveEl: { [key: string]: HTMLElement | null } = {}
+  private columnCollectHandles: { [key: string]: number | null } = {}
 
   /** Map para guardar los índices por tabla: Namespace~Table */
   protected catalogTableIndexes: { [key: string]: TableIndex[] } = {};
@@ -54,6 +60,22 @@ export class CatalogComponent implements OnInit {
   showDescriptions = false;
   showTableInfo = false;
 
+  searchStringValue: string | undefined;
+  searchMatchCount = 0;
+  activeMatchIndex = 0;
+
+  private searchMatches: HTMLElement[] = [];
+  private activeMatchEl: HTMLElement | null = null;
+  private activeMatchCard: HTMLElement | null = null;
+  private collectMatchesHandle: number | null = null;
+  private searchModeActive = false;
+  private prevShowDescriptions: boolean | null = null;
+  private prevShowTableInfo: boolean | null = null;
+
+  mobileSearchOpen = false;
+
+  private host = inject(ElementRef<HTMLElement>);
+
   toggleDescriptions(): void {
     this.showDescriptions = !this.showDescriptions;
     this.cdr.markForCheck();
@@ -64,7 +86,69 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  searchStringValue: string | undefined;
+  onSearchInput(value: string): void {
+    this.searchStringValue = value;
+    const isActive = !!value?.trim();
+    if (isActive) {
+      if (!this.searchModeActive) {
+        this.prevShowDescriptions = this.showDescriptions;
+        this.prevShowTableInfo = this.showTableInfo;
+      }
+      this.searchModeActive = true;
+      this.showDescriptions = true;
+      this.showTableInfo = true;
+      if (this.catalogTree) {
+        this.expandVisible(this.catalogTree);
+      }
+    } else {
+      this.searchModeActive = false;
+      this.clearSearchNavigation();
+      if (this.prevShowDescriptions !== null) {
+        this.showDescriptions = this.prevShowDescriptions;
+      }
+      if (this.prevShowTableInfo !== null) {
+        this.showTableInfo = this.prevShowTableInfo;
+      }
+      this.prevShowDescriptions = null;
+      this.prevShowTableInfo = null;
+    }
+    this.cdr.markForCheck();
+    this.scheduleCollectMatches(true);
+  }
+
+  clearSearch(input: HTMLInputElement): void {
+    input.value = '';
+    this.searchStringValue = '';
+    this.searchModeActive = false;
+    this.mobileSearchOpen = false;
+    this.clearSearchNavigation();
+    if (this.prevShowDescriptions !== null) {
+      this.showDescriptions = this.prevShowDescriptions;
+    }
+    if (this.prevShowTableInfo !== null) {
+      this.showTableInfo = this.prevShowTableInfo;
+    }
+    this.prevShowDescriptions = null;
+    this.prevShowTableInfo = null;
+    this.cdr.markForCheck();
+  }
+
+  openMobileSearch(): void {
+    this.mobileSearchOpen = true;
+    this.cdr.markForCheck();
+  }
+
+  goToNextMatch(): void {
+    if (this.searchMatchCount === 0) return;
+    const nextIndex = (this.activeMatchIndex + 1) % this.searchMatchCount;
+    this.setActiveMatch(nextIndex, true);
+  }
+
+  goToPrevMatch(): void {
+    if (this.searchMatchCount === 0) return;
+    const prevIndex = (this.activeMatchIndex - 1 + this.searchMatchCount) % this.searchMatchCount;
+    this.setActiveMatch(prevIndex, true);
+  }
 
   search(catalog: Catalog, keywords: string): boolean {
     const regex = getSearchRegex(keywords)
@@ -246,6 +330,14 @@ export class CatalogComponent implements OnInit {
     return this.hasSyncError(item) || this.hasMdxError(item);
   }
 
+  private expandVisible(level: Catalog[]) {
+    level.forEach(entry => {
+      if (!this.isItemVisible(entry)) return;
+      entry.expanded = true;
+      if (entry.Children) this.expandVisible(entry.Children);
+    });
+  }
+
   isItemVisible(item: Catalog): boolean {
     if (!this.categoryFiltering) return true;
     const categoryName = item.Category?.Name;
@@ -257,6 +349,99 @@ export class CatalogComponent implements OnInit {
   hasVisibleChildren(item: Catalog): boolean {
     if (!item.Children || item.Children.length === 0) return false;
     return item.Children.some(child => this.isItemVisible(child));
+  }
+
+  private scheduleCollectMatches(resetIndex: boolean) {
+    if (this.collectMatchesHandle !== null) {
+      clearTimeout(this.collectMatchesHandle);
+    }
+    this.collectMatchesHandle = window.setTimeout(() => {
+      this.collectMatchesHandle = null;
+      this.collectMatches(resetIndex);
+    }, 0);
+  }
+
+  private collectMatches(resetIndex: boolean) {
+    const root = this.host.nativeElement;
+    const marks = Array.from(root.querySelectorAll('mark.searchMark')) as HTMLElement[];
+    this.searchMatches = marks.filter(mark => {
+      const card = mark.closest('.catalog-card') as HTMLElement | null;
+      return !!card && !card.hasAttribute('hidden');
+    });
+    this.clearMatchCardClasses();
+    this.searchMatches.forEach(mark => {
+      const card = mark.closest('.catalog-card') as HTMLElement | null;
+      if (card) card.classList.add('search-has-match');
+    });
+    this.searchMatchCount = this.searchMatches.length;
+    this.searchResults = this.searchMatchCount;
+    if (this.searchMatchCount === 0) {
+      this.clearActiveMatch();
+      this.activeMatchIndex = 0;
+      this.cdr.markForCheck();
+      return;
+    }
+    const targetIndex = resetIndex ? 0 : Math.min(this.activeMatchIndex, this.searchMatchCount - 1);
+    this.setActiveMatch(targetIndex, resetIndex);
+  }
+
+  private clearSearchNavigation() {
+    this.searchMatches = [];
+    this.searchMatchCount = 0;
+    this.searchResults = 0;
+    this.activeMatchIndex = 0;
+    this.clearMatchCardClasses();
+    this.clearActiveMatch();
+  }
+
+  private clearActiveMatch() {
+    if (this.activeMatchEl) {
+      this.activeMatchEl.classList.remove('active');
+      this.applyActiveStyle(this.activeMatchEl, false);
+      this.activeMatchEl = null;
+    }
+    if (this.activeMatchCard) {
+      this.activeMatchCard.classList.remove('search-active-card');
+      this.activeMatchCard = null;
+    }
+  }
+
+  private clearMatchCardClasses() {
+    const root = this.host.nativeElement;
+    root.querySelectorAll('.catalog-card.search-has-match').forEach((card: Element) => {
+      card.classList.remove('search-has-match');
+    });
+  }
+
+  private setActiveMatch(index: number, scroll: boolean) {
+    if (!this.searchMatches.length) return;
+    this.clearActiveMatch();
+    this.activeMatchIndex = index;
+    const el = this.searchMatches[index];
+    el.classList.add('active');
+    this.applyActiveStyle(el, true);
+    this.activeMatchEl = el;
+    const card = el.closest('.catalog-card') as HTMLElement | null;
+    if (card) {
+      card.classList.add('search-active-card');
+      this.activeMatchCard = card;
+    }
+    if (scroll) {
+      el.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+    this.cdr.markForCheck();
+  }
+
+  private applyActiveStyle(el: HTMLElement, active: boolean) {
+    if (active) {
+      el.style.background = '#ffb300';
+      el.style.boxShadow = '0 0 0 3px rgba(255, 179, 0, 0.55)';
+      el.style.borderRadius = '2px';
+    } else {
+      el.style.background = '';
+      el.style.boxShadow = '';
+      el.style.borderRadius = '';
+    }
   }
 
   getMdxErrorTooltip(item: Catalog): string {
@@ -667,7 +852,104 @@ export class CatalogComponent implements OnInit {
   clearColumnSearch(item: Catalog): void {
     const key = item.Namespace + '~' + item.Table;
     this.columnSearchTerms[key] = '';
+    this.clearColumnSearchNavigation(key);
     this.cdr.markForCheck();
+  }
+
+  onColumnSearchInput(item: Catalog, container: HTMLElement, value: string): void {
+    const key = item.Namespace + '~' + item.Table;
+    this.columnSearchTerms[key] = value;
+    if (!value || !value.trim()) {
+      this.clearColumnSearchNavigation(key);
+      this.cdr.markForCheck();
+      return;
+    }
+    this.scheduleCollectColumnMatches(key, container, true);
+  }
+
+  goToNextColumnMatch(item: Catalog, container: HTMLElement): void {
+    const key = item.Namespace + '~' + item.Table;
+    const count = this.columnSearchMatchCount[key] || 0;
+    if (count === 0) return;
+    const nextIndex = ((this.columnSearchActiveIndex[key] || 0) + 1) % count;
+    this.setActiveColumnMatch(key, nextIndex, container, true);
+  }
+
+  goToPrevColumnMatch(item: Catalog, container: HTMLElement): void {
+    const key = item.Namespace + '~' + item.Table;
+    const count = this.columnSearchMatchCount[key] || 0;
+    if (count === 0) return;
+    const current = this.columnSearchActiveIndex[key] || 0;
+    const prevIndex = (current - 1 + count) % count;
+    this.setActiveColumnMatch(key, prevIndex, container, true);
+  }
+
+  private scheduleCollectColumnMatches(key: string, container: HTMLElement, resetIndex: boolean) {
+    const handle = this.columnCollectHandles[key];
+    if (handle !== undefined && handle !== null) {
+      clearTimeout(handle);
+    }
+    this.columnCollectHandles[key] = window.setTimeout(() => {
+      this.columnCollectHandles[key] = null;
+      this.collectColumnMatches(key, container, resetIndex);
+    }, 0);
+  }
+
+  private collectColumnMatches(key: string, container: HTMLElement, resetIndex: boolean) {
+    const marks = Array.from(container.querySelectorAll('mark.searchMark')) as HTMLElement[];
+    this.columnSearchMatches[key] = marks;
+    this.columnSearchMatchCount[key] = marks.length;
+    if (marks.length === 0) {
+      this.clearActiveColumnMatch(key);
+      this.columnSearchActiveIndex[key] = 0;
+      this.cdr.markForCheck();
+      return;
+    }
+    const targetIndex = resetIndex ? 0 : Math.min(this.columnSearchActiveIndex[key] || 0, marks.length - 1);
+    this.setActiveColumnMatch(key, targetIndex, container, resetIndex);
+  }
+
+  private clearColumnSearchNavigation(key: string) {
+    this.columnSearchMatchCount[key] = 0;
+    this.columnSearchActiveIndex[key] = 0;
+    this.columnSearchMatches[key] = [];
+    this.clearActiveColumnMatch(key);
+  }
+
+  private clearActiveColumnMatch(key: string) {
+    const active = this.columnSearchActiveEl[key];
+    if (active) {
+      this.applyColumnActiveStyle(active, false);
+      active.classList.remove('column-active');
+    }
+    this.columnSearchActiveEl[key] = null;
+  }
+
+  private setActiveColumnMatch(key: string, index: number, container: HTMLElement, scroll: boolean) {
+    const matches = this.columnSearchMatches[key] || [];
+    if (matches.length === 0) return;
+    this.clearActiveColumnMatch(key);
+    this.columnSearchActiveIndex[key] = index;
+    const el = matches[index];
+    el.classList.add('column-active');
+    this.applyColumnActiveStyle(el, true);
+    this.columnSearchActiveEl[key] = el;
+    if (scroll) {
+      el.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+    this.cdr.markForCheck();
+  }
+
+  private applyColumnActiveStyle(el: HTMLElement, active: boolean) {
+    if (active) {
+      el.style.background = '#ffb300';
+      el.style.boxShadow = '0 0 0 3px rgba(255, 179, 0, 0.55)';
+      el.style.borderRadius = '2px';
+    } else {
+      el.style.background = '';
+      el.style.boxShadow = '';
+      el.style.borderRadius = '';
+    }
   }
 
   //Export related

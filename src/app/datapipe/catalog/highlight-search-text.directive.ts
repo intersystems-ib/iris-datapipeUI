@@ -104,7 +104,7 @@ export class HighlightSearchTextDirective implements OnDestroy {
 }
 
 export function getSearchRegex(searchTerm: string) {
-    const escaped = searchTerm.trim().split(/\s+/).filter(t => t.length > 0)
-        .map(te => te.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join("|");
+    const normalized = searchTerm.trim();
+    const escaped = normalized.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
     return new RegExp(`(${escaped})`, 'gi');
 }

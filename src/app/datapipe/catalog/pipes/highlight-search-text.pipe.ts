@@ -20,11 +20,11 @@ export function highlightTerms(searchTerm: string, ...text:string[]): string{
   if (joinedText.trim()=="") {
     return '';
   }
-  return joinedText.replace(getSearchRegex(searchTerm), '<mark style="padding:0">$1</mark>');
+  return joinedText.replace(getSearchRegex(searchTerm), '<mark class="searchMark" style="padding:0">$1</mark>');
 }
 
 export function getSearchRegex(searchTerm: string) {
-  const escaped = searchTerm.trim().split(/\s+/).filter(t => t.length > 0)
-    .map(te => te.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join("|");
+  const normalized = searchTerm.trim();
+  const escaped = normalized.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
   return new RegExp(`(${escaped})`, 'gi');
 }

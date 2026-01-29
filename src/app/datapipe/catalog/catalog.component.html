@@ -1,39 +1,5 @@
-<div class="catalog-container">
+<div class="catalog-container" [class.search-active]="searchStringValue?.trim()">
   <p class="h2">Data Catalog</p>
-
-  <!-- Search Bar -->
-  <div class="search-section">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Search catalog...</mat-label>
-      <input matInput #searchInput (input)="searchStringValue = searchInput.value"
-        placeholder="Search by entity, description or table">
-      <span matSuffix *ngIf="searchInput.value" class="search-results-count">({{ searchResults }})</span>
-      <button mat-icon-button matSuffix *ngIf="searchInput.value" (click)="searchInput.value='';searchStringValue = ''"
-        aria-label="Clear search">
-        <mat-icon>close</mat-icon>
-      </button>
-      <mat-icon matSuffix *ngIf="!searchInput.value">search</mat-icon>
-    </mat-form-field>
-    <div class="action-buttons">
-      <button mat-icon-button (click)="expandAll()" matTooltip="Expand All">
-        <mat-icon>unfold_more</mat-icon>
-      </button>
-      <button mat-icon-button (click)="collapseAll()" matTooltip="Collapse All">
-        <mat-icon>unfold_less</mat-icon>
-      </button>
-      <button mat-icon-button (click)="toggleDescriptions()"
-        [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'" [class.active]="showDescriptions">
-        <mat-icon>{{ showDescriptions ? 'notes' : 'speaker_notes_off' }}</mat-icon>
-      </button>
-      <button mat-icon-button (click)="toggleTableInfo()"
-        [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
-        <mat-icon>{{ showTableInfo ? 'table_view' : 'grid_off' }}</mat-icon>
-      </button>
-      <button mat-icon-button (click)="importModal=true" [matTooltip]="'Import catalogs'">
-        <mat-icon color="primary">publish</mat-icon>
-      </button>
-    </div>
-  </div>
 
   <!-- Category Filters -->
   <div class="category-filters">
@@ -68,15 +34,60 @@
   </div>
 
   <!-- Bottom Toolbar -->
-  <mat-toolbar class="bottom-toolbar">
-    <button mat-raised-button color="primary" (click)="createNewRootEntity($event)">
-      <mat-icon>add</mat-icon>
-      New Entity
-    </button>
-    <button mat-raised-button color="accent" (click)="refreshCatalog()">
-      <mat-icon>refresh</mat-icon>
-      Refresh
-    </button>
+  <mat-toolbar class="bottom-toolbar" [class.mobile-search-open]="mobileSearchOpen">
+    <div class="search-section bottom-toolbar-search">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search catalog...</mat-label>
+        <input matInput #searchInput (input)="onSearchInput(searchInput.value)"
+          placeholder="Search by entity, description or table">
+        <mat-icon matSuffix *ngIf="!searchInput.value">search</mat-icon>
+      </mat-form-field>
+      <div class="search-nav-controls" *ngIf="searchStringValue?.trim()">
+        <span class="search-nav-count">{{ searchMatchCount ? (activeMatchIndex + 1) : 0 }} of {{ searchMatchCount }}</span>
+        <button mat-icon-button (click)="goToPrevMatch()" [disabled]="searchMatchCount < 2" aria-label="Previous match">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button (click)="goToNextMatch()" [disabled]="searchMatchCount < 2" aria-label="Next match">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button mat-icon-button (click)="clearSearch(searchInput)" aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="action-buttons">
+        <button mat-icon-button class="search-toggle-btn" (click)="openMobileSearch()" aria-label="Open search">
+          <mat-icon>search</mat-icon>
+        </button>
+        <button mat-icon-button (click)="expandAll()" matTooltip="Expand All">
+          <mat-icon>unfold_more</mat-icon>
+        </button>
+        <button mat-icon-button (click)="collapseAll()" matTooltip="Collapse All">
+          <mat-icon>unfold_less</mat-icon>
+        </button>
+        <button mat-icon-button (click)="toggleDescriptions()"
+          [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'" [class.active]="showDescriptions">
+          <mat-icon>{{ showDescriptions ? 'notes' : 'speaker_notes_off' }}</mat-icon>
+        </button>
+        <button mat-icon-button (click)="toggleTableInfo()"
+          [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
+          <mat-icon>{{ showTableInfo ? 'table_view' : 'grid_off' }}</mat-icon>
+        </button>
+        <button mat-icon-button (click)="importModal=true" [matTooltip]="'Import catalogs'">
+          <mat-icon color="primary">publish</mat-icon>
+        </button>
+      </div>
+    </div>
+    <span class="toolbar-spacer"></span>
+    <div class="bottom-toolbar-right">
+      <button mat-raised-button color="primary" (click)="createNewRootEntity($event)">
+        <mat-icon>add</mat-icon>
+        <span class="btn-text">New Entity</span>
+      </button>
+      <button mat-raised-button color="accent" (click)="refreshCatalog()">
+        <mat-icon>refresh</mat-icon>
+        <span class="btn-text">Refresh</span>
+      </button>
+    </div>
   </mat-toolbar>
 </div>
 
@@ -473,19 +484,36 @@
     <catalog-modal [(open)]="item.showColumns" [title]="'Table Details - ' + item.Table" [titleClickable]="true"
       (titleClick)="copyTableName(item.Table)">
       <div *ngIf="item.showColumns">
-
+        <div class="columns-search-scope" #columnsSearchContainer>
         <!-- 🔍 BUSCADOR ÚNICO -->
         <div class="columns-search-container">
           <mat-form-field appearance="outline" class="columns-search-field">
             <mat-label>Search columns or indexes...</mat-label>
             <input #ColumnIndexSearch matInput [(ngModel)]="columnSearchTerms[item.Namespace + '~' + item.Table]"
-              (ngModelChange)="cdr.markForCheck()" placeholder="Filter by name, description or properties" />
+              (ngModelChange)="onColumnSearchInput(item, columnsSearchContainer, $event)"
+              placeholder="Filter by name, description or properties" />
             <mat-icon matPrefix>search</mat-icon>
             <button mat-icon-button matSuffix *ngIf="columnSearchTerms[item.Namespace + '~' + item.Table]"
               (click)="clearColumnSearch(item)" aria-label="Clear search">
               <mat-icon>close</mat-icon>
             </button>
           </mat-form-field>
+          <div class="column-search-nav" *ngIf="columnSearchTerms[item.Namespace + '~' + item.Table]?.trim()">
+            <span class="column-search-count">
+              {{ (columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0) ? (columnSearchActiveIndex[item.Namespace + '~' + item.Table] || 0) + 1 : 0 }}
+              of {{ columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0 }}
+            </span>
+            <button mat-icon-button (click)="goToPrevColumnMatch(item, columnsSearchContainer)"
+              [disabled]="(columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0) < 2"
+              aria-label="Previous match">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <button mat-icon-button (click)="goToNextColumnMatch(item, columnsSearchContainer)"
+              [disabled]="(columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0) < 2"
+              aria-label="Next match">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
 
           <button mat-icon-button matSuffix (click)="ExportModal.openModal();extractError=''; this.cdr.markForCheck();"
             matTooltip="Download Sample Data" *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0"
@@ -528,8 +556,7 @@
               <ng-template #columnsTable>
                 <div class="columns-cards-container">
                   <mat-card *ngFor="let column of catalogTablesColumns[item.Namespace + '~' + item.Table]"
-                    class="column-card" [hidden]="(ColumnIndexSearch.value | searchText: column.columnName:column.dataType:
-                            column.description).length===0 ">
+                    class="column-card">
                     <mat-card-content class="column-card-content">
                       <!-- LEFT: Column Name -->
                       <div class="column-left">
@@ -614,8 +641,7 @@
               <ng-template #indexesTable>
                 <div class="columns-cards-container">
                   <mat-card *ngFor="let index of catalogTableIndexes[item.Namespace + '~' + item.Table]"
-                    class="column-card"
-                    [hidden]="(ColumnIndexSearch.value | searchText : index.properties : index.name).length==0">
+                    class="column-card">
                     <mat-card-content class="column-card-content">
                       <!-- LEFT: index name + badges -->
                       <div class="column-left">
@@ -670,6 +696,7 @@
           </mat-expansion-panel>
 
         </mat-accordion>
+        </div>
         <!-- MODAL EXPORT -->
         <catalog-modal #ExportModal [zIndex]="20" title="Download Sample Data" [modalStyle]="{width:'50%'}">
           <div style="display: flex;justify-content: space-evenly;align-items: center;">

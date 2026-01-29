@@ -3,7 +3,7 @@
   margin: 0 auto;
   position: relative;
   // Space for bottom toolbar
-  padding: 24px 24px 80px;
+  padding: 24px 24px 96px;
 }
 
 // Bottom Toolbar
@@ -16,9 +16,12 @@
   background-color: #f5f5f5;
   border-top: 1px solid #e0e0e0;
   display: flex;
-  gap: 12px;
-  padding: 12px 24px;
+  gap: 16px;
+  padding: 16px 24px;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  flex-wrap: nowrap;
+  align-items: center;
+  min-height: 88px;
 
   button {
     display: flex;
@@ -40,17 +43,42 @@
   }
 }
 
+.bottom-toolbar .mat-mdc-form-field {
+  margin: 0;
+  padding: 0;
+  align-self: center;
+}
+
+.bottom-toolbar .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.bottom-toolbar .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+.bottom-toolbar-right {
+  display: inline-flex;
+  gap: 12px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
 // Search Section
 .search-section {
-  margin-bottom: 32px;
+  margin-bottom: 0;
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 
   .search-field {
-    flex: 1;
-    max-width: 600px;
+    flex: 1 1 520px;
+    max-width: 760px;
     font-size: 16px;
     min-width: 250px;
 
@@ -63,10 +91,41 @@
     }
   }
 
+  .search-field ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: #ffffff;
+    position: relative;
+    top: 10px;
+  }
+
+  .search-nav-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    border: 1px solid #d6d6d6;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+    .search-nav-count {
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      margin: 0 6px;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    button {
+      color: #3f51b5;
+    }
+  }
+
   .action-buttons {
     display: flex;
     gap: 8px;
     flex-shrink: 0;
+    align-items: center;
 
     button {
       color: #3f51b5;
@@ -76,6 +135,53 @@
         background-color: rgba(63, 81, 181, 0.1);
       }
     }
+  }
+}
+
+.bottom-toolbar-search {
+  flex: 1 1 720px;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 56px;
+}
+
+.bottom-toolbar .search-toggle-btn {
+  display: none;
+  color: #3f51b5;
+}
+
+.bottom-toolbar button.mat-mdc-raised-button {
+  height: 40px;
+}
+
+.search-nav-controls {
+  height: 36px;
+  align-items: center;
+}
+
+.catalog-container.search-active {
+  .catalog-card {
+    opacity: 0.35;
+    transition: opacity 0.2s ease;
+  }
+
+  .catalog-card.search-has-match {
+    opacity: 1;
+  }
+
+  .catalog-card.search-active-card {
+    opacity: 1;
+  }
+
+  mark.searchMark {
+    background: #ffe08a;
+    padding: 0 1px;
+  }
+
+  mark.searchMark.active {
+    background: #ffb300;
+    box-shadow: 0 0 0 3px rgba(255, 179, 0, 0.55);
+    border-radius: 2px;
   }
 }
 
@@ -868,6 +974,75 @@
     display: none !important;
   }
 
+  .bottom-toolbar-right .btn-text {
+    display: none;
+  }
+
+  .bottom-toolbar .search-toggle-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bottom-toolbar-search {
+    display: flex;
+  }
+
+  .bottom-toolbar-search .search-field,
+  .bottom-toolbar-search .search-nav-controls {
+    display: none;
+  }
+
+  .action-buttons {
+    display: flex;
+  }
+
+  .bottom-toolbar-right {
+    display: inline-flex;
+  }
+
+  .bottom-toolbar {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .toolbar-spacer {
+    display: none;
+  }
+
+  .bottom-toolbar-search {
+    flex: 0 1 auto;
+    width: auto;
+  }
+
+  .bottom-toolbar-right {
+    margin-left: auto;
+  }
+
+  .bottom-toolbar.mobile-search-open {
+    .bottom-toolbar-search {
+      display: flex;
+      flex: 1 1 auto;
+    }
+
+    .bottom-toolbar-right {
+      display: none;
+    }
+
+    .action-buttons {
+      display: none;
+    }
+
+    .bottom-toolbar .search-toggle-btn {
+      display: none;
+    }
+
+    .bottom-toolbar-search .search-field,
+    .bottom-toolbar-search .search-nav-controls {
+      display: flex;
+    }
+  }
+
   .catalog-container {
     padding: 16px;
   }
@@ -1030,12 +1205,18 @@
   padding: 1rem 0;
   margin-bottom: 1rem;
   border-bottom: 1px solid #e0e0e0;
-  display: inline-flex;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
 }
 
 .columns-search-field {
-  width: 90%;
+  flex: 1 1 auto;
   font-size: 14px;
 
   ::ng-deep .mat-form-field-wrapper {
@@ -1047,13 +1228,28 @@
   }
 }
 
-/* Highlight styling */
-::ng-deep .column-highlight {
-  background-color: #ffeb3b;
-  color: #000;
+.column-search-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border: 1px solid #d6d6d6;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
+}
+
+.column-search-count {
+  font-size: 12px;
   font-weight: 600;
-  padding: 2px 4px;
-  border-radius: 3px;
+  color: #444;
+  margin: 0 6px;
+}
+
+.columns-search-container mark.searchMark {
+  background: #ffe08a;
+  padding: 0 1px;
 }
 
 .columns-cards-container {
