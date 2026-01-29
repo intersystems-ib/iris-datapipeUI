@@ -5,7 +5,7 @@
   <div class="category-filters">
     <mat-chip-set>
       <mat-chip-option *ngFor="let category of Object.keys(categories)" [selected]="categories[category].selected"
-        (selectionChange)="categoryChange(categories[category])" [ngStyle]="{'--mdc-chip-label-text-color': categories[category].loadedAttributes?.['Color'],
+                       (selectionChange)="categoryChange(categories[category])" [ngStyle]="{'--mdc-chip-label-text-color': categories[category].loadedAttributes?.['Color'],
                                 '--mdc-chip-selected-label-text-color': categories[category].loadedAttributes?.['Color'],
                               'background-color':categories[category].loadedAttributes?.['BackgroundColor']}">
         {{ categories[category].Name }}
@@ -39,11 +39,12 @@
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>Search catalog...</mat-label>
         <input matInput #searchInput (input)="onSearchInput(searchInput.value)"
-          placeholder="Search by entity, description or table">
+               placeholder="Search by entity, description or table">
         <mat-icon matSuffix *ngIf="!searchInput.value">search</mat-icon>
       </mat-form-field>
       <div class="search-nav-controls" *ngIf="searchStringValue?.trim()">
-        <span class="search-nav-count">{{ searchMatchCount ? (activeMatchIndex + 1) : 0 }} of {{ searchMatchCount }}</span>
+        <span class="search-nav-count">{{ searchMatchCount ? (activeMatchIndex + 1) : 0 }}
+          of {{ searchMatchCount }}</span>
         <button mat-icon-button (click)="goToPrevMatch()" [disabled]="searchMatchCount < 2" aria-label="Previous match">
           <mat-icon>chevron_left</mat-icon>
         </button>
@@ -65,21 +66,22 @@
           <mat-icon>unfold_less</mat-icon>
         </button>
         <button mat-icon-button (click)="toggleDescriptions()"
-          [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'" [class.active]="showDescriptions">
+                [matTooltip]="showDescriptions ? 'Hide descriptions' : 'Show descriptions'"
+                [class.active]="showDescriptions">
           <mat-icon>{{ showDescriptions ? 'notes' : 'speaker_notes_off' }}</mat-icon>
         </button>
         <button mat-icon-button (click)="toggleTableInfo()"
-          [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
+                [matTooltip]="showTableInfo ? 'Hide table info' : 'Show table info'" [class.active]="showTableInfo">
           <mat-icon>{{ showTableInfo ? 'table_view' : 'grid_off' }}</mat-icon>
         </button>
-        <button mat-icon-button (click)="importModal=true" [matTooltip]="'Import catalogs'">
+        <button mat-icon-button *ngIf="canEdit" (click)="importModal=true" [matTooltip]="'Import catalogs'">
           <mat-icon color="primary">publish</mat-icon>
         </button>
       </div>
     </div>
     <span class="toolbar-spacer"></span>
     <div class="bottom-toolbar-right">
-      <button mat-raised-button color="primary" (click)="createNewRootEntity($event)">
+      <button mat-raised-button color="primary" *ngIf="canEdit" (click)="createNewRootEntity($event)">
         <mat-icon>add</mat-icon>
         <span class="btn-text">New Entity</span>
       </button>
@@ -94,10 +96,10 @@
 <!-- Recursive Card Template -->
 <ng-template #catalogCard let-item let-level="level" let-index="index" let-array="array" let-parent="parent">
   <mat-card class="catalog-card"
-    [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ')"
-    [id]="'catalog-card-' + item.Id"
-    [class.sync-error-card]="hasAnyError(item)"
-    [hidden]="categoryFiltering && categories[item.Category.Name] && !categories[item.Category.Name].selected">
+            [ngClass]="(item.refreshing==true?'loading-line ':' ')+(level === 1 ? 'parent-card ' : 'child-card ')"
+            [id]="'catalog-card-' + item.Id"
+            [class.sync-error-card]="hasAnyError(item)"
+            [hidden]="categoryFiltering && categories[item.Category.Name] && !categories[item.Category.Name].selected">
     <mat-card-header>
       <div class="card-header-content">
         <div class="entity-info">
@@ -106,7 +108,7 @@
             <div class="expand-button" *ngIf="item.Children && item.Children.length > 0">
               <button mat-icon-button (click)="toggleExpand(item)">
                 <mat-icon>{{
-                  item.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right'
+                    item.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right'
                   }}
                 </mat-icon>
               </button>
@@ -121,8 +123,8 @@
             <mat-chip *ngIf="!item.isEditing && item.Subtypeof == undefined" class="category-chip" [ngStyle]="{'--mdc-chip-label-text-color': categories[item.Category.Name].loadedAttributes?.['Color'],
                                 '--mdc-chip-selected-label-text-color': categories[item.Category.Name].loadedAttributes?.['Color'],
                               'background-color':categories[item.Category.Name].loadedAttributes?.['BackgroundColor']}"
-              [ngClass]="level > 1 ? 'subcategory' : ''">{{
-              item.Category.Name
+                      [ngClass]="level > 1 ? 'subcategory' : ''">{{
+                item.Category.Name
               }}
             </mat-chip>
             <mat-icon *ngIf="!item?.isEditing && hasMdxError(item)"
@@ -134,24 +136,25 @@
               sync_problem
             </mat-icon>
             <h2 *ngIf="!item.isEditing && level === 1" class="entity-title" HighlightSearchText [text]="item.Entity"
-              [searchString]="searchStringValue" (resultChange)="searchResults = searchResults+$event"
-              (click)="toggleExpand(item)"></h2>
+                [searchString]="searchStringValue" (resultChange)="searchResults = searchResults+$event"
+                (click)="toggleExpand(item)"></h2>
 
             <h3 *ngIf="!item.isEditing && level === 2" class="entity-title" HighlightSearchText [text]="item.Entity"
-              [searchString]="searchStringValue"
-              (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"
-              (click)="toggleExpand(item)"></h3>
+                [searchString]="searchStringValue"
+                (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"
+                (click)="toggleExpand(item)"></h3>
             <h4 *ngIf="!item.isEditing && level > 2" class="entity-title" HighlightSearchText [text]="item.Entity"
-              [searchString]="searchStringValue"
-              (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"
-              (click)="toggleExpand(item)"></h4>
+                [searchString]="searchStringValue"
+                (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"
+                (click)="toggleExpand(item)"></h4>
 
             <!-- Edit mode -->
             <mat-form-field *ngIf="item.isEditing && item.Subtypeof==undefined" appearance="outline" class="edit-field">
               <mat-label>Category</mat-label>
               <mat-select [(ngModel)]="item.Category.Name" [disabled]="item.Subtypeof!=undefined"
-                [matTooltip]="item.Subtypeof!=undefined?'A subtype must have the same category as its father':'Select a category'">
-                <mat-option *ngFor="let category of Object.values(categories)" [value]="category.Name">{{ category.Name
+                          [matTooltip]="item.Subtypeof!=undefined?'A subtype must have the same category as its father':'Select a category'">
+                <mat-option *ngFor="let category of Object.values(categories)" [value]="category.Name">{{
+                    category.Name
                   }}
                 </mat-option>
               </mat-select>
@@ -164,7 +167,7 @@
         </div>
         <!-- TOTAL en cabecera SOLO en modo compacto -->
         <div class="header-total"
-          *ngIf="!showDescriptions && !showTableInfo && !(item.showHistogram || item.showTreeMap)">
+             *ngIf="!showDescriptions && !showTableInfo && !(item.showHistogram || item.showTreeMap)">
           <div class="total-records">
             <div class="records-count" [matTooltip]="item.Total?.Count | numberWithSeparators">
               {{ item.Total?.Count | largeNumbers }}
@@ -173,31 +176,34 @@
         </div>
 
         <div class="item-actions">
-          <!-- Move Up -->
-          <button mat-icon-button color="primary" class="hide-on-mobile"
-            [matTooltip]="categoryFiltering?'Can not edit order while filtering by category':'Move up'"
-            (click)="moveItem(item, index, array, 'up')" [disabled]="index<=0 || item.Id === -1">
+          <ng-container *ngIf="canEdit">
+            <!-- Move Up -->
+            <button mat-icon-button color="primary" class="hide-on-mobile"
+                    [matTooltip]="categoryFiltering?'Can not edit order while filtering by category':'Move up'"
+                    (click)="moveItem(item, index, array, 'up')" [disabled]="index<=0 || item.Id === -1">
 
-            <mat-icon>arrow_upward</mat-icon>
-          </button>
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
 
-          <!-- Move Down -->
-          <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move down"
-            (click)="moveItem(item, index, array, 'down')"
-            [disabled]="(index >= (array.length -1) || array.length===1) || item.Id === -1">
-            <mat-icon>arrow_downward</mat-icon>
-          </button>
+            <!-- Move Down -->
+            <button mat-icon-button class="hide-on-mobile" color="primary" matTooltip="Move down"
+                    (click)="moveItem(item, index, array, 'down')"
+                    [disabled]="(index >= (array.length -1) || array.length===1) || item.Id === -1">
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
 
-          <!-- Add Subtype -->
-          <button mat-icon-button class="hide-on-mobile" color="primary" (click)="addChildEntity(item, $event)"
-            matTooltip="Add Subtype">
-            <mat-icon>playlist_add</mat-icon>
-          </button>
-          <!--Delete -->
-          <button mat-icon-button class="delete-button hide-on-mobile" [hidden]="!item.isEditing || item.Id === -1"
-            (click)="DeleteModal.openModal()">
-            <mat-icon color="white">delete</mat-icon>
-          </button>
+            <!-- Add Subtype -->
+            <button mat-icon-button class="hide-on-mobile" color="primary"
+                    (click)="addChildEntity(item, $event)"
+                    matTooltip="Add Subtype">
+              <mat-icon>playlist_add</mat-icon>
+            </button>
+            <!--Delete -->
+            <button mat-icon-button class="delete-button hide-on-mobile" [hidden]="!item.isEditing || item.Id === -1"
+                    (click)="DeleteModal.openModal()">
+              <mat-icon color="white">delete</mat-icon>
+            </button>
+          </ng-container>
           <catalog-modal #DeleteModal [zIndex]="20" [title]="'Delete catalog?'" [modalStyle]="{width:'50%'}">
             <p class="warning-text">
               If you delete this data, it cannot be recovered.
@@ -213,45 +219,46 @@
 
           <!-- Show/Hide Histogram -->
           <button mat-icon-button [disabled]="(item.showHistogram && !item.doneLoadingGraph)"
-            (click)="toggleHistogram(item)"
-            [matTooltip]="(item.MDXHistogram || item.MDXHistogramUpdated)?(item.showHistogram ? 'Hide Histogram' : 'Show Histogram'):'Nothing to load'"
-            [class.active]="item.showHistogram" class="toggle-button">
+                  (click)="toggleHistogram(item)"
+                  [matTooltip]="(item.MDXHistogram || item.MDXHistogramUpdated)?(item.showHistogram ? 'Hide Histogram' : 'Show Histogram'):'Nothing to load'"
+                  [class.active]="item.showHistogram" class="toggle-button">
             <mat-icon [ngStyle]="{'color':!(item.MDXHistogram || item.MDXHistogramUpdated)?'#d5d4d4':''}">
               {{ item.showHistogram ? 'insert_chart' : 'insert_chart_outlined' }}
             </mat-icon>
           </button>
           <button mat-icon-button [disabled]="item.showTreeMap && !item.doneLoadingGraph" (click)="toggleTreeMap(item)"
-            [matTooltip]="(item.MDXTreeMap)?(item.showTreeMap ? 'Hide treemap' : 'Show treemap'):'Nothing to load'"
-            [class.active]="item.showTreeMap" class="toggle-button">
+                  [matTooltip]="(item.MDXTreeMap)?(item.showTreeMap ? 'Hide treemap' : 'Show treemap'):'Nothing to load'"
+                  [class.active]="item.showTreeMap" class="toggle-button">
             <mat-icon [ngStyle]="{'color':!(item.MDXTreeMap)?'#d5d4d4':''}">dashboard</mat-icon>
           </button>
 
 
           <!-- Show/Hide Columns -->
           <button mat-icon-button (click)="item.showColumns = true; loadColumns(item); cdr.markForCheck()"
-            [matTooltip]="'Show Columns'" class="toggle-button">
+                  [matTooltip]="'Show Columns'" class="toggle-button">
             <mat-icon>table_rows</mat-icon>
           </button>
 
           <!-- Edit / Cancel / Save -->
           <button *ngIf="!item.isEditing && canEdit" mat-icon-button color="primary" (click)="toggleEditMode(item)"
-            matTooltip="Edit">
+                  matTooltip="Edit">
             <mat-icon>edit</mat-icon>
           </button>
           <button *ngIf="item.isEditing" mat-icon-button color="warn" (click)="cancelEdit(item, array, index)"
-            matTooltip="Cancel">
+                  matTooltip="Cancel">
             <mat-icon>close</mat-icon>
           </button>
           <button *ngIf="item.isEditing" mat-icon-button color="primary" (click)="exportItem(item)" matTooltip="Export">
             <mat-icon>download</mat-icon>
           </button>
           <button *ngIf="item.isEditing" [disabled]="item.Subtypeof===-1" mat-icon-button color="accent"
-            (click)="saveEdit(item)" matTooltip="Save">
+                  (click)="saveEdit(item)" matTooltip="Save">
             <mat-icon>save</mat-icon>
           </button>
-          <button mat-icon-button color="primary" (click)="openCubeModal(item)"
-            [disabled]="!item.Cube || item.cubeOperationRunning" matTooltip="Refresh Data">
-            <mat-icon [class.sync-spin]="item.cubeOperationRunning">{{ item.cubeOperationRunning ? 'autorenew' : 'sync'
+          <button mat-icon-button color="primary" *ngIf="canEdit" (click)="openCubeModal(item)"
+                  [disabled]="!item.Cube || item.cubeOperationRunning" matTooltip="Refresh Data">
+            <mat-icon [class.sync-spin]="item.cubeOperationRunning">{{
+                item.cubeOperationRunning ? 'autorenew' : 'sync'
               }}
             </mat-icon>
           </button>
@@ -265,8 +272,8 @@
             <svg class="cube-progress-svg" viewBox="0 0 64 64" aria-hidden="true">
               <circle class="cube-progress-track" cx="32" cy="32" [attr.r]="cubeProgressRadius"></circle>
               <circle class="cube-progress-fill" cx="32" cy="32" [attr.r]="cubeProgressRadius"
-                [attr.stroke-dasharray]="cubeProgressCircumference"
-                [attr.stroke-dashoffset]="cubeProgressCircumference * (1-((item?.cubeStatus?.stage?.[stage.key]?.progress ?? 0)/100))">
+                      [attr.stroke-dasharray]="cubeProgressCircumference"
+                      [attr.stroke-dashoffset]="cubeProgressCircumference * (1-((item?.cubeStatus?.stage?.[stage.key]?.progress ?? 0)/100))">
               </circle>
             </svg>
             <span class="cube-progress-value">{{ item?.cubeStatus?.stage?.[stage.key]?.progress ?? 0 }}%</span>
@@ -294,20 +301,21 @@
               <ng-container
                 *ngIf="!item.MDXError['MDXHistogram'] && !item.MDXError['MDXHistogramUpdated']; else ErrorWithGraph">
                 <apx-chart *ngIf="item.showHistogram" [series]="item.histogramSeries!" [chart]="item.chartOptionsChart!"
-                  [plotOptions]="chartOptions.plotOptions!"
-                  [dataLabels]="item.histogramSeries[0].data.length<=18?chartOptions.dataLabels!:{enabled: false }"
-                  [xaxis]="item.histogramXaxis!" [yaxis]="chartOptions.yaxis!" [tooltip]="chartOptions.tooltip!"
-                  [legend]="chartOptions.legend!" [colors]="chartOptions.colors!" />
+                           [plotOptions]="chartOptions.plotOptions!"
+                           [dataLabels]="item.histogramSeries[0].data.length<=18?chartOptions.dataLabels!:{enabled: false }"
+                           [xaxis]="item.histogramXaxis!" [yaxis]="chartOptions.yaxis!"
+                           [tooltip]="chartOptions.tooltip!"
+                           [legend]="chartOptions.legend!" [colors]="chartOptions.colors!"/>
               </ng-container>
               <ng-container *ngIf="!item.MDXError['MDXTreeMap']; else ErrorWithGraph">
                 <apx-chart *ngIf="item.showTreeMap;" [hidden]="!item.showTreeMap" [series]="item.treeMapSeries"
-                  [chart]="{type:'treemap'}" [title]="{text:'Treemap', align:'center'}" [legend]="{show:false}"
-                  [dataLabels]="{enabled: true}" [plotOptions]="{
+                           [chart]="{type:'treemap'}" [title]="{text:'Treemap', align:'center'}" [legend]="{show:false}"
+                           [dataLabels]="{enabled: true}" [plotOptions]="{
                                 treemap: {
                                   distributed: false,
                                   enableShades: true
                                 }
-                              }" />
+                              }"/>
               </ng-container>
             </div>
           </div>
@@ -332,18 +340,18 @@
         <div class="description-section" *ngIf="showDescriptions || showTableInfo || item.isEditing">
           <!-- View mode -->
           <p *ngIf="!item.isEditing && showDescriptions" class="entity-description" HighlightSearchText
-            [text]="item.EntityDescription" [searchString]="searchStringValue"
-            (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event">
+             [text]="item.EntityDescription" [searchString]="searchStringValue"
+             (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event">
           </p>
 
           <div *ngIf="!item.isEditing && showDescriptions && (item.DataOrigins || item.Usage)"
-            class="documentation-section">
+               class="documentation-section">
             <div *ngIf="item.DataOrigins" class="doc-info">
               <mat-icon class="doc-icon">forward</mat-icon>
               <div class="doc-content">
                 <span class="doc-label">Data Origins:</span>
                 <span class="doc-text" HighlightSearchText [text]="item.DataOrigins" [searchString]="searchStringValue"
-                  (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                      (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
               </div>
             </div>
             <div *ngIf="item.Usage" class="doc-info">
@@ -351,7 +359,7 @@
               <div class="doc-content">
                 <span class="doc-label">Usage:</span>
                 <span class="doc-text" HighlightSearchText [text]="item.Usage" [searchString]="searchStringValue"
-                  (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                      (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
               </div>
             </div>
           </div>
@@ -360,22 +368,22 @@
             <div class="table-info">
               <mat-icon class="table-icon">dns</mat-icon>
               <span class="table-name" HighlightSearchText [text]="item.Namespace" [searchString]="searchStringValue"
-                (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                    (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
             </div>
             <div class="table-info">
               <mat-icon class="table-icon">view_in_ar</mat-icon>
               <span class="table-name" HighlightSearchText [text]="item.Cube || ''" [searchString]="searchStringValue"
-                (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                    (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
             </div>
             <div class="table-info">
               <mat-icon class="table-icon">table_view</mat-icon>
               <span class="table-name" HighlightSearchText [text]="item.Table" [searchString]="searchStringValue"
-                (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                    (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
             </div>
             <div class="table-info filter-info">
               <mat-icon class="table-icon">filter_alt</mat-icon>
               <span class="table-name" HighlightSearchText [text]="item.Filter" [searchString]="searchStringValue"
-                (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
+                    (resultChange)="(searchStringValue&&$event>0&&parent)?parent.expanded=true:'';searchResults = searchResults+$event"></span>
             </div>
           </div>
 
@@ -389,14 +397,14 @@
             <mat-label>Data Origins</mat-label>
             <mat-icon matPrefix class="field-icon">forward</mat-icon>
             <textarea matInput [(ngModel)]="item.DataOrigins" rows="3"
-              placeholder="Document the origin of the data..."></textarea>
+                      placeholder="Document the origin of the data..."></textarea>
           </mat-form-field>
 
           <mat-form-field *ngIf="item.isEditing" appearance="outline" class="edit-field full-width">
             <mat-label>Usage</mat-label>
             <mat-icon matPrefix class="field-icon">attribution</mat-icon>
             <textarea matInput [(ngModel)]="item.Usage" rows="3"
-              placeholder="Describe how this data is used..."></textarea>
+                      placeholder="Describe how this data is used..."></textarea>
           </mat-form-field>
 
           <div *ngIf="item.isEditing" class="namespace-table-filter-row">
@@ -421,17 +429,19 @@
                   <mat-slide-toggle color="primary" [(ngModel)]="item.ShouldSyncCube" matTooltip="Sync the cube daily">
                   </mat-slide-toggle>
                   <mat-icon class="toggle-icon"
-                    [ngStyle]="{'color': item.ShouldSyncCube ? 'green' : 'grey'}">autorenew</mat-icon>
+                            [ngStyle]="{'color': item.ShouldSyncCube ? 'green' : 'grey'}">autorenew
+                  </mat-icon>
                   <span [ngStyle]="{'color': item.ShouldSyncCube ? 'green' : 'grey'}">
                     {{ item.ShouldSyncCube ? 'Enabled Automatic Sync' : 'Enable Automatic Sync' }}
                   </span>
                 </div>
                 <div class="toggle-row">
                   <mat-slide-toggle color="primary" [(ngModel)]="item.ShouldRebuildCube"
-                    matTooltip="Rebuild the cube weekly">
+                                    matTooltip="Rebuild the cube weekly">
                   </mat-slide-toggle>
                   <mat-icon class="toggle-icon"
-                    [ngStyle]="{'color': item.ShouldRebuildCube ? 'green' : 'grey'}">build_circle</mat-icon>
+                            [ngStyle]="{'color': item.ShouldRebuildCube ? 'green' : 'grey'}">build_circle
+                  </mat-icon>
                   <span [ngStyle]="{'color': item.ShouldRebuildCube ? 'green' : 'grey'}">
                     {{ item.ShouldRebuildCube ? 'Enabled Automatic Build' : 'Enable Automatic Build' }}
                   </span>
@@ -482,242 +492,247 @@
       </div>
     </mat-card-content>
     <catalog-modal [(open)]="item.showColumns" [title]="'Table Details - ' + item.Table" [titleClickable]="true"
-      (titleClick)="copyTableName(item.Table)">
+                   (titleClick)="copyTableName(item.Table)">
       <div *ngIf="item.showColumns">
         <div class="columns-search-scope" #columnsSearchContainer>
-        <!-- 🔍 BUSCADOR ÚNICO -->
-        <div class="columns-search-container">
-          <mat-form-field appearance="outline" class="columns-search-field">
-            <mat-label>Search columns or indexes...</mat-label>
-            <input #ColumnIndexSearch matInput [(ngModel)]="columnSearchTerms[item.Namespace + '~' + item.Table]"
-              (ngModelChange)="onColumnSearchInput(item, columnsSearchContainer, $event)"
-              placeholder="Filter by name, description or properties" />
-            <mat-icon matPrefix>search</mat-icon>
-            <button mat-icon-button matSuffix *ngIf="columnSearchTerms[item.Namespace + '~' + item.Table]"
-              (click)="clearColumnSearch(item)" aria-label="Clear search">
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-          <div class="column-search-nav" *ngIf="columnSearchTerms[item.Namespace + '~' + item.Table]?.trim()">
+          <!-- 🔍 BUSCADOR ÚNICO -->
+          <div class="columns-search-container">
+            <mat-form-field appearance="outline" class="columns-search-field">
+              <mat-label>Search columns or indexes...</mat-label>
+              <input #ColumnIndexSearch matInput [(ngModel)]="columnSearchTerms[item.Namespace + '~' + item.Table]"
+                     (ngModelChange)="onColumnSearchInput(item, columnsSearchContainer, $event)"
+                     placeholder="Filter by name, description or properties"/>
+              <mat-icon matPrefix>search</mat-icon>
+              <button mat-icon-button matSuffix *ngIf="columnSearchTerms[item.Namespace + '~' + item.Table]"
+                      (click)="clearColumnSearch(item)" aria-label="Clear search">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+            <div class="column-search-nav" *ngIf="columnSearchTerms[item.Namespace + '~' + item.Table]?.trim()">
             <span class="column-search-count">
               {{ (columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0) ? (columnSearchActiveIndex[item.Namespace + '~' + item.Table] || 0) + 1 : 0 }}
               of {{ columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0 }}
             </span>
-            <button mat-icon-button (click)="goToPrevColumnMatch(item, columnsSearchContainer)"
-              [disabled]="(columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0) < 2"
-              aria-label="Previous match">
-              <mat-icon>chevron_left</mat-icon>
+              <button mat-icon-button (click)="goToPrevColumnMatch(item, columnsSearchContainer)"
+                      [disabled]="(columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0) < 2"
+                      aria-label="Previous match">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <button mat-icon-button (click)="goToNextColumnMatch(item, columnsSearchContainer)"
+                      [disabled]="(columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0) < 2"
+                      aria-label="Next match">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+
+            <button mat-icon-button matSuffix
+                    (click)="ExportModal.openModal();extractError=''; this.cdr.markForCheck();"
+                    matTooltip="Download Sample Data"
+                    *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0"
+                    aria-label="Download Sample data">
+              <mat-icon>download</mat-icon>
             </button>
-            <button mat-icon-button (click)="goToNextColumnMatch(item, columnsSearchContainer)"
-              [disabled]="(columnSearchMatchCount[item.Namespace + '~' + item.Table] || 0) < 2"
-              aria-label="Next match">
-              <mat-icon>chevron_right</mat-icon>
+            <button mat-icon-button matSuffix (click)="resetTableInfo(item)" matTooltip="Rebuild table info"
+                    *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0"
+                    aria-label="Rebuild table info">
+              <mat-icon>autorenew</mat-icon>
             </button>
           </div>
 
-          <button mat-icon-button matSuffix (click)="ExportModal.openModal();extractError=''; this.cdr.markForCheck();"
-            matTooltip="Download Sample Data" *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0"
-            aria-label="Download Sample data">
-            <mat-icon>download</mat-icon>
-          </button>
-          <button mat-icon-button matSuffix (click)="resetTableInfo(item)" matTooltip="Rebuild table info"
-            *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length!==0" aria-label="Rebuild table info">
-            <mat-icon>autorenew</mat-icon>
-          </button>
-        </div>
+          <!-- ⬇️ Acordeones debajo del buscador -->
+          <mat-accordion multi>
 
-        <!-- ⬇️ Acordeones debajo del buscador -->
-        <mat-accordion multi>
+            <!-- PANEL: COLUMNS -->
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title class="accordion-columns">
+                  <mat-icon>table_rows</mat-icon>
+                  <span>&nbsp;Table Columns</span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
 
-          <!-- PANEL: COLUMNS -->
-          <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header>
-              <mat-panel-title class="accordion-columns">
-                <mat-icon>table_rows</mat-icon>
-                <span>&nbsp;Table Columns</span>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <div class="columns-table">
-              <!-- LOADING -->
-              <div class="histogram-loading"
-                *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table] === undefined; else doneLoadingColumns">
-                <mat-spinner diameter="50"></mat-spinner>
-                <span class="loading-text">Loading table...</span>
-              </div>
-
-              <ng-template #doneLoadingColumns>
-                <div *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length===0; else columnsTable"
-                  style="color:red">
-                  Table not found in namespace
+              <div class="columns-table">
+                <!-- LOADING -->
+                <div class="histogram-loading"
+                     *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table] === undefined; else doneLoadingColumns">
+                  <mat-spinner diameter="50"></mat-spinner>
+                  <span class="loading-text">Loading table...</span>
                 </div>
-              </ng-template>
 
-              <ng-template #columnsTable>
-                <div class="columns-cards-container">
-                  <mat-card *ngFor="let column of catalogTablesColumns[item.Namespace + '~' + item.Table]"
-                    class="column-card">
-                    <mat-card-content class="column-card-content">
-                      <!-- LEFT: Column Name -->
-                      <div class="column-left">
+                <ng-template #doneLoadingColumns>
+                  <div *ngIf="catalogTablesColumns[item.Namespace+'~'+item.Table]?.length===0; else columnsTable"
+                       style="color:red">
+                    Table not found in namespace
+                  </div>
+                </ng-template>
+
+                <ng-template #columnsTable>
+                  <div class="columns-cards-container">
+                    <mat-card *ngFor="let column of catalogTablesColumns[item.Namespace + '~' + item.Table]"
+                              class="column-card">
+                      <mat-card-content class="column-card-content">
+                        <!-- LEFT: Column Name -->
+                        <div class="column-left">
                         <span class="column-copy" (click)="copyToClipboard(column.columnName)"
-                          matTooltip="Click to copy">
+                              matTooltip="Click to copy">
                           <mat-icon>copy_all</mat-icon>
                         </span>
-                        <span class="column-name"
-                          [innerHTML]="ColumnIndexSearch.value | highlightText : column.columnName"></span>
+                          <span class="column-name"
+                                [innerHTML]="ColumnIndexSearch.value | highlightText : column.columnName"></span>
 
-                        <span class="column-nullability" *ngIf="column.isNullable==='NO'" matTooltip="NOT NULL Column">
+                          <span class="column-nullability" *ngIf="column.isNullable==='NO'"
+                                matTooltip="NOT NULL Column">
                           <mat-icon class="nullability-icon">emergency</mat-icon>
                         </span>
 
-                        <span class="column-generated" *ngIf="column.isGenerated==='YES'"
-                          matTooltip="Calculated Column">
+                          <span class="column-generated" *ngIf="column.isGenerated==='YES'"
+                                matTooltip="Calculated Column">
                           <mat-icon class="generated-icon">auto_awesome</mat-icon>
                         </span>
 
-                        <span class="column-generated" *ngIf="column.isIdentity==='YES'" matTooltip="Primary key">
+                          <span class="column-generated" *ngIf="column.isIdentity==='YES'" matTooltip="Primary key">
                           <mat-icon class="generated-icon">key</mat-icon>
                         </span>
-                      </div>
+                        </div>
 
-                      <!-- CENTER: Data type -->
-                      <div class="column-center">
-                        <div class="type-chip">
+                        <!-- CENTER: Data type -->
+                        <div class="column-center">
+                          <div class="type-chip">
                           <span class="type-value"
-                            [innerHTML]="ColumnIndexSearch.value | highlightText :column.dataType">{{
-                            column.dataType
+                                [innerHTML]="ColumnIndexSearch.value | highlightText :column.dataType">{{
+                              column.dataType
                             }}</span>
-                        </div>
-                      </div>
-
-                      <!-- RIGHT: Description -->
-                      <div class="column-right" *ngIf="column.description; else noDescription">
-                        <div class="description-box"
-                          [innerHTML]="ColumnIndexSearch.value | highlightText :column.description">
-                        </div>
-                      </div>
-
-                      <ng-template #noDescription>
-                        <div *ngIf="column.isIdentity==='NO'" class="column-right">
-                          <div class="description-box empty">
-                            No description available
                           </div>
                         </div>
-                      </ng-template>
-                    </mat-card-content>
-                  </mat-card>
-                </div>
-              </ng-template>
-            </div>
 
+                        <!-- RIGHT: Description -->
+                        <div class="column-right" *ngIf="column.description; else noDescription">
+                          <div class="description-box"
+                               [innerHTML]="ColumnIndexSearch.value | highlightText :column.description">
+                          </div>
+                        </div>
 
-          </mat-expansion-panel>
-
-          <!-- PANEL: INDEXES -->
-          <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header>
-              <mat-panel-title class="accordion-columns">
-                <mat-icon>search</mat-icon>
-                <span>&nbsp;Table Indexes</span>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <div class="columns-table">
-              <!-- LOADING INDEXES -->
-              <div class="histogram-loading"
-                *ngIf="catalogTableIndexes[item.Namespace+'~'+item.Table] === undefined; else doneLoadingIndexes">
-                <mat-spinner diameter="40"></mat-spinner>
-                <span class="loading-text">Loading indexes...</span>
+                        <ng-template #noDescription>
+                          <div *ngIf="column.isIdentity==='NO'" class="column-right">
+                            <div class="description-box empty">
+                              No description available
+                            </div>
+                          </div>
+                        </ng-template>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                </ng-template>
               </div>
 
-              <ng-template #doneLoadingIndexes>
-                <div *ngIf="catalogTableIndexes[item.Namespace+'~'+item.Table]?.length===0; else indexesTable"
-                  style="color:red">
-                  No indexes defined for this table
-                </div>
-              </ng-template>
 
-              <ng-template #indexesTable>
-                <div class="columns-cards-container">
-                  <mat-card *ngFor="let index of catalogTableIndexes[item.Namespace + '~' + item.Table]"
-                    class="column-card">
-                    <mat-card-content class="column-card-content">
-                      <!-- LEFT: index name + badges -->
-                      <div class="column-left">
+            </mat-expansion-panel>
+
+            <!-- PANEL: INDEXES -->
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title class="accordion-columns">
+                  <mat-icon>search</mat-icon>
+                  <span>&nbsp;Table Indexes</span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div class="columns-table">
+                <!-- LOADING INDEXES -->
+                <div class="histogram-loading"
+                     *ngIf="catalogTableIndexes[item.Namespace+'~'+item.Table] === undefined; else doneLoadingIndexes">
+                  <mat-spinner diameter="40"></mat-spinner>
+                  <span class="loading-text">Loading indexes...</span>
+                </div>
+
+                <ng-template #doneLoadingIndexes>
+                  <div *ngIf="catalogTableIndexes[item.Namespace+'~'+item.Table]?.length===0; else indexesTable"
+                       style="color:red">
+                    No indexes defined for this table
+                  </div>
+                </ng-template>
+
+                <ng-template #indexesTable>
+                  <div class="columns-cards-container">
+                    <mat-card *ngFor="let index of catalogTableIndexes[item.Namespace + '~' + item.Table]"
+                              class="column-card">
+                      <mat-card-content class="column-card-content">
+                        <!-- LEFT: index name + badges -->
+                        <div class="column-left">
                         <span class="column-copy" (click)="copyToClipboard(index.name)" matTooltip="Click to copy">
                           <mat-icon>copy_all</mat-icon>
                         </span>
-                        <span class="column-name"
-                          [innerHTML]="ColumnIndexSearch.value | highlightText : index.name"></span>
+                          <span class="column-name"
+                                [innerHTML]="ColumnIndexSearch.value | highlightText : index.name"></span>
 
 
-                        <span class="column-generated" *ngIf="index.isPrimaryKey === 'YES'"
-                          matTooltip="Primary Key Index">
+                          <span class="column-generated" *ngIf="index.isPrimaryKey === 'YES'"
+                                matTooltip="Primary Key Index">
                           <mat-icon class="generated-icon">key</mat-icon>
                         </span>
 
-                        <span class="column-generated" *ngIf="index.isUnique === 'YES' && index.isPrimaryKey !== 'YES'"
-                          matTooltip="Unique Index">
+                          <span class="column-generated"
+                                *ngIf="index.isUnique === 'YES' && index.isPrimaryKey !== 'YES'"
+                                matTooltip="Unique Index">
                           <mat-icon class="generated-icon">fingerprint</mat-icon>
                         </span>
-                      </div>
-
-                      <!-- CENTER: type -->
-                      <div class="column-center">
-                        <div class="type-chip">
-                          <span class="type-value">{{ index.type || 'index' }}</span>
                         </div>
-                      </div>
 
-                      <!-- RIGHT: description + properties -->
-                      <div class="column-right">
-                        <div class="description-box">
-                          <div *ngIf="index.description">
-                            {{ index.description }}
+                        <!-- CENTER: type -->
+                        <div class="column-center">
+                          <div class="type-chip">
+                            <span class="type-value">{{ index.type || 'index' }}</span>
                           </div>
-                          <div class="index-properties" *ngIf="index.properties; else noProps">
-                            <span>Properties: </span>
-                            <strong [innerHTML]="ColumnIndexSearch.value | highlightText : index.properties"></strong>
-                          </div>
+                        </div>
 
-                          <ng-template #noProps>
-                            <div class="index-properties">
-                              Properties: <strong>No properties defined</strong>
+                        <!-- RIGHT: description + properties -->
+                        <div class="column-right">
+                          <div class="description-box">
+                            <div *ngIf="index.description">
+                              {{ index.description }}
                             </div>
-                          </ng-template>
-                        </div>
-                      </div>
-                    </mat-card-content>
-                  </mat-card>
-                </div>
-              </ng-template>
-            </div>
-          </mat-expansion-panel>
+                            <div class="index-properties" *ngIf="index.properties; else noProps">
+                              <span>Properties: </span>
+                              <strong [innerHTML]="ColumnIndexSearch.value | highlightText : index.properties"></strong>
+                            </div>
 
-        </mat-accordion>
+                            <ng-template #noProps>
+                              <div class="index-properties">
+                                Properties: <strong>No properties defined</strong>
+                              </div>
+                            </ng-template>
+                          </div>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                </ng-template>
+              </div>
+            </mat-expansion-panel>
+
+          </mat-accordion>
         </div>
         <!-- MODAL EXPORT -->
         <catalog-modal #ExportModal [zIndex]="20" title="Download Sample Data" [modalStyle]="{width:'50%'}">
           <div style="display: flex;justify-content: space-evenly;align-items: center;">
             <div>
               <mat-label>File type</mat-label>
-              <br />
+              <br/>
               <mat-button-toggle-group [(ngModel)]="exportOptions.fileType" [hideSingleSelectionIndicator]="true">
                 <mat-button-toggle [value]="'CSV'">CSV</mat-button-toggle>
                 <mat-button-toggle [value]="'JSON'">JSON</mat-button-toggle>
               </mat-button-toggle-group>
             </div>
-            <br />
+            <br/>
             <div *ngIf="exportOptions.fileType == 'CSV'" style="height: 100px; display: inline-flex;">
               <div style="margin-right: 16px;">
                 <mat-label>AddHeader</mat-label>
-                <br />
+                <br/>
                 <mat-slide-toggle [(ngModel)]="exportOptions.addHeader"></mat-slide-toggle>
               </div>
               <div>
                 <mat-label>AddInfo</mat-label>
-                <br />
+                <br/>
                 <mat-slide-toggle [(ngModel)]="exportOptions.addInfo"></mat-slide-toggle>
               </div>
             </div>
@@ -725,7 +740,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Rows</mat-label>
               <input matInput type="number" [(ngModel)]="exportOptions.amount" min="5" max="1000" step="1"
-                (ngModelChange)="validateAmount()" inputmode="numeric" pattern="^[0-9]{3-5}$" />
+                     (ngModelChange)="validateAmount()" inputmode="numeric" pattern="^[0-9]{3-5}$"/>
               <mat-hint>Rows to download (5-1000)</mat-hint>
             </mat-form-field>
           </div>
@@ -767,7 +782,7 @@
     and it took <strong>{{ (syncTarget?.LastSyncTime | durationCompact) || 'N/A' }}</strong>.
   </p>
   <div class="sync-error-box"
-    *ngIf="syncTarget?.LastSyncErrors && syncTarget?.LastSyncErrors?.trim() && syncTarget?.LastSyncErrors?.trim() !== '0'">
+       *ngIf="syncTarget?.LastSyncErrors && syncTarget?.LastSyncErrors?.trim() && syncTarget?.LastSyncErrors?.trim() !== '0'">
     <mat-icon class="sync-error-box-icon">sync_problem</mat-icon>
     <div class="sync-error-box-content">
       <div class="sync-error-box-title">Synchronization errors</div>
@@ -796,7 +811,7 @@
 
 <catalog-modal [(open)]="exportCatalogModal" [title]="'JSON export'">
   <textarea class="export-modal-area" [readOnly]="true" [innerHTML]="exportedCatalogJSON"
-    style="height: 80vh"></textarea>
+            style="height: 80vh"></textarea>
   <button mat-icon-button matSuffix color="primary" (click)="copyData()" aria-label="Copy">
     <mat-icon>copy_all</mat-icon>
   </button>
@@ -806,11 +821,11 @@
   <textarea class="export-modal-area" [(ngModel)]="importData" style="height: 80vh"></textarea>
   <div style="display: inline-flex">
     <button mat-icon-button matSuffix color="primary" (click)="pasteData()" aria-label="Paste"
-      [matTooltip]="'Paste clipboard content'">
+            [matTooltip]="'Paste clipboard content'">
       <mat-icon>content_paste</mat-icon>
     </button>
     <button mat-icon-button matSuffix color="primary" (click)="importContent()" [matTooltip]="'Upload content'"
-      aria-label="Upload">
+            aria-label="Upload">
       <mat-icon>upload</mat-icon>
     </button>
   </div>

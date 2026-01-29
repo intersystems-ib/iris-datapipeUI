@@ -19,24 +19,24 @@ export class AuthService {
 
   /** user permissions */
   permissions: any = {};
-  
+
   /** isLoginSubject is used to know if the user is logged in or not */
   isLoginSubject = new BehaviorSubject<boolean>(this.authenticated());
 
   /** private user token */
   private _token: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  /** 
-   * Constructor 
+  /**
+   * Constructor
    */
   constructor(private http: HttpClient, private router: Router) {
   }
 
   /**
    * Login into the app (implements Basic HTTP auth with IRIS backend)
-   * @param username 
+   * @param username
    * @param password
-   * @param redirectTo url to redirect after login 
+   * @param redirectTo url to redirect after login
    */
   public login(username: string, password: string, redirectTo: string): Observable<string> {
     let basicheader = btoa(encodeURI(username+":"+password));
@@ -58,7 +58,10 @@ export class AuthService {
           setTimeout(() => {
             this.isLoginSubject.next(true);
             this.getUserInfo().subscribe( d => {
-              this.router.navigateByUrl(redirectTo);  
+              this.router.navigateByUrl(redirectTo).then((wasSuccessful)=>{
+                if(!wasSuccessful)
+                  this.router.navigateByUrl('/datapipe/catalog')
+              });
             }
             );
           });
@@ -118,7 +121,7 @@ export class AuthService {
   }
 
   /**
-   * Get user information from IRIS and load attributes as needed 
+   * Get user information from IRIS and load attributes as needed
    */
   public getUserInfo(): Observable<any> {
     return this.http
@@ -131,7 +134,7 @@ export class AuthService {
           this.username = data.username;
           this.fullName = data.fullName;
           this.permissions = data.permissions;
-          
+
           return data;
         }),
         catchError(err => {
@@ -144,8 +147,8 @@ export class AuthService {
   /**
    * Check that user has a permission with a given level
    * @param permission
-   * @param level 
-   * @returns 
+   * @param level
+   * @returns
    */
   public checkPermission(permission: string, level: string): boolean {
     let permitted: boolean = false;
@@ -156,5 +159,5 @@ export class AuthService {
     }
     return permitted;
   }
-  
+
 }
