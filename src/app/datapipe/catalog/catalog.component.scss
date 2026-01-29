@@ -873,6 +873,10 @@
       color: #3f51b5;
       line-height: 1;
       cursor: help;
+
+      &.stale-total {
+        color: #7ea0ff;
+      }
     }
 
     .records-count-full {
@@ -1191,6 +1195,14 @@
   font-size: 13px;
   max-width: 400px;
   white-space: pre-line;
+}
+
+/* Multiline tooltip styling */
+::ng-deep .multiline-tooltip {
+  white-space: pre-line;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .catalog-card-disabled::after {

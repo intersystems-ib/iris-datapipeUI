@@ -330,6 +330,163 @@ export class CatalogComponent implements OnInit {
     return this.hasSyncError(item) || this.hasMdxError(item);
   }
 
+  isSyncOrBuildStale(item: Catalog): boolean {
+    const now = Date.now();
+    const thresholdMs = 24 * 60 * 60 * 1000;
+    const syncMs = this.getDateMs(item.LastSync);
+    const buildMs = this.getDateMs(item.LastBuild);
+    if (syncMs === null && buildMs === null) return false;
+    // Use the most recent of sync or build
+    const mostRecentMs = Math.max(syncMs ?? 0, buildMs ?? 0);
+    return Math.abs(now - mostRecentMs) > thresholdMs;
+  }
+
+  getSyncBuildAgeTooltip(item: Catalog): string {
+    const totalRaw = item.Total as any;
+    const totalValue = typeof totalRaw === 'number' ? totalRaw : totalRaw?.Count;
+    const total = totalValue != null ? totalValue.toLocaleString() : 'N/A';
+    const now = Date.now();
+    const syncMs = this.getDateMs(item.LastSync);
+    const buildMs = this.getDateMs(item.LastBuild);
+
+    let ageLine: string;
+    // Determine which is more recent (larger ms = more recent)
+    if (syncMs !== null && buildMs !== null) {
+      if (syncMs >= buildMs) {
+        ageLine = `Data age: ${this.formatAge(now - syncMs)} (Sync)`;
+      } else {
+        ageLine = `Data age: ${this.formatAge(now - buildMs)} (Build)`;
+      }
+    } else if (syncMs !== null) {
+      ageLine = `Data age: ${this.formatAge(now - syncMs)} (Sync)`;
+    } else if (buildMs !== null) {
+      ageLine = `Data age: ${this.formatAge(now - buildMs)} (Build)`;
+    } else {
+      ageLine = 'Data age: N/A';
+    }
+
+    return `${total}\n${ageLine}`;
+  }
+
+  private formatAge(ms: number): string {
+    if (!Number.isFinite(ms)) return 'N/A';
+    // Use absolute value to handle clock drift between server and client
+    const absMs = Math.abs(ms);
+    if (absMs < 60000) return 'just now';
+    const totalMinutes = Math.floor(absMs / 60000);
+    const totalHours = Math.floor(totalMinutes / 60);
+    const days = Math.floor(totalHours / 24);
+    const hours = totalHours % 24;
+    const minutes = totalMinutes % 60;
+    if (days > 0) {
+      return `${days}d ${hours}h`;
+    }
+    return `${hours}h ${minutes}m`;
+  }
+
+  private parseMaybeDate(value: Date | string | number | undefined | null): Date | null {
+    const ms = this.getDateMs(value);
+    return ms === null ? null : new Date(ms);
+  }
+
+  private getDateMs(value: Date | string | number | undefined | null): number | null {
+    if (value === null || value === undefined) return null;
+    if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.getTime();
+
+    if (typeof value === 'number') {
+      const ms = value < 1e12 ? value * 1000 : value;
+      return Number.isNaN(ms) ? null : ms;
+    }
+
+    const raw = String(value).trim();
+    if (!raw || raw.toLowerCase() === 'n/a') return null;
+    const cleaned = raw.replace(/[\u0000-\u001F\u007F\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, '');
+
+    const parsed = Date.parse(cleaned);
+    if (!Number.isNaN(parsed)) return parsed;
+    const normalized = cleaned.replace(/\s+/g, ' ').replace(' ', 'T');
+    const parsedIso = Date.parse(normalized);
+    if (!Number.isNaN(parsedIso)) return parsedIso;
+
+    const isoMatch = normalized.match(
+      /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(Z)?$/
+    );
+    if (isoMatch) {
+      const year = Number(isoMatch[1]);
+      const month = Number(isoMatch[2]) - 1;
+      const day = Number(isoMatch[3]);
+      const hour = Number(isoMatch[4]);
+      const minute = Number(isoMatch[5]);
+      const second = Number(isoMatch[6]);
+      const msRaw = isoMatch[7] ? isoMatch[7].slice(0, 3).padEnd(3, '0') : '0';
+      const ms = Number(msRaw);
+      const utc = Date.UTC(year, month, day, hour, minute, second, ms);
+      return Number.isNaN(utc) ? null : utc;
+    }
+
+    const noColonMatch = cleaned.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2})(\d{2})(\d{2})Z?$/);
+    if (noColonMatch) {
+      const year = Number(noColonMatch[1]);
+      const month = Number(noColonMatch[2]) - 1;
+      const day = Number(noColonMatch[3]);
+      const hour = Number(noColonMatch[4]);
+      const minute = Math.min(Number(noColonMatch[5]), 59);
+      const second = Math.min(Number(noColonMatch[6]), 59);
+      const utc = Date.UTC(year, month, day, hour, minute, second, 0);
+      return Number.isNaN(utc) ? null : utc;
+    }
+
+    // Fallback: pull numeric parts even if separators are non-standard
+    const partsMatch = cleaned.match(/(\d{4})\D?(\d{2})\D?(\d{2})\D?(\d{2})\D?(\d{2})\D?(\d{2})/);
+    if (partsMatch) {
+      const year = Number(partsMatch[1]);
+      const month = Number(partsMatch[2]) - 1;
+      const day = Number(partsMatch[3]);
+      const hour = Number(partsMatch[4]);
+      const minute = Math.min(Number(partsMatch[5]), 59);
+      const second = Math.min(Number(partsMatch[6]), 59);
+      const utc = Date.UTC(year, month, day, hour, minute, second, 0);
+      return Number.isNaN(utc) ? null : utc;
+    }
+
+    const digits = cleaned.match(/\d/g);
+    if (digits && digits.length >= 14) {
+      const year = Number(digits.slice(0, 4).join(''));
+      const month = Number(digits.slice(4, 6).join('')) - 1;
+      const day = Number(digits.slice(6, 8).join(''));
+      const hour = Number(digits.slice(8, 10).join(''));
+      const minute = Math.min(Number(digits.slice(10, 12).join('')), 59);
+      const second = Math.min(Number(digits.slice(12, 14).join('')), 59);
+      const utc = Date.UTC(year, month, day, hour, minute, second, 0);
+      return Number.isNaN(utc) ? null : utc;
+    }
+
+    if (/^\d+$/.test(cleaned)) {
+      const num = Number(cleaned);
+      if (!Number.isFinite(num)) return null;
+      return num < 1e12 ? num * 1000 : num;
+    }
+
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(cleaned)) {
+      const parsedAlt = Date.parse(cleaned.replace(' ', 'T'));
+      return Number.isNaN(parsedAlt) ? null : parsedAlt;
+    }
+
+    const usMatch = cleaned.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (usMatch) {
+      const month = Number(usMatch[1]) - 1;
+      const day = Number(usMatch[2]);
+      const year = Number(usMatch[3]);
+      const hour = Number(usMatch[4] || 0);
+      const minute = Number(usMatch[5] || 0);
+      const second = Number(usMatch[6] || 0);
+      const date = new Date(year, month, day, hour, minute, second);
+      return Number.isNaN(date.getTime()) ? null : date.getTime();
+    }
+
+    return null;
+  }
+
   private expandVisible(level: Catalog[]) {
     level.forEach(entry => {
       if (!this.isItemVisible(entry)) return;
