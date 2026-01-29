@@ -43,9 +43,14 @@ export class HighlightSearchTextDirective implements OnDestroy {
         let safeHtml: string | null = '';
         if (this.text) {
             const escaped = this.escapeHtml(this.text)
-            if (searchString) {
-                safeHtml = this.sanitizer.sanitize(SecurityContext.HTML, this.highlightTerms(searchString, escaped));
+            const normalized = searchString?.trim();
+            if (normalized) {
+                safeHtml = this.sanitizer.sanitize(SecurityContext.HTML, this.highlightTerms(normalized, escaped));
             } else {
+                if (this.results !== 0) {
+                    this.emitResultChange(-this.results)
+                    this.results = 0
+                }
                 safeHtml = this.sanitizer.sanitize(SecurityContext.HTML, escaped);
             }
         }
@@ -73,7 +78,7 @@ export class HighlightSearchTextDirective implements OnDestroy {
     highlightTerms(searchTerm: string, ...text: string[]): string {
         const joinedText = text.join(" ")
         if (joinedText.trim() == "") {
-            this.resultChange.emit(-this.results)
+            this.emitResultChange(-this.results)
             this.results = 0
             return '';
         }
@@ -82,13 +87,18 @@ export class HighlightSearchTextDirective implements OnDestroy {
             replacedValues++;
             return '<mark class="searchMark">' + sub + '</mark>';
         });
-        this.resultChange.emit(replacedValues - this.results)
+        this.emitResultChange(replacedValues - this.results)
         this.results = replacedValues
         return result
     }
 
     ngOnDestroy() {
-        this.resultChange.emit(-this.results)
+        this.emitResultChange(-this.results)
+    }
+
+    private emitResultChange(delta: number) {
+        if (delta === 0) return;
+        Promise.resolve().then(() => this.resultChange.emit(delta));
     }
 
 }

@@ -246,6 +246,19 @@ export class CatalogComponent implements OnInit {
     return this.hasSyncError(item) || this.hasMdxError(item);
   }
 
+  isItemVisible(item: Catalog): boolean {
+    if (!this.categoryFiltering) return true;
+    const categoryName = item.Category?.Name;
+    if (!categoryName) return true;
+    const category = this.categories?.[categoryName];
+    return !category || !!category.selected;
+  }
+
+  hasVisibleChildren(item: Catalog): boolean {
+    if (!item.Children || item.Children.length === 0) return false;
+    return item.Children.some(child => this.isItemVisible(child));
+  }
+
   getMdxErrorTooltip(item: Catalog): string {
     if (!item.MDXError) return '';
     if (Array.isArray(item.MDXError)) {

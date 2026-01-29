@@ -5,7 +5,7 @@
   <div class="search-section">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search catalog...</mat-label>
-      <input matInput #searchInput debouncedInput (debouncedValue)="searchStringValue = $event"
+      <input matInput #searchInput (input)="searchStringValue = searchInput.value"
         placeholder="Search by entity, description or table">
       <span matSuffix *ngIf="searchInput.value" class="search-results-count">({{ searchResults }})</span>
       <button mat-icon-button matSuffix *ngIf="searchInput.value" (click)="searchInput.value='';searchStringValue = ''"
@@ -114,9 +114,13 @@
               item.Category.Name
               }}
             </mat-chip>
-            <mat-icon *ngIf="!item?.isEditing && item?.MDXError && item.MDXError?.MDXTotal"
-                      class="error-icon" [matTooltip]="item.MDXError.MDXTotal.join('\n')" matTooltipClass="error-tooltip">
+            <mat-icon *ngIf="!item?.isEditing && hasMdxError(item)"
+                      class="mdx-error-icon" [matTooltip]="getMdxErrorTooltip(item)" matTooltipClass="error-tooltip">
               error
+            </mat-icon>
+            <mat-icon *ngIf="!item?.isEditing && hasSyncError(item)"
+                      class="sync-error-icon" [matTooltip]="item.LastSyncErrors" matTooltipClass="error-tooltip">
+              sync_problem
             </mat-icon>
             <h2 *ngIf="!item.isEditing && level === 1" class="entity-title" HighlightSearchText [text]="item.Entity"
               [searchString]="searchStringValue" (resultChange)="searchResults = searchResults+$event"
@@ -426,7 +430,7 @@
 
 
           </div>
-          <div class="namespace-table-filter-row">
+          <div *ngIf="item.isEditing" class="namespace-table-filter-row">
             <mat-form-field appearance="outline" class="edit-field filter-width">
               <mat-label>Filter</mat-label>
               <mat-icon matPrefix class="field-icon">filter_alt</mat-icon>
@@ -713,7 +717,7 @@
   </mat-card>
 
   <!-- Recursively render children -->
-  <div class="children-container" [hidden]="!(item.expanded && item.Children && item.Children.length > 0)">
+  <div class="children-container" *ngIf="item.expanded && hasVisibleChildren(item)">
     <ng-container *ngFor="let child of item.Children; trackBy: trackById; let index = index">
       <ng-container
         *ngTemplateOutlet="catalogCard; context: {$implicit: child, level: level + 1, index : index, array: item.Children, parent:item}"></ng-container>
@@ -729,11 +733,11 @@
   </p>
   <p class="warning-text">
     <strong>Build</strong> process was done last time on <strong>{{ syncTarget?.LastBuild || 'N/A' }}</strong>
-    and it took <strong>{{ syncTarget?.LastBuildTime || 'N/A' }}</strong>.
+    and it took <strong>{{ (syncTarget?.LastBuildTime | durationCompact) || 'N/A' }}</strong>.
   </p>
   <p class="warning-text">
     <strong>Synchronization</strong> process was done last time on <strong>{{ syncTarget?.LastSync || 'N/A' }}</strong>
-    and it took <strong>{{ syncTarget?.LastSyncTime || 'N/A' }}</strong>.
+    and it took <strong>{{ (syncTarget?.LastSyncTime | durationCompact) || 'N/A' }}</strong>.
   </p>
   <div class="sync-error-box"
     *ngIf="syncTarget?.LastSyncErrors && syncTarget?.LastSyncErrors?.trim() && syncTarget?.LastSyncErrors?.trim() !== '0'">

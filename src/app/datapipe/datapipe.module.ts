@@ -24,6 +24,7 @@ import {HighlightSearchTextPipe} from "./catalog/pipes/highlight-search-text.pip
 import {SearchTextPipe} from "./catalog/pipes/search-text.pipe";
 import {DebouncedInputDirective} from "./catalog/debounced-input.directive";
 import {HighlightSearchTextDirective} from "./catalog/highlight-search-text.directive";
+import {DurationCompactPipe} from "./catalog/pipes/duration-compact.pipe";
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import {HighlightSearchTextDirective} from "./catalog/highlight-search-text.dire
     LargeNumbersPipe,
     HighlightSearchTextPipe,
     SearchTextPipe,
+    DurationCompactPipe,
     DebouncedInputDirective,
     HighlightSearchTextDirective
   ]
