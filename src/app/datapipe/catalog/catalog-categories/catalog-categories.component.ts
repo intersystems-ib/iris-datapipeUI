@@ -78,6 +78,8 @@ export class CatalogCategoriesComponent implements OnInit {
 
   anyChanges: boolean = false;
 
+  loading: boolean = true
+
   private datapipeService = inject(DatapipeService);
 
   protected cdr = inject(ChangeDetectorRef)
@@ -85,14 +87,16 @@ export class CatalogCategoriesComponent implements OnInit {
   ngOnInit() {
     this.datapipeService.getResources().subscribe(
       (result: { resources: string[] }) => {
-        if (result.resources)
+        if (result.resources) {
           this.resources = result.resources
+        }
       })
     this.search()
   }
 
   search() {
     this.anyChanges = false
+    this.loading = true
     this.datapipeService.getCategories(this.filter).subscribe(
       (result: any | ({ categories: Category[] })) => {
         result.categories.forEach((cat: Category) => {
@@ -100,6 +104,7 @@ export class CatalogCategoriesComponent implements OnInit {
         })
         if (result.categories)
           this.categories = result.categories
+        this.loading = false
         this.cdr.markForCheck()
       }
     )

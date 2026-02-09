@@ -32,79 +32,84 @@
 
     </mat-expansion-panel>
   </mat-accordion>
+  <div style="width: 100%;display: flex;  flex-direction: column;  align-items: center;">
+    <span *ngIf="categories === undefined; else DoneLoading">
+      <mat-spinner diameter="50"></mat-spinner>
+      <span class="loading-text">Loading categories...</span>
+      </span>
+    <ng-template #DoneLoading >
+      <span *ngIf="categories!.length==0; else CategoryTable">
+        No categories to load
+      </span>
+    </ng-template>
 
-  <!-- results table -->
-  <!-- can initilize matSort options as: matSortActive="Name" matSortDirection="asc" -->
-  <div [hidden]="categories" style="width: 100%;display: flex;  flex-direction: column;  align-items: center;">
-    <mat-spinner diameter="50"></mat-spinner>
-    <span class="loading-text">Loading catalogs...</span>
   </div>
-  <table mat-table *ngIf="categories" [dataSource]="categories">
+  <ng-template #CategoryTable>
+    <table mat-table [dataSource]="categories!">
 
-    <ng-container matColumnDef="Name">
-      <th mat-header-cell *matHeaderCellDef style="width:15%;"> Name</th>
-      <td mat-cell *matCellDef="let category" style="width:15%;">
-        <mat-form-field floatLabel="always" class="field-s">
-          <input matInput [(ngModel)]="category.Name" (ngModelChange)="anyChanges = true; cdr.markForCheck()"
-                 name="Name">
-        </mat-form-field>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="Resource">
-      <th mat-header-cell *matHeaderCellDef style="width:25%;"> Resource</th>
-      <td mat-cell *matCellDef="let category" style="width:25%;">
-        <catalog-suggestion-input [suggestions]="resources" [(value)]="category.Resource"
-                                  (valueChange)="anyChanges = true;cdr.markForCheck()"/>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="Color">
-      <th mat-header-cell *matHeaderCellDef style="width:15%;"> Color in HEX</th>
-      <td mat-cell *matCellDef="let category" style="width:15%">
-        <div style="display: inline-flex">
-          <div [ngStyle]="{'background-color':category.loadedAttributes?.Color}"
-               style="width: 30px; height:30px; border: 1px solid black;"><br>
-          </div>
+      <ng-container matColumnDef="Name">
+        <th mat-header-cell *matHeaderCellDef style="width:15%;"> Name</th>
+        <td mat-cell *matCellDef="let category" style="width:15%;">
           <mat-form-field floatLabel="always" class="field-s">
-            <input matInput [(ngModel)]="category.loadedAttributes.Color"
-                   (ngModelChange)="anyChanges = true; cdr.markForCheck()"
-                   name="Color">
+            <input matInput [(ngModel)]="category.Name" (ngModelChange)="anyChanges = true; cdr.markForCheck()"
+                   name="Name">
           </mat-form-field>
-        </div>
-    </ng-container>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="BackgroundColor">
-      <th mat-header-cell *matHeaderCellDef style="width:15%;"> BackgroundColor in HEX</th>
-      <td mat-cell *matCellDef="let category" style="width:15%;">
-        <div style="display: inline-flex">
-          <div [ngStyle]="{'background-color':category.loadedAttributes?.BackgroundColor}"
-               style="width: 30px; height:30px; border: 1px solid black;"><br>
+      <ng-container matColumnDef="Resource">
+        <th mat-header-cell *matHeaderCellDef style="width:25%;"> Resource</th>
+        <td mat-cell *matCellDef="let category" style="width:25%;">
+          <catalog-suggestion-input [suggestions]="resources" [(value)]="category.Resource"
+                                    (valueChange)="anyChanges = true;cdr.markForCheck()"/>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Color">
+        <th mat-header-cell *matHeaderCellDef style="width:15%;"> Color in HEX</th>
+        <td mat-cell *matCellDef="let category" style="width:15%">
+          <div style="display: inline-flex">
+            <div [ngStyle]="{'background-color':category.loadedAttributes?.Color}"
+                 style="width: 30px; height:30px; border: 1px solid black;"><br>
+            </div>
+            <mat-form-field floatLabel="always" class="field-s">
+              <input matInput [(ngModel)]="category.loadedAttributes.Color"
+                     (ngModelChange)="anyChanges = true; cdr.markForCheck()"
+                     name="Color">
+            </mat-form-field>
           </div>
-          <mat-form-field floatLabel="always" class="field-s">
-            <input matInput [(ngModel)]="category.loadedAttributes.BackgroundColor"
-                   (ngModelChange)="anyChanges = true; cdr.markForCheck()"
-                   name="BackgroundColor">
-          </mat-form-field>
-        </div>
-      </td>
-    </ng-container>
+      </ng-container>
+
+      <ng-container matColumnDef="BackgroundColor">
+        <th mat-header-cell *matHeaderCellDef style="width:15%;"> BackgroundColor in HEX</th>
+        <td mat-cell *matCellDef="let category" style="width:15%;">
+          <div style="display: inline-flex">
+            <div [ngStyle]="{'background-color':category.loadedAttributes?.BackgroundColor}"
+                 style="width: 30px; height:30px; border: 1px solid black;"><br>
+            </div>
+            <mat-form-field floatLabel="always" class="field-s">
+              <input matInput [(ngModel)]="category.loadedAttributes.BackgroundColor"
+                     (ngModelChange)="anyChanges = true; cdr.markForCheck()"
+                     name="BackgroundColor">
+            </mat-form-field>
+          </div>
+        </td>
+      </ng-container>
 
 
-    <ng-container matColumnDef="DeleteCategory">
-      <th mat-header-cell *matHeaderCellDef style="width:25%;"></th>
-      <td mat-cell *matCellDef="let category" style="width:25%;">
-        <button mat-button (click)="deleteCategory(category.Id)">
-          <mat-icon style="color: red">delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
+      <ng-container matColumnDef="DeleteCategory">
+        <th mat-header-cell *matHeaderCellDef style="width:25%;"></th>
+        <td mat-cell *matCellDef="let category" style="width:25%;">
+          <button mat-button (click)="deleteCategory(category.Id)">
+            <mat-icon style="color: red">delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-  </table>
-
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </ng-template>
   <mat-toolbar class="bottom-toolbar">
     <button mat-raised-button color="primary" (click)="create()">
       <mat-icon>add</mat-icon>
