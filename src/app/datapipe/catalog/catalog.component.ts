@@ -740,7 +740,6 @@ export class CatalogComponent implements OnInit {
 
     // Add to parent's children and flat list
     parent.Children.push(newChild);
-    this.catalogTree.push(newChild);
 
     // Expand parent to show new child
     parent.expanded = true;
