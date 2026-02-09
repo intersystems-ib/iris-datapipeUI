@@ -468,7 +468,7 @@
     }
 
     .table-name {
-      font-family: 'Courier New', monospace;
+      font-family: inherit;
       font-size: 13px;
       color: #424242;
       word-break: break-all;
@@ -485,7 +485,7 @@
       width: 100%;
 
       textarea {
-        font-family: 'Courier New', monospace;
+        font-family: inherit;
         font-size: 13px;
       }
 
@@ -500,7 +500,7 @@
       min-width: 0;
 
       input {
-        font-family: 'Courier New', monospace;
+        font-family: inherit;
         font-size: 13px;
       }
     }
@@ -655,7 +655,7 @@
         }
 
         input, mat-select {
-          font-family: 'Courier New', monospace;
+          font-family: inherit;
           font-size: 13px;
         }
       }
@@ -669,7 +669,7 @@
         }
 
         input {
-          font-family: 'Courier New', monospace;
+          font-family: inherit;
           font-size: 13px;
         }
       }
@@ -683,7 +683,7 @@
         }
 
         input {
-          font-family: 'Courier New', monospace;
+          font-family: inherit;
           font-size: 13px;
         }
       }
@@ -772,7 +772,7 @@
     }
 
     .column-name {
-      font-family: 'Courier New', Courier, monospace;
+      font-family: inherit;
       font-weight: 700;
       font-size: 18px;
       color: #2c3e50;
@@ -816,7 +816,7 @@
     }
 
     .data-type-badge {
-      font-family: 'Courier New', Courier, monospace;
+      font-family: inherit;
       font-size: 14px;
       font-weight: 600;
       color: #3f51b5;
@@ -1335,7 +1335,7 @@
 }
 
 .column-name {
-  font-family: "Fira Code", "Roboto Mono", monospace;
+  font-family: inherit;
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -1740,7 +1740,7 @@
 
 export-modal-area {
   white-space: nowrap;
-  font-family: monospace;
+  font-family: inherit;
   width: 100%;
   overflow-y: auto;
   height: 600px;
