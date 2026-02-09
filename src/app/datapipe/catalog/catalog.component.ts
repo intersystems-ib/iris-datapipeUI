@@ -1382,14 +1382,3 @@ export function GetExportOptionsDefaults(): ExportDataOptions {
   }
 }
 
-export function markVal(value: any): any {
-  switch (typeof value) {
-    case typeof "string":
-      return '<mark class="mark-blue">' + value + '</mark>'
-    case "boolean":
-      return '<mark class="mark-orange">' + value + '</mark>'
-    case "number":
-      return '<mark class="mark-red">' + value + '</mark>'
-  }
-  return value
-}
