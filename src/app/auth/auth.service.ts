@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, ReplaySubject, Observable, throwError } from 'rxjs';
-import { map, distinctUntilChanged, tap, catchError } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {BehaviorSubject, Observable, throwError} from 'rxjs';
+import {catchError, map, tap} from 'rxjs/operators';
+import {environment} from '../../environments/environment';
+import {AlertService} from "../shared/alert.service";
 
 /**
  * Authentication Service
@@ -29,7 +30,7 @@ export class AuthService {
   /**
    * Constructor
    */
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient, private router: Router, private alertService: AlertService) {
   }
 
   /**
@@ -39,7 +40,7 @@ export class AuthService {
    * @param redirectTo url to redirect after login
    */
   public login(username: string, password: string, redirectTo: string): Observable<string> {
-    let basicheader = btoa(encodeURI(username+":"+password));
+    let basicheader = btoa((username + ":" + password));
     let headers = new HttpHeaders();
     headers = headers.set('Authorization', 'Basic ' + basicheader);
     headers = headers.set('Cache-Control', 'no-cache');
@@ -49,21 +50,28 @@ export class AuthService {
         environment.urlIRISApi + '/login',
         {},
         {headers}
-      ).
-      pipe(
+      ).pipe(
         map(data => {
           let token = `Basic ${basicheader}`;
-          localStorage.setItem(environment.authLocalStorageKey, JSON.stringify({ username, token }));
+          localStorage.setItem(environment.authLocalStorageKey, JSON.stringify({username, token}));
           this._token.next(token);
           setTimeout(() => {
             this.isLoginSubject.next(true);
-            this.getUserInfo().subscribe( d => {
-              this.router.navigateByUrl(redirectTo).then((wasSuccessful)=>{
-                if(!wasSuccessful)
-                  this.router.navigateByUrl('/datapipe/catalog')
-              });
-            }
-            );
+            this.getUserInfo().subscribe({
+              next: (d => {
+                  this.router.navigateByUrl(redirectTo).then((wasSuccessful) => {
+                    if (!wasSuccessful)
+                      this.router.navigateByUrl('/datapipe/catalog')
+                  });
+                }
+              ), error: (err: HttpErrorResponse) => {
+                if (err && (err.status === 403 || err.status === 500)) {
+                  const body = (typeof err.error === 'string') ? err.error : (err.error && err.error.message ? err.error.message : err.message);
+                  const message = body && body.trim().length > 0 ? body : `Request failed with status ${err.status}`;
+                  this.alertService.error(message);
+                }
+              }
+            });
           });
           this.username = username;
           return username;
@@ -127,8 +135,7 @@ export class AuthService {
     return this.http
       .get<any>(
         environment.urlIRISApi + '/getUserInfo',
-      ).
-      pipe(
+      ).pipe(
         tap(data => {
           // load user attributes
           this.username = data.username;
